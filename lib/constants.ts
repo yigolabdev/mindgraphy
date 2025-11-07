@@ -1,6 +1,15 @@
 // Demo token for development
 export const DEMO_TOKEN = 'demo-token-2025'
 
+// All available tokens for static generation
+export const STATIC_TOKENS = [
+  'demo-token-2025',
+  'token-001',
+  'token-002',
+  'token-003',
+  'token-004',
+]
+
 // Route paths
 export const ROUTES = {
   // Public

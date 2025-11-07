@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { use, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ClientPortalLayout } from '@/components/layout/client-portal-layout'

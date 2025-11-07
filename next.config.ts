@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // Note: 'output: export' removed because this app uses dynamic routes (/c/[token])
-  // and server-side features that are not compatible with static HTML export
+  output: 'export', // ✅ Static HTML export for AWS S3 deployment
   images: {
-    unoptimized: true, // allows <Image> to work without Image Optimization API
+    unoptimized: true, // Required for static export - allows <Image> to work
   },
+  trailingSlash: true, // Better for S3 hosting
 };
 
 export default nextConfig;
