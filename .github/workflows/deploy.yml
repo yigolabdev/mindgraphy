@@ -35,4 +35,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-south-1
-          SOURCE_DIR: ./dist  # or ./build for React, or ./ for pure HTML
+          SOURCE_DIR: dist  # or ./build for React, or ./ for pure HTML
