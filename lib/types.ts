@@ -68,6 +68,7 @@ export type ProjectStatus =
   | 'editing' 
   | 'completed' 
   | 'delivered' 
+  | 'cancelled'
   | 'archived'
 
 export interface Project {
