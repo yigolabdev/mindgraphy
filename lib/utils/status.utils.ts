@@ -133,12 +133,13 @@ export function isUpcomingStatus(status: string): boolean {
  */
 export function getNextStatuses(currentStatus: ProjectStatus): ProjectStatus[] {
   const statusFlow: Record<ProjectStatus, ProjectStatus[]> = {
-    'scheduled': ['in_progress', 'archived'],
-    'in_progress': ['proof_ready', 'archived'],
-    'proof_ready': ['editing', 'archived'],
+    'scheduled': ['in_progress', 'cancelled', 'archived'],
+    'in_progress': ['proof_ready', 'cancelled', 'archived'],
+    'proof_ready': ['editing', 'cancelled', 'archived'],
     'editing': ['completed', 'proof_ready'],
     'completed': ['delivered'],
     'delivered': ['archived'],
+    'cancelled': ['archived'],
     'archived': [],
   }
   
@@ -167,6 +168,7 @@ export function getStatusProgress(status: ProjectStatus): number {
     'editing': 60,
     'completed': 80,
     'delivered': 100,
+    'cancelled': 0,
     'archived': 100,
   }
   

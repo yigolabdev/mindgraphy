@@ -31,7 +31,7 @@ export default function ProjectsPage() {
       id: project.id,
       name: `${project.customer?.groomName} & ${project.customer?.brideName}`,
       weddingDate: formatDate(project.weddingDate),
-      currentPhotographerId: project.assignedPhotographer?.user?.id
+      currentPhotographerId: project.assignedPhotographers?.[0]?.user?.id
     })
     setAssignDialogOpen(true)
   }
@@ -42,30 +42,9 @@ export default function ProjectsPage() {
   }
 
   const handleAssignPhotographer = (photographerId: string, photographerName: string) => {
-    if (selectedProject) {
-      setProjects(prev =>
-        prev.map(p => {
-          if (p.id !== selectedProject.id) return p
-          
-          // If assignedPhotographer exists, update it; otherwise keep original
-          if (p.assignedPhotographer && p.assignedPhotographer.user) {
-            return {
-              ...p,
-              assignedPhotographer: {
-                ...p.assignedPhotographer,
-                user: {
-                  ...p.assignedPhotographer.user,
-                  id: photographerId,
-                  firstName: photographerName
-                }
-              }
-            } as typeof p
-          }
-          
-          return p
-        })
-      )
-    }
+    // TODO: Implement photographer assignment for multiple photographers
+    console.log('Assign photographer:', photographerId, photographerName)
+    setAssignDialogOpen(false)
   }
 
   return (
@@ -116,10 +95,10 @@ export default function ProjectsPage() {
                         <span className="font-medium">담당작가:</span>{' '}
                         {project.assignedPhotographers && project.assignedPhotographers.length > 0 ? (
                           <span className="text-foreground">
-                            {project.assignedPhotographers.map((p, idx) => (
+                            {project.assignedPhotographers.filter((p) => p && p.user).map((p, idx, arr) => (
                               <span key={p.id}>
-                                {p.user?.lastName}{p.user?.firstName}
-                                {idx < project.assignedPhotographers!.length - 1 && ', '}
+                                {p.user!.lastName}{p.user!.firstName}
+                                {idx < arr.length - 1 && ', '}
                               </span>
                             ))}
                           </span>

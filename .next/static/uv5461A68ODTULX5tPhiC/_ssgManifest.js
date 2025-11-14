@@ -1,1 +1,0 @@
-self.__SSG_MANIFEST=new Set(["\u002Fadmin\u002Fprojects\u002F[id]","\u002Fc\u002F[token]","\u002Fc\u002F[token]\u002Fcontract","\u002Fc\u002F[token]\u002Fdownload","\u002Fc\u002F[token]\u002Finfo","\u002Fc\u002F[token]\u002Finvalid","\u002Fc\u002F[token]\u002Fpayment","\u002Fc\u002F[token]\u002Fproof-gallery"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

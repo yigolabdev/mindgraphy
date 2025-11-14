@@ -140,7 +140,7 @@ export default function TeamPage() {
     )
   }
 
-  const getRoleIcon = (role: UserRole) => {
+  const getRoleIcon = (role: TeamUserRole) => {
     const icons = {
       admin: Shield,
       photographer: Camera,
@@ -337,7 +337,7 @@ export default function TeamPage() {
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             {user.role === 'photographer' && user.photographerStats && (
-                              <Link href={`/admin/team/${user.id}/performance`}>
+                              <Link href={`/admin/team/performance?id=${user.id}`}>
                                 <Button variant="outline" size="sm">
                                   <TrendingUp className="mr-1 h-3 w-3" />
                                   성과

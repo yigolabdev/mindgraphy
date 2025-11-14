@@ -309,7 +309,7 @@ export const mockProjects: Project[] = [
     customer: mockCustomers[2],
     contractId: 'contract-2',
     projectType: 'wedding',
-    projectStatus: 'contracted',
+    projectStatus: 'scheduled',
     weddingDate: '2026-01-18',
     weddingTime: '15:00',
     weddingVenue: '부산 씨사이드호텔',

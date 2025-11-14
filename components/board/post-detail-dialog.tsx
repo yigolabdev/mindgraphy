@@ -76,7 +76,7 @@ export function PostDetailDialog({
         postId: post.id,
         content: commentText,
         authorId: user?.id || '',
-        authorName: user ? `${user.lastName}${user.firstName}` : '',
+        authorName: user?.name || '익명',
         authorRole: user?.role || 'photographer',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

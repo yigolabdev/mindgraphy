@@ -189,7 +189,7 @@ export function CustomerDetailDialog({
                           </div>
                         </div>
 
-                        <ProgressBar value={project.progress} showLabel size="sm" />
+                        <ProgressBar value={project.progress} showLabel />
                       </div>
                     </CardContent>
                   </Card>

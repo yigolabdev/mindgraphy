@@ -174,7 +174,7 @@ export const mockTeamUsers: TeamUser[] = [
 ]
 
 // Helper functions
-export const getRoleLabel = (role: UserRole) => {
+export const getRoleLabel = (role: TeamUserRole) => {
   const labels = {
     admin: '관리자',
     photographer: '사진작가',

@@ -2,12 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // output: 'export', // ❌ Disabled - incompatible with dynamic routes ([id], [token])
-  // Note: For static export, we would need generateStaticParams() in all dynamic route pages
+  output: 'export', // ✅ Static export enabled - all dynamic routes converted to query params
   images: {
-    unoptimized: true, // Allows <Image> to work without optimization
+    unoptimized: true, // Required for static export
   },
-  trailingSlash: true, // Better for hosting compatibility
+  trailingSlash: true, // Better for static hosting compatibility
 };
 
 export default nextConfig;

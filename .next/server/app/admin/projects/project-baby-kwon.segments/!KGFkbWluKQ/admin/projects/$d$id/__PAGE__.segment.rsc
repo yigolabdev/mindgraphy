@@ -1,9 +1,0 @@
-1:"$Sreact.fragment"
-2:I[47257,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/247eb132b7f7b574.js"],"ClientPageRoot"]
-3:I[39885,["/_next/static/chunks/da71caf8b05cd551.js","/_next/static/chunks/6a887112d20b4989.js","/_next/static/chunks/26fd8ca99be32b08.js","/_next/static/chunks/ff845c408d939ade.js","/_next/static/chunks/46e25a6230069107.js","/_next/static/chunks/e4b59ced7cb693f7.js"],"default"]
-6:I[97367,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/247eb132b7f7b574.js"],"OutletBoundary"]
-7:"$Sreact.suspense"
-0:{"buildId":"uv5461A68ODTULX5tPhiC","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{"id":"project-baby-kwon"},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/_next/static/chunks/6a887112d20b4989.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/26fd8ca99be32b08.js","async":true}],["$","script","script-2",{"src":"/_next/static/chunks/ff845c408d939ade.js","async":true}],["$","script","script-3",{"src":"/_next/static/chunks/46e25a6230069107.js","async":true}],["$","script","script-4",{"src":"/_next/static/chunks/e4b59ced7cb693f7.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
-4:{}
-5:{"id":"project-baby-kwon"}
-8:null

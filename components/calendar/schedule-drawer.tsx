@@ -330,7 +330,7 @@ export function ScheduleDrawer({ event, open, onOpenChange }: ScheduleDrawerProp
           </div>
 
           {/* Assignment */}
-          {event.photographerName && (
+          {event.photographerNames && event.photographerNames.length > 0 && (
             <div className="space-y-3">
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -338,7 +338,7 @@ export function ScheduleDrawer({ event, open, onOpenChange }: ScheduleDrawerProp
               </h3>
               <div className="text-sm bg-zinc-50 rounded-lg p-4">
                 <span className="text-muted-foreground">사진작가:</span>
-                <p className="font-medium">{event.photographerName}</p>
+                <p className="font-medium">{event.photographerNames.join(', ')}</p>
               </div>
             </div>
           )}

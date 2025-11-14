@@ -72,7 +72,7 @@ export function ProjectDetailDialog({
               <CardTitle className="text-base">진행 상황</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProgressBar value={project.progress} showLabel size="lg" />
+              <ProgressBar value={project.progress} showLabel />
             </CardContent>
           </Card>
 

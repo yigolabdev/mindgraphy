@@ -33,72 +33,7 @@
     "afterFiles": [],
     "fallback": []
   },
-  "dynamicRoutes": [
-    {
-      "page": "/admin/projects/[id]",
-      "regex": "^/admin/projects/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPid": "nxtPid"
-      },
-      "namedRegex": "^/admin/projects/(?<nxtPid>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/c/[token]",
-      "regex": "^/c/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/contract",
-      "regex": "^/c/([^/]+?)/contract(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/contract(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/download",
-      "regex": "^/c/([^/]+?)/download(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/download(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/info",
-      "regex": "^/c/([^/]+?)/info(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/info(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/invalid",
-      "regex": "^/c/([^/]+?)/invalid(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/invalid(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/payment",
-      "regex": "^/c/([^/]+?)/payment(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/payment(?:/)?$"
-    },
-    {
-      "page": "/c/[token]/proof-gallery",
-      "regex": "^/c/([^/]+?)/proof\\-gallery(?:/)?$",
-      "routeKeys": {
-        "nxtPtoken": "nxtPtoken"
-      },
-      "namedRegex": "^/c/(?<nxtPtoken>[^/]+?)/proof\\-gallery(?:/)?$"
-    }
-  ],
+  "dynamicRoutes": [],
   "staticRoutes": [
     {
       "page": "/",
@@ -119,10 +54,22 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/admin/board",
+      "regex": "^/admin/board(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/board(?:/)?$"
+    },
+    {
       "page": "/admin/calendar",
       "regex": "^/admin/calendar(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/calendar(?:/)?$"
+    },
+    {
+      "page": "/admin/customers",
+      "regex": "^/admin/customers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/customers(?:/)?$"
     },
     {
       "page": "/admin/dashboard",
@@ -155,6 +102,12 @@
       "namedRegex": "^/admin/projects(?:/)?$"
     },
     {
+      "page": "/admin/schedule",
+      "regex": "^/admin/schedule(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/schedule(?:/)?$"
+    },
+    {
       "page": "/admin/settings",
       "regex": "^/admin/settings(?:/)?$",
       "routeKeys": {},
@@ -177,6 +130,18 @@
       "regex": "^/admin/settings/products(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/settings/products(?:/)?$"
+    },
+    {
+      "page": "/admin/team",
+      "regex": "^/admin/team(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/team(?:/)?$"
+    },
+    {
+      "page": "/admin/team/performance",
+      "regex": "^/admin/team/performance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/team/performance(?:/)?$"
     },
     {
       "page": "/c",
