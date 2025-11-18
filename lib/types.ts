@@ -28,22 +28,7 @@ export interface Customer {
   createdAt: string
 }
 
-// Contract Types
-export interface Contract {
-  id: string
-  contractNumber: string
-  customerId: string
-  customer?: Customer
-  packageType: string
-  totalAmount: number
-  depositAmount: number
-  balanceAmount: number
-  contractStatus: 'draft' | 'sent' | 'signed' | 'active' | 'completed' | 'cancelled'
-  contractDate: string
-  signedAt?: string
-  pdfUrl?: string
-  createdAt: string
-}
+// Contract Types (see below for full Contract interface near ContractTemplate)
 
 // Payment Types
 export interface Payment {

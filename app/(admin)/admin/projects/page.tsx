@@ -47,7 +47,10 @@ export default function ProjectsPage() {
   const photographers = useMemo(() => {
     const photoSet = new Set<string>()
     projects.forEach(p => {
-      p.assignedPhotographers?.forEach(ph => photoSet.add(ph.name))
+      p.assignedPhotographers?.forEach(ph => {
+        const name = ph.user ? `${ph.user.lastName}${ph.user.firstName}` : '미배정'
+        photoSet.add(name)
+      })
     })
     return Array.from(photoSet)
   }, [projects])
@@ -87,7 +90,10 @@ export default function ProjectsPage() {
     // Photographer filter
     if (photographerFilter !== 'all') {
       filtered = filtered.filter(p => 
-        p.assignedPhotographers?.some(ph => ph.name === photographerFilter)
+        p.assignedPhotographers?.some(ph => {
+          const name = ph.user ? `${ph.user.lastName}${ph.user.firstName}` : '미배정'
+          return name === photographerFilter
+        })
       )
     }
     

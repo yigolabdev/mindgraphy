@@ -27,7 +27,7 @@ import { mockPhotographers } from '@/lib/mock-data'
 import { mockProducts } from '@/lib/mock/settings'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import type { ProductType } from '@/lib/types'
+import type { ProjectType } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
 
 interface CreateProjectDialogProps {
@@ -48,7 +48,7 @@ export function CreateProjectDialog({
   
   const [formData, setFormData] = useState({
     // 상품 정보 (고객용 페이지와 동일)
-    productType: '' as ProductType | '',
+    productType: '' as ProjectType | '',
     clientType: '', // 'direct' or 'venue'
     
     // 기본 정보
@@ -244,14 +244,18 @@ export function CreateProjectDialog({
     }
   }
 
-  const getProductTypeLabel = (type: ProductType) => {
-    const labels: Record<ProductType, string> = {
+  const getProductTypeLabel = (type: ProjectType) => {
+    const labels: Record<ProjectType, string> = {
       wedding: '일반 웨딩',
       hanbok: '한복 & 캐주얼',
       dress_shop: '가봉 스냅',
-      baby: '돌스냅'
+      baby: '돌스냅',
+      studio: '스튜디오',
+      outdoor: '야외촬영',
+      pre_wedding: '프리웨딩',
+      family: '가족촬영'
     }
-    return labels[type]
+    return labels[type] || type
   }
 
   return (
@@ -299,7 +303,7 @@ export function CreateProjectDialog({
                   상품 타입 *
                 </Label>
                 <div className="grid grid-cols-2 gap-3">
-                  {(['wedding', 'hanbok', 'dress_shop', 'baby'] as ProductType[]).map((type) => (
+                  {(['wedding', 'hanbok', 'dress_shop', 'baby'] as ProjectType[]).map((type) => (
                     <button
                       key={type}
                       type="button"

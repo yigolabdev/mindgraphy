@@ -59,10 +59,10 @@ export function ShiftSwapModal({ open, onOpenChange, schedule, onSubmit }: Shift
           <div className="rounded-lg border p-4 space-y-3 bg-zinc-50">
             <div className="flex items-start justify-between">
               <div>
-                <h4 className="font-semibold">{schedule.title}</h4>
+                <h4 className="font-semibold">{schedule.groomName} & {schedule.brideName}</h4>
                 <p className="text-sm text-muted-foreground">{schedule.venueName}</p>
               </div>
-              <Badge variant="outline">{schedule.packageType}</Badge>
+              <Badge variant="outline">{schedule.packageName}</Badge>
             </div>
 
             <div className="space-y-2 text-sm">
