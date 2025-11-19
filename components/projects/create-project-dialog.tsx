@@ -34,6 +34,7 @@ interface CreateProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
+  title?: string
 }
 
 type Step = 'product' | 'package' | 'details' | 'additional' | 'confirm'
@@ -41,7 +42,8 @@ type Step = 'product' | 'package' | 'details' | 'additional' | 'confirm'
 export function CreateProjectDialog({
   open,
   onOpenChange,
-  onSuccess
+  onSuccess,
+  title = '새 촬영 등록'
 }: CreateProjectDialogProps) {
   const [step, setStep] = useState<Step>('product')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -197,9 +199,17 @@ export function CreateProjectDialog({
     
     try {
       // TODO: 실제 API 호출로 변경
+      // 관리자 직접 등록 시 leadStatus는 'contracted' (바로 확정)
+      // sourceChannel은 '관리자 직접 등록'
+      console.log('등록 데이터:', {
+        ...formData,
+        leadStatus: 'contracted', // 관리자 직접 등록은 바로 확정
+        sourceChannel: '관리자 직접 등록'
+      })
+      
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      toast.success('새 촬영이 등록되었습니다!')
+      toast.success('고객이 등록되고 일정이 확정되었습니다!')
       
       // Reset form
       setFormData({
@@ -262,7 +272,7 @@ export function CreateProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">새 촬영 등록</DialogTitle>
+          <DialogTitle className="text-xl">{title}</DialogTitle>
           <DialogDescription>{getStepDescription()}</DialogDescription>
         </DialogHeader>
 

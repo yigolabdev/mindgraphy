@@ -45,8 +45,6 @@ export const ROUTES = {
   
   // Admin - Settings
   ADMIN_SETTINGS: '/admin/settings',
-  ADMIN_SETTINGS_PRODUCTS: '/admin/settings/products',
-  ADMIN_SETTINGS_MASTERS: '/admin/settings/masters',
 } as const
 
 // Project statuses

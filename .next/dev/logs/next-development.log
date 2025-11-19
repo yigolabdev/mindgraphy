@@ -2932,3 +2932,441 @@ Check the render method of `div`.  It was passed a child from ProjectsPage.
 [02:15:29.041] Server  LOG      ✓ Compiled in 215ms
 [02:15:47.668] Server  LOG      ✓ Compiled in 85ms
 [02:16:47.179] Server  LOG      ✓ Compiled in 23ms
+[13:31:07.640] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[13:31:17.343] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:31:17.343] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:36:00.063] Server  LOG      ✓ Compiled in 257ms
+[13:36:13.341] Server  LOG      ✓ Compiled in 168ms
+[13:36:33.808] Server  LOG      ✓ Compiled in 274ms
+[13:36:41.338] Server  LOG      ✓ Compiled in 119ms
+[13:36:58.587] Server  LOG      ✓ Compiled in 188ms
+[13:37:13.429] Server  LOG      ✓ Compiled in 98ms
+[13:37:21.773] Server  LOG      ✓ Compiled in 242ms
+[13:37:47.113] Server  LOG      ✓ Compiled in 138ms
+[13:37:54.674] Server  LOG      ✓ Compiled in 305ms
+[13:38:04.484] Server  LOG      ✓ Compiled in 112ms
+[13:38:26.759] Server  LOG      ✓ Compiled in 20ms
+[13:39:12.350] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[13:46:06.761] Server  LOG      ✓ Compiled in 285ms
+[13:46:13.639] Server  LOG      ✓ Compiled in 118ms
+[13:46:28.844] Server  LOG      ✓ Compiled in 119ms
+[13:46:35.614] Server  LOG      ✓ Compiled in 82ms
+[13:46:51.965] Server  LOG      ✓ Compiled in 283ms
+[13:47:17.030] Server  LOG      ✓ Compiled in 110ms
+[13:47:18.563] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[13:47:23.586] Server  LOG      ✓ Compiled in 82ms
+[13:47:30.205] Server  LOG      ✓ Compiled in 121ms
+[13:49:31.365] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:49:31.365] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:49:44.245] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:49:44.245] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:49:50.373] Server  LOG      ✓ Compiled in 161ms
+[13:50:28.803] Server  LOG      ✓ Compiled in 132ms
+[13:50:37.093] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:50:37.093] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:50:43.956] Server  LOG      ✓ Compiled in 116ms
+[13:50:48.931] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:50:48.932] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[13:50:54.979] Server  LOG      ✓ Compiled in 91ms
+[13:51:10.780] Server  LOG      ✓ Compiled in 128ms
+[13:51:23.626] Server  LOG      ✓ Compiled in 18ms
+[13:51:59.680] Server  LOG      ✓ Compiled in 7ms
+[13:53:10.934] Server  LOG      ✓ Compiled in 199ms
+[13:53:22.924] Server  LOG      ✓ Compiled in 153ms
+[13:53:23.026] Browser ERROR   uncaughtError: ReferenceError: Camera is not defined
+[13:54:16.237] Server  LOG      ✓ Compiled in 348ms
+[13:54:16.254] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[13:54:16.626] Server  LOG      ✓ Compiled in 0ms
+[13:54:16.899] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[13:54:17.065] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[13:54:44.333] Server  LOG      ✓ Compiled in 147ms
+[13:54:53.281] Server  LOG      ✓ Compiled in 125ms
+[14:03:32.976] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:03:42.903] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:03:42.903] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:05:00.288] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:05:00.288] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:05:11.969] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:05:11.970] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:06:02.289] Server  LOG      ✓ Compiled in 88ms
+[14:06:50.139] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:06:55.839] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:06:55.839] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:07:01.022] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:07:01.022] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:07:11.439] Server  LOG      ✓ Compiled in 272ms
+[14:07:13.847] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:07:13.847] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:07:46.605] Server  LOG      ✓ Compiled in 210ms
+[14:08:13.439] Server  LOG      ✓ Compiled in 556ms
+[14:09:25.963] Server  LOG      ✓ Compiled in 183ms
+[14:09:35.010] Server  LOG      ✓ Compiled in 157ms
+[14:09:49.718] Server  LOG      ✓ Compiled in 124ms
+[14:11:55.126] Server  LOG      ✓ Compiled in 131ms
+[14:12:06.423] Server  LOG      ✓ Compiled in 142ms
+[14:12:33.528] Server  LOG      ✓ Compiled in 584ms
+[14:12:54.072] Server  LOG      ✓ Compiled in 139ms
+[14:13:21.903] Server  LOG      ✓ Compiled in 130ms
+[14:15:49.957] Server  LOG      ✓ Compiled in 105ms
+[14:16:02.675] Server  LOG      ✓ Compiled in 114ms
+[14:16:32.063] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:16:32.063] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:17:01.862] Server  LOG      ✓ Compiled in 36ms
+[14:17:32.070] Server  LOG      ✓ Compiled in 108ms
+[14:18:08.754] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:18:30.237] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:20:08.191] Server  LOG      ✓ Compiled in 35ms
+[14:20:30.796] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:20:30.796] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:21:51.100] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:51.102] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:21:57.569] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:00.197] Browser ERROR   flushSync was called from inside a lifecycle method. React cannot flush when React is already rendering. Consider moving this call to a scheduler task or micro task.
+[14:22:32.959] Server  LOG      ✓ Compiled in 308ms
+[14:23:41.344] Server  LOG      ✓ Compiled in 156ms
+[14:24:23.379] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:24:23.379] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:26:11.587] Server  LOG      ✓ Compiled in 304ms
+[14:26:18.456] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:26:18.456] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:27:04.804] Server  LOG      ✓ Compiled in 139ms
+[14:27:40.682] Server  LOG      ✓ Compiled in 192ms
+[14:28:03.217] Server  LOG      ✓ Compiled in 156ms
+[14:28:22.423] Server  LOG      ✓ Compiled in 107ms
+[14:28:34.272] Server  LOG      ✓ Compiled in 147ms
+[14:28:49.815] Server  LOG      ✓ Compiled in 171ms
+[14:29:28.918] Server  LOG      ✓ Compiled in 186ms
+[14:30:49.151] Server  LOG      ✓ Compiled in 58ms
+[14:31:13.692] Server  LOG      ✓ Compiled in 48ms
+[14:31:39.703] Server  LOG      ✓ Compiled in 156ms
+[14:32:02.590] Server  LOG      ✓ Compiled in 157ms
+[14:32:15.079] Server  LOG      ✓ Compiled in 192ms
+[14:32:50.610] Server  LOG      ✓ Compiled in 137ms
+[14:33:01.380] Server  LOG      ✓ Compiled in 127ms
+[14:33:14.101] Server  LOG      ✓ Compiled in 125ms
+[14:33:46.861] Server  LOG      ✓ Compiled in 651ms
+[14:34:09.700] Server  LOG      ✓ Compiled in 212ms
+[14:34:46.208] Server  LOG      ✓ Compiled in 575ms
+[14:34:46.310] Browser ERROR   ./app/(admin)/admin/customers/page.tsx:883:25
+Parsing ecmascript source code failed
+  881 |               </Card>
+  882 |             </div>
+> 883 |           </TabsContent>
+      |                         ^
+> 884 |         </Tabs>
+      | ^^^^^^^^^
+  885 |       </div>
+  886 |
+  887 |       {/* Customer Detail Dialog */}
+
+Expected '</', got 'jsx text (
+        )'
+
+Import traces:
+  Client Component Browser:
+    ./app/(admin)/admin/customers/page.tsx [Client Component Browser]
+    ./app/(admin)/admin/customers/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/(admin)/admin/customers/page.tsx [Client Component SSR]
+    ./app/(admin)/admin/customers/page.tsx [Server Component]
+[14:34:47.191] Browser ERROR   ./app/(admin)/admin/customers/page.tsx:883:25
+Parsing ecmascript source code failed
+  881 |               </Card>
+  882 |             </div>
+> 883 |           </TabsContent>
+      |                         ^
+> 884 |         </Tabs>
+      | ^^^^^^^^^
+  885 |       </div>
+  886 |
+  887 |       {/* Customer Detail Dialog */}
+
+Expected '</', got 'jsx text (
+        )'
+
+Import traces:
+  Client Component Browser:
+    ./app/(admin)/admin/customers/page.tsx [Client Component Browser]
+    ./app/(admin)/admin/customers/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/(admin)/admin/customers/page.tsx [Client Component SSR]
+    ./app/(admin)/admin/customers/page.tsx [Server Component]
+[14:35:09.015] Server  LOG      ✓ Compiled in 161ms
+[14:36:08.343] Server  LOG      ✓ Compiled in 289ms
+[14:36:09.189] Browser ERROR   uncaughtError: ReferenceError: AlertTriangle is not defined
+[14:36:17.549] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:36:17.571] Server  LOG      ✓ Compiled in 118ms
+[14:36:18.021] Server  ERROR    ⨯ ReferenceError: ArrowRight is not defined
+[14:36:18.356] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:36:19.196] Browser ERROR   uncaughtError: ReferenceError: ArrowRight is not defined
+[14:36:29.349] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:36:29.370] Server  LOG      ✓ Compiled in 194ms
+[14:36:29.767] Server  ERROR    ⨯ ReferenceError: ArrowRight is not defined
+[14:36:29.896] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:36:30.191] Browser ERROR   uncaughtError: ReferenceError: ArrowRight is not defined
+[14:36:41.706] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:36:42.042] Server  LOG      ✓ Compiled in 227ms
+[14:36:42.243] Server  ERROR    ⨯ ReferenceError: ArrowRight is not defined
+[14:36:42.363] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:36:43.192] Browser ERROR   uncaughtError: ReferenceError: ArrowRight is not defined
+[14:37:02.558] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:37:02.576] Server  LOG      ✓ Compiled in 199ms
+[14:37:03.067] Server  ERROR    ⨯ ReferenceError: ArrowRight is not defined
+[14:37:03.211] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:37:04.192] Browser ERROR   uncaughtError: ReferenceError: ArrowRight is not defined
+[14:37:33.763] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:37:34.675] Server  LOG      ✓ Compiled in 191ms
+[14:37:34.950] Server  ERROR    ⨯ ReferenceError: ArrowRight is not defined
+[14:37:35.363] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:37:36.193] Browser ERROR   uncaughtError: ReferenceError: ArrowRight is not defined
+[14:37:49.574] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[14:37:49.773] Server  LOG      ✓ Compiled in 134ms
+[14:37:50.058] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:39:57.546] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:40:18.292] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:40:18.292] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:41:36.346] Server  LOG      ✓ Compiled in 121ms
+[14:41:58.782] Server  LOG      ✓ Compiled in 171ms
+[14:42:15.043] Server  LOG      ✓ Compiled in 151ms
+[14:42:26.062] Server  LOG      ✓ Compiled in 120ms
+[14:42:55.799] Server  LOG      ✓ Compiled in 273ms
+[14:52:35.796] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:53:04.732] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:53:04.732] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:54:52.747] Server  LOG      ✓ Compiled in 266ms
+[14:55:09.344] Server  LOG      ✓ Compiled in 175ms
+[14:55:25.601] Server  LOG      ✓ Compiled in 138ms
+[14:55:38.132] Server  LOG      ✓ Compiled in 124ms
+[14:55:51.777] Server  LOG      ✓ Compiled in 112ms
+[14:56:17.908] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[14:56:22.901] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:56:22.901] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:58:18.949] Server  LOG      ✓ Compiled in 138ms
+[14:58:19.079] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:58:19.079] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[14:58:34.001] Server  LOG      ✓ Compiled in 157ms
+[14:58:44.139] Server  LOG      ✓ Compiled in 126ms
+[14:59:17.545] Server  LOG      ✓ Compiled in 135ms
+[14:59:41.838] Server  LOG      ✓ Compiled in 145ms
+[15:04:11.422] Server  LOG      ✓ Compiled in 124ms
+[15:04:25.281] Server  LOG      ✓ Compiled in 123ms
+[15:04:26.189] Browser ERROR   uncaughtError: ReferenceError: handleFinish is not defined
+[15:04:37.371] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[15:04:37.637] Server  LOG      ✓ Compiled in 192ms
+[15:04:37.730] Server  ERROR    ⨯ ReferenceError: handleFinish is not defined
+[15:04:37.919] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:04:38.188] Browser ERROR   uncaughtError: ReferenceError: handleFinish is not defined
+[15:05:01.845] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[15:05:02.071] Server  LOG      ✓ Compiled in 181ms
+[15:05:02.257] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:05:25.818] Server  LOG      ✓ Compiled in 167ms
+[15:08:40.426] Server  LOG      ✓ Compiled in 156ms
+[15:08:49.327] Server  LOG      ✓ Compiled in 164ms
+[15:09:03.131] Server  LOG      ✓ Compiled in 173ms
+[15:09:07.526] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:16.253] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:38.915] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:40.591] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:41.967] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:43.242] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:09:44.109] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:10:17.544] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:10:17.545] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:10:32.895] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:10:32.895] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:10:53.802] Server  LOG      ✓ Compiled in 183ms
+[15:11:01.383] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:11:01.383] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[15:12:04.808] Server  LOG      ✓ Compiled in 175ms
+[15:13:15.535] Server  LOG      ✓ Compiled in 63ms
+[15:13:59.488] Server  LOG      ✓ Compiled in 95ms
+[15:15:25.865] Server  LOG      ✓ Compiled in 172ms
+[15:16:12.972] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:16:36.222] Server  LOG      ✓ Compiled in 172ms
+[15:20:13.105] Server  LOG      ✓ Compiled in 196ms
+[15:20:20.410] Server  LOG      ✓ Compiled in 80ms
+[15:21:48.806] Server  LOG      ✓ Compiled in 41ms
+[15:21:49.669] Server  ERROR    ⨯ ReferenceError: format is not defined
+[15:21:50.123] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:21:50.329] Browser ERROR   uncaughtError: ReferenceError: format is not defined
+[15:22:16.153] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[15:22:16.160] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./lib/mock-data.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[15:22:16.161] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[15:22:16.199] Server  LOG      ✓ Compiled in 171ms
+[15:22:16.934] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[15:22:53.626] Server  LOG      ✓ Compiled in 151ms
+[18:05:43.651] Server  LOG      ✓ Compiled in 37ms
+[18:05:55.980] Server  LOG      ✓ Compiled in 222ms
+[18:06:12.306] Server  LOG      ✓ Compiled in 15ms
+[18:06:25.551] Server  LOG      ✓ Compiled in 12ms
+[18:07:15.507] Server  LOG      ✓ Compiled in 188ms
+[18:08:22.015] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:08:22.031] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:09:54.618] Server  LOG      ✓ Compiled in 250ms
+[18:10:19.268] Server  LOG      ✓ Compiled in 161ms
+[18:10:47.369] Server  LOG      ✓ Compiled in 143ms
+[18:11:15.848] Server  LOG      ✓ Compiled in 140ms
+[18:11:23.870] Server  LOG      ✓ Compiled in 74ms
+[18:12:29.221] Server  LOG      ✓ Compiled in 182ms
+[18:12:43.552] Server  LOG      ✓ Compiled in 160ms
+[18:13:00.544] Server  LOG      ✓ Compiled in 211ms
+[18:16:41.884] Server  LOG      ✓ Compiled in 227ms
+[18:16:41.995] Browser ERROR   uncaughtError: ReferenceError: DollarSign is not defined
+[18:16:58.786] Server  LOG      ✓ Compiled in 171ms
+[18:16:58.791] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:16:59.370] Server  ERROR    ⨯ ReferenceError: DollarSign is not defined
+[18:16:59.536] Browser ERROR   uncaughtError: ReferenceError: DollarSign is not defined
+[18:16:59.881] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:17:00.037] Browser ERROR   uncaughtError: ReferenceError: DollarSign is not defined
+[18:17:19.101] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:17:19.111] Server  LOG      ✓ Compiled in 146ms
+[18:17:19.601] Server  ERROR    ⨯ ReferenceError: filteredSnapProducts is not defined
+[18:17:19.741] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:17:19.903] Browser ERROR   uncaughtError: ReferenceError: filteredSnapProducts is not defined
+[18:17:34.712] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:17:34.725] Server  LOG      ✓ Compiled in 133ms
+[18:17:35.349] Server  ERROR    ⨯ ReferenceError: filteredSnapProducts is not defined
+[18:17:35.483] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:17:35.641] Browser ERROR   uncaughtError: ReferenceError: filteredSnapProducts is not defined
+[18:17:43.958] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:17:43.974] Server  LOG      ✓ Compiled in 104ms
+[18:17:44.398] Server  ERROR    ⨯ ReferenceError: filteredSnapProducts is not defined
+[18:17:44.521] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:17:44.696] Browser ERROR   uncaughtError: ReferenceError: filteredSnapProducts is not defined
+[18:17:51.733] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:17:51.748] Server  LOG      ✓ Compiled in 109ms
+[18:17:52.148] Server  ERROR    ⨯ ReferenceError: filteredOptions is not defined
+[18:17:52.276] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:17:52.433] Browser ERROR   uncaughtError: ReferenceError: filteredOptions is not defined
+[18:18:05.843] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:05.859] Server  LOG      ✓ Compiled in 124ms
+[18:18:06.286] Server  ERROR    ⨯ ReferenceError: filteredOptions is not defined
+[18:18:06.407] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:18:06.555] Browser ERROR   uncaughtError: ReferenceError: filteredOptions is not defined
+[18:18:13.942] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:14.050] Server  LOG      ✓ Compiled in 76ms
+[18:18:14.115] Server  ERROR    ⨯ ReferenceError: filteredOptions is not defined
+[18:18:14.773] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:18:15.391] Browser ERROR   uncaughtError: ReferenceError: filteredOptions is not defined
+[18:18:22.156] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:22.170] Server  LOG      ✓ Compiled in 124ms
+[18:18:22.552] Server  ERROR    ⨯ ReferenceError: filteredPolicies is not defined
+[18:18:22.669] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:18:22.833] Browser ERROR   uncaughtError: ReferenceError: filteredPolicies is not defined
+[18:18:36.485] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:36.496] Server  LOG      ✓ Compiled in 122ms
+[18:18:36.927] Server  ERROR    ⨯ ReferenceError: filteredPolicies is not defined
+[18:18:37.052] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:18:37.204] Browser ERROR   uncaughtError: ReferenceError: filteredPolicies is not defined
+[18:18:44.445] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:44.558] Server  LOG      ✓ Compiled in 75ms
+[18:18:44.646] Server  ERROR    ⨯ ReferenceError: filteredPolicies is not defined
+[18:18:45.309] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:18:45.488] Browser ERROR   uncaughtError: ReferenceError: filteredPolicies is not defined
+[18:18:52.569] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:18:52.585] Server  LOG      ✓ Compiled in 103ms
+[18:18:53.206] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:23:20.056] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:25:14.674] Server  LOG      ✓ Compiled in 2ms
+[18:25:30.020] Server  LOG      ✓ Compiled in 273ms
+[18:27:07.613] Server  LOG      ✓ Compiled in 44ms
+[18:27:35.794] Server  LOG      ✓ Compiled in 315ms
+[18:28:10.213] Server  LOG      ✓ Compiled in 13ms
+[18:28:50.152] Server  LOG      ✓ Compiled in 131ms
+[18:29:04.380] Server  LOG      ✓ Compiled in 177ms
+[18:29:15.621] Server  LOG      ✓ Compiled in 121ms
+[18:31:22.267] Server  LOG      ✓ Compiled in 210ms
+[18:31:38.080] Server  LOG      ✓ Compiled in 394ms
+[18:40:34.470] Server  LOG      ✓ Compiled in 538ms
+[18:40:50.769] Server  LOG      ✓ Compiled in 296ms
+[18:41:03.263] Server  LOG      ✓ Compiled in 133ms
+[18:41:21.573] Server  LOG      ✓ Compiled in 117ms
+[18:41:49.925] Server  LOG      ✓ Compiled in 128ms
+[18:43:28.602] Server  LOG      ✓ Compiled in 223ms
+[18:44:55.047] Server  LOG      ✓ Compiled in 204ms
+[18:46:11.676] Server  LOG      ✓ Compiled in 687ms
+[18:46:44.024] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:46:45.397] Server  LOG      ✓ Compiled in 212ms
+[18:49:11.332] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:49:11.332] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:49:25.925] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:49:25.925] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:49:44.787] Server  LOG      ✓ Compiled in 149ms
+[18:49:45.202] Browser ERROR   uncaughtError: ReferenceError: togglePastDate is not defined
+[18:49:47.305] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:49:47.306] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[18:50:01.810] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[18:50:02.122] Server  LOG      ✓ Compiled in 137ms
+[18:50:02.419] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:50:18.709] Server  LOG      ✓ Compiled in 145ms
+[18:50:19.269] Browser ERROR   The final argument passed to %s changed size between renders. The order and size of this array must remain constant.
+
+Previous: %s
+Incoming: %s useEffect [2025-04-12, [object Object]] [2025-04-12, [object Object], 2]
+[18:50:33.663] Server  LOG      ✓ Compiled in 159ms
+[18:50:34.189] Browser ERROR   The final argument passed to %s changed size between renders. The order and size of this array must remain constant.
+
+Previous: %s
+Incoming: %s useEffect [2025-04-12, [object Object], 2] [2025-04-12, [object Object]]
+[18:50:48.790] Server  LOG      ✓ Compiled in 136ms
+[18:51:13.506] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[18:53:46.536] Server  LOG      ✓ Compiled in 206ms
+[18:59:05.422] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[19:07:18.524] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[19:07:20.453] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[19:08:51.030] Server  LOG      ✓ Compiled in 150ms
+[19:08:59.049] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:08:59.049] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:09:14.455] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:09:14.455] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:10:39.780] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:10:39.780] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[19:11:05.920] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[19:21:10.190] Server  LOG      ✓ Compiled in 144ms
+[19:26:23.339] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[19:26:24.720] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

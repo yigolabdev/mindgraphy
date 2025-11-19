@@ -3442,6 +3442,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/refresh-cw.js [app-client] (ecmascript) <export default as RefreshCw>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$phone$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Phone$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/phone.js [app-client] (ecmascript) <export default as Phone>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/date-fns/format.js [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$differenceInDays$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/date-fns/differenceInDays.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$locale$2f$ko$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/date-fns/locale/ko.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/lib/utils.ts [app-client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/utils/index.ts [app-client] (ecmascript)");
@@ -3465,6 +3466,8 @@ function LiveStatusPage() {
     _s();
     const [currentTime, setCurrentTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Date());
     const [isRefreshing, setIsRefreshing] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [selectedSchedule, setSelectedSchedule] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [detailDialogOpen, setDetailDialogOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     // Update time every second
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "LiveStatusPage.useEffect": ()=>{
@@ -3528,6 +3531,40 @@ function LiveStatusPage() {
         };
         return labels[status] || status;
     };
+    // Convert ScheduleEvent to Schedule for ScheduleDetailDialog
+    const convertToSchedule = (event)=>{
+        const eventDate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(event.start), 'yyyy-MM-dd');
+        const daysUntil = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$differenceInDays$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["differenceInDays"])(new Date(event.start), new Date());
+        // Map status
+        const statusMap = {
+            'reserved': 'assigned',
+            'in_progress': 'confirmed',
+            'completed': 'completed',
+            'editing': 'confirmed',
+            'cancelled': 'cancelled'
+        };
+        return {
+            id: event.id,
+            projectId: event.projectDetailId || event.id,
+            customerName: `${event.groomName} & ${event.brideName}`,
+            date: eventDate,
+            time: event.ceremonyTime,
+            location: event.venueName,
+            photographerIds: event.photographerIds,
+            photographerNames: event.photographerNames,
+            status: statusMap[event.status] || 'assigned',
+            type: event.productType,
+            daysUntil: daysUntil,
+            hasProof: false,
+            proofStatus: 'pending'
+        };
+    };
+    // Handle schedule click
+    const handleScheduleClick = (event)=>{
+        const schedule = convertToSchedule(event);
+        setSelectedSchedule(schedule);
+        setDetailDialogOpen(true);
+    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$layout$2f$admin$2d$layout$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AdminLayout"], {
         align: "left",
         children: [
@@ -3547,14 +3584,14 @@ function LiveStatusPage() {
                                                 className: "h-8 w-8 text-green-600 animate-pulse"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 113,
+                                                lineNumber: 156,
                                                 columnNumber: 15
                                             }, this),
                                             "실시간 현황판"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 155,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3562,13 +3599,13 @@ function LiveStatusPage() {
                                         children: "오늘의 촬영 현황을 실시간으로 확인하세요"
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 116,
+                                        lineNumber: 159,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 111,
+                                lineNumber: 154,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3581,7 +3618,7 @@ function LiveStatusPage() {
                                                 className: "h-5 w-5 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 122,
+                                                lineNumber: 165,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3592,7 +3629,7 @@ function LiveStatusPage() {
                                                         children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(currentTime, 'HH:mm:ss')
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 124,
+                                                        lineNumber: 167,
                                                         columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3602,19 +3639,19 @@ function LiveStatusPage() {
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 127,
+                                                        lineNumber: 170,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 123,
+                                                lineNumber: 166,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 121,
+                                        lineNumber: 164,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3628,7 +3665,7 @@ function LiveStatusPage() {
                                                 className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])("h-5 w-5", isRefreshing && "animate-spin")
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 139,
+                                                lineNumber: 182,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3636,25 +3673,25 @@ function LiveStatusPage() {
                                                 children: "새로고침"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 140,
+                                                lineNumber: 183,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 175,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 120,
+                                lineNumber: 163,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 110,
+                        lineNumber: 153,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3671,20 +3708,20 @@ function LiveStatusPage() {
                                                 children: "전체 일정"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 149,
+                                                lineNumber: 192,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 150,
+                                                lineNumber: 193,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 148,
+                                        lineNumber: 191,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3694,7 +3731,7 @@ function LiveStatusPage() {
                                                 children: todaySchedules.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 153,
+                                                lineNumber: 196,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3702,19 +3739,19 @@ function LiveStatusPage() {
                                                 children: "오늘 총 일정 수"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 154,
+                                                lineNumber: 197,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 152,
+                                        lineNumber: 195,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 147,
+                                lineNumber: 190,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3728,20 +3765,20 @@ function LiveStatusPage() {
                                                 children: "진행중"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 162,
+                                                lineNumber: 205,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$play$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Play$3e$__["Play"], {
                                                 className: "h-4 w-4 text-green-600"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 163,
+                                                lineNumber: 206,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 161,
+                                        lineNumber: 204,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3751,7 +3788,7 @@ function LiveStatusPage() {
                                                 children: inProgressSchedules.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 166,
+                                                lineNumber: 209,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3759,19 +3796,19 @@ function LiveStatusPage() {
                                                 children: "현재 촬영중"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 167,
+                                                lineNumber: 210,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 165,
+                                        lineNumber: 208,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 160,
+                                lineNumber: 203,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3785,20 +3822,20 @@ function LiveStatusPage() {
                                                 children: "예정"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 175,
+                                                lineNumber: 218,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$clock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Clock$3e$__["Clock"], {
                                                 className: "h-4 w-4 text-blue-600"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 176,
+                                                lineNumber: 219,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 174,
+                                        lineNumber: 217,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3808,7 +3845,7 @@ function LiveStatusPage() {
                                                 children: upcomingSchedules.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 179,
+                                                lineNumber: 222,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3816,19 +3853,19 @@ function LiveStatusPage() {
                                                 children: "대기중인 일정"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 180,
+                                                lineNumber: 223,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 178,
+                                        lineNumber: 221,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 173,
+                                lineNumber: 216,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3842,20 +3879,20 @@ function LiveStatusPage() {
                                                 children: "완료"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 188,
+                                                lineNumber: 231,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
                                                 className: "h-4 w-4 text-gray-600"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 189,
+                                                lineNumber: 232,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 187,
+                                        lineNumber: 230,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3865,7 +3902,7 @@ function LiveStatusPage() {
                                                 children: completedSchedules.length
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 192,
+                                                lineNumber: 235,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3873,25 +3910,25 @@ function LiveStatusPage() {
                                                 children: "촬영 완료"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 193,
+                                                lineNumber: 236,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 191,
+                                        lineNumber: 234,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 186,
+                                lineNumber: 229,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 146,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, this),
                     inProgressSchedules.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3904,7 +3941,7 @@ function LiveStatusPage() {
                                         className: "h-5 w-5 text-green-600"
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 204,
+                                        lineNumber: 247,
                                         columnNumber: 15
                                     }, this),
                                     "진행중인 촬영",
@@ -3913,13 +3950,13 @@ function LiveStatusPage() {
                                         children: inProgressSchedules.length
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 206,
+                                        lineNumber: 249,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 203,
+                                lineNumber: 246,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3940,12 +3977,12 @@ function LiveStatusPage() {
                                                                     className: "h-6 w-6"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 217,
+                                                                    lineNumber: 260,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 216,
+                                                                lineNumber: 259,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3956,7 +3993,7 @@ function LiveStatusPage() {
                                                                         children: getPhotographerNames(schedule.photographerIds)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 220,
+                                                                        lineNumber: 263,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3966,33 +4003,33 @@ function LiveStatusPage() {
                                                                                 className: "mr-1 h-3 w-3"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 222,
+                                                                                lineNumber: 265,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             "촬영중"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 221,
+                                                                        lineNumber: 264,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 219,
+                                                                lineNumber: 262,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 215,
+                                                        lineNumber: 258,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "jsx-5d5e20ac9e349db4" + " " + "hidden md:block h-12 w-px bg-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 229,
+                                                        lineNumber: 272,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4005,7 +4042,7 @@ function LiveStatusPage() {
                                                                         className: "h-4 w-4 text-muted-foreground"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 234,
+                                                                        lineNumber: 277,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4017,13 +4054,13 @@ function LiveStatusPage() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 235,
+                                                                        lineNumber: 278,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 233,
+                                                                lineNumber: 276,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4036,7 +4073,7 @@ function LiveStatusPage() {
                                                                                 className: "h-4 w-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 239,
+                                                                                lineNumber: 282,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4048,13 +4085,13 @@ function LiveStatusPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 240,
+                                                                                lineNumber: 283,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 238,
+                                                                        lineNumber: 281,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4064,7 +4101,7 @@ function LiveStatusPage() {
                                                                                 className: "h-4 w-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 243,
+                                                                                lineNumber: 286,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4072,19 +4109,19 @@ function LiveStatusPage() {
                                                                                 children: schedule.venueName
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 244,
+                                                                                lineNumber: 287,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 242,
+                                                                        lineNumber: 285,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 237,
+                                                                lineNumber: 280,
                                                                 columnNumber: 25
                                                             }, this),
                                                             schedule.specialRequests && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4095,13 +4132,13 @@ function LiveStatusPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 248,
+                                                                lineNumber: 291,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 232,
+                                                        lineNumber: 275,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4112,39 +4149,39 @@ function LiveStatusPage() {
                                                             children: schedule.packageName
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 256,
+                                                            lineNumber: 299,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 298,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 213,
+                                                lineNumber: 256,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 212,
+                                            lineNumber: 255,
                                             columnNumber: 19
                                         }, this)
                                     }, schedule.id, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 211,
+                                        lineNumber: 254,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 209,
+                                lineNumber: 252,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 202,
+                        lineNumber: 245,
                         columnNumber: 11
                     }, this),
                     upcomingSchedules.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4157,7 +4194,7 @@ function LiveStatusPage() {
                                         className: "h-5 w-5 text-blue-600"
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 272,
+                                        lineNumber: 315,
                                         columnNumber: 15
                                     }, this),
                                     "예정된 촬영",
@@ -4166,13 +4203,13 @@ function LiveStatusPage() {
                                         children: upcomingSchedules.length
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 274,
+                                        lineNumber: 317,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 271,
+                                lineNumber: 314,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4194,7 +4231,7 @@ function LiveStatusPage() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(schedule.start), 'HH:mm')
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 285,
+                                                                    lineNumber: 328,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4205,25 +4242,25 @@ function LiveStatusPage() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 288,
+                                                                    lineNumber: 331,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 284,
+                                                            lineNumber: 327,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 283,
+                                                        lineNumber: 326,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "jsx-5d5e20ac9e349db4" + " " + "hidden md:block h-12 w-px bg-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 295,
+                                                        lineNumber: 338,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4236,7 +4273,7 @@ function LiveStatusPage() {
                                                                         className: "h-4 w-4 text-muted-foreground"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 300,
+                                                                        lineNumber: 343,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4248,13 +4285,13 @@ function LiveStatusPage() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 301,
+                                                                        lineNumber: 344,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 299,
+                                                                lineNumber: 342,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4267,7 +4304,7 @@ function LiveStatusPage() {
                                                                                 className: "h-4 w-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 305,
+                                                                                lineNumber: 348,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4275,13 +4312,13 @@ function LiveStatusPage() {
                                                                                 children: schedule.venueName
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                                lineNumber: 306,
+                                                                                lineNumber: 349,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 304,
+                                                                        lineNumber: 347,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4292,24 +4329,24 @@ function LiveStatusPage() {
                                                                             children: schedule.packageName
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                            lineNumber: 309,
+                                                                            lineNumber: 352,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 308,
+                                                                        lineNumber: 351,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 303,
+                                                                lineNumber: 346,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 298,
+                                                        lineNumber: 341,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4321,12 +4358,12 @@ function LiveStatusPage() {
                                                                     className: "h-5 w-5"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 319,
+                                                                    lineNumber: 362,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 318,
+                                                                lineNumber: 361,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4337,7 +4374,7 @@ function LiveStatusPage() {
                                                                         children: getPhotographerNames(schedule.photographerIds)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 322,
+                                                                        lineNumber: 365,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4345,46 +4382,46 @@ function LiveStatusPage() {
                                                                         children: "담당 작가"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 323,
+                                                                        lineNumber: 366,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 321,
+                                                                lineNumber: 364,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 317,
+                                                        lineNumber: 360,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 281,
+                                                lineNumber: 324,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 323,
                                             columnNumber: 19
                                         }, this)
                                     }, schedule.id, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 279,
+                                        lineNumber: 322,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 277,
+                                lineNumber: 320,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 270,
+                        lineNumber: 313,
                         columnNumber: 11
                     }, this),
                     completedSchedules.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4397,7 +4434,7 @@ function LiveStatusPage() {
                                         className: "h-5 w-5 text-gray-600"
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 338,
+                                        lineNumber: 381,
                                         columnNumber: 15
                                     }, this),
                                     "완료된 촬영",
@@ -4406,13 +4443,13 @@ function LiveStatusPage() {
                                         children: completedSchedules.length
                                     }, void 0, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 340,
+                                        lineNumber: 383,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 337,
+                                lineNumber: 380,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4430,12 +4467,12 @@ function LiveStatusPage() {
                                                             className: "h-4 w-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 349,
+                                                            lineNumber: 392,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 348,
+                                                        lineNumber: 391,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4450,7 +4487,7 @@ function LiveStatusPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 352,
+                                                                lineNumber: 395,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4458,7 +4495,7 @@ function LiveStatusPage() {
                                                                 children: getPhotographerNames(schedule.photographerIds)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 355,
+                                                                lineNumber: 398,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4468,7 +4505,7 @@ function LiveStatusPage() {
                                                                         className: "h-3 w-3"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 359,
+                                                                        lineNumber: 402,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4476,46 +4513,46 @@ function LiveStatusPage() {
                                                                         children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(schedule.start), 'HH:mm')
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                        lineNumber: 360,
+                                                                        lineNumber: 403,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                lineNumber: 358,
+                                                                lineNumber: 401,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                        lineNumber: 351,
+                                                        lineNumber: 394,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 347,
+                                                lineNumber: 390,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 346,
+                                            lineNumber: 389,
                                             columnNumber: 19
                                         }, this)
                                     }, schedule.id, false, {
                                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                        lineNumber: 345,
+                                        lineNumber: 388,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 343,
+                                lineNumber: 386,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 336,
+                        lineNumber: 379,
                         columnNumber: 11
                     }, this),
                     availablePhotographers.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4533,7 +4570,7 @@ function LiveStatusPage() {
                                                     className: "h-5 w-5 text-emerald-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 377,
+                                                    lineNumber: 420,
                                                     columnNumber: 19
                                                 }, this),
                                                 "촬영 가능한 작가",
@@ -4542,13 +4579,13 @@ function LiveStatusPage() {
                                                     children: availablePhotographers.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 379,
+                                                    lineNumber: 422,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 376,
+                                            lineNumber: 419,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4556,18 +4593,18 @@ function LiveStatusPage() {
                                             children: "오늘 스케줄 없음 • 즉시 연락 가능"
                                         }, void 0, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 381,
+                                            lineNumber: 424,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 375,
+                                    lineNumber: 418,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 374,
+                                lineNumber: 417,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4589,7 +4626,7 @@ function LiveStatusPage() {
                                                                     children: photographer.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 399,
+                                                                    lineNumber: 442,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4599,7 +4636,7 @@ function LiveStatusPage() {
                                                                             className: "h-3.5 w-3.5"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                            lineNumber: 401,
+                                                                            lineNumber: 444,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4607,19 +4644,19 @@ function LiveStatusPage() {
                                                                             children: "촬영 가능"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                            lineNumber: 402,
+                                                                            lineNumber: 445,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 400,
+                                                                    lineNumber: 443,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 398,
+                                                            lineNumber: 441,
                                                             columnNumber: 25
                                                         }, this),
                                                         photographer.phone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -4630,7 +4667,7 @@ function LiveStatusPage() {
                                                                     className: "h-4 w-4 group-hover:scale-110 transition-transform"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 412,
+                                                                    lineNumber: 455,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4638,45 +4675,45 @@ function LiveStatusPage() {
                                                                     children: photographer.phone
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 413,
+                                                                    lineNumber: 456,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 408,
+                                                            lineNumber: 451,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 396,
+                                                    lineNumber: 439,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 395,
+                                                lineNumber: 438,
                                                 columnNumber: 21
                                             }, this)
                                         }, photographer.id, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 391,
+                                            lineNumber: 434,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 389,
+                                    lineNumber: 432,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 388,
+                                lineNumber: 431,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 373,
+                        lineNumber: 416,
                         columnNumber: 11
                     }, this),
                     photographersOnLeave.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4694,7 +4731,7 @@ function LiveStatusPage() {
                                                     className: "h-5 w-5 text-amber-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 431,
+                                                    lineNumber: 474,
                                                     columnNumber: 19
                                                 }, this),
                                                 "휴가/휴무 작가",
@@ -4704,13 +4741,13 @@ function LiveStatusPage() {
                                                     children: photographersOnLeave.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 433,
+                                                    lineNumber: 476,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 430,
+                                            lineNumber: 473,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4718,18 +4755,18 @@ function LiveStatusPage() {
                                             children: "현재 휴무 중 • 연락 불가"
                                         }, void 0, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 435,
+                                            lineNumber: 478,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 429,
+                                    lineNumber: 472,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 428,
+                                lineNumber: 471,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4751,7 +4788,7 @@ function LiveStatusPage() {
                                                                     children: photographer.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 453,
+                                                                    lineNumber: 496,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4761,7 +4798,7 @@ function LiveStatusPage() {
                                                                             className: "h-3.5 w-3.5"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                            lineNumber: 455,
+                                                                            lineNumber: 498,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4769,19 +4806,19 @@ function LiveStatusPage() {
                                                                             children: "휴무 중"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                            lineNumber: 456,
+                                                                            lineNumber: 499,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 454,
+                                                                    lineNumber: 497,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 452,
+                                                            lineNumber: 495,
                                                             columnNumber: 25
                                                         }, this),
                                                         photographer.phone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4791,7 +4828,7 @@ function LiveStatusPage() {
                                                                     className: "h-4 w-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 463,
+                                                                    lineNumber: 506,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4799,45 +4836,45 @@ function LiveStatusPage() {
                                                                     children: photographer.phone
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                                    lineNumber: 464,
+                                                                    lineNumber: 507,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                            lineNumber: 462,
+                                                            lineNumber: 505,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                    lineNumber: 450,
+                                                    lineNumber: 493,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                                lineNumber: 449,
+                                                lineNumber: 492,
                                                 columnNumber: 21
                                             }, this)
                                         }, photographer.id, false, {
                                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                            lineNumber: 445,
+                                            lineNumber: 488,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 443,
+                                    lineNumber: 486,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                lineNumber: 442,
+                                lineNumber: 485,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 427,
+                        lineNumber: 470,
                         columnNumber: 11
                     }, this),
                     todaySchedules.length === 0 && availablePhotographers.length === 0 && photographersOnLeave.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -4848,7 +4885,7 @@ function LiveStatusPage() {
                                     className: "h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50"
                                 }, void 0, false, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 480,
+                                    lineNumber: 523,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -4856,7 +4893,7 @@ function LiveStatusPage() {
                                     children: "오늘 일정이 없습니다"
                                 }, void 0, false, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 481,
+                                    lineNumber: 524,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4864,24 +4901,24 @@ function LiveStatusPage() {
                                     children: "편안한 하루 보내세요!"
                                 }, void 0, false, {
                                     fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                                    lineNumber: 482,
+                                    lineNumber: 525,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                            lineNumber: 479,
+                            lineNumber: 522,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                        lineNumber: 478,
+                        lineNumber: 521,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-                lineNumber: 108,
+                lineNumber: 151,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -4891,11 +4928,11 @@ function LiveStatusPage() {
         ]
     }, void 0, true, {
         fileName: "[project]/app/(admin)/admin/live-status/page.tsx",
-        lineNumber: 107,
+        lineNumber: 150,
         columnNumber: 5
     }, this);
 }
-_s(LiveStatusPage, "iXhIP46OkvnEEyqcArzcJPL1Vzc=");
+_s(LiveStatusPage, "fdVlkn62YcM7Lb932ba8RE6S5AQ=");
 _c = LiveStatusPage;
 var _c;
 __turbopack_context__.k.register(_c, "LiveStatusPage");

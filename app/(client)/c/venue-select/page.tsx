@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -25,6 +25,7 @@ export default function VenueSelectPage() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const customVenueInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     // Fade in on mount
@@ -43,6 +44,19 @@ export default function VenueSelectPage() {
       }
     }
   }, [])
+
+  // Focus and scroll to input when "기타" is selected
+  useEffect(() => {
+    if (selectedVenue === '기타' && customVenueInputRef.current) {
+      setTimeout(() => {
+        customVenueInputRef.current?.focus()
+        customVenueInputRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        })
+      }, 100)
+    }
+  }, [selectedVenue])
 
   const handleSubmit = async () => {
     if (!isValid) return
@@ -148,6 +162,7 @@ export default function VenueSelectPage() {
               예식장 이름을 직접 입력해 주세요
             </label>
             <input
+              ref={customVenueInputRef}
               id="custom-venue"
               type="text"
               value={customVenue}
@@ -156,10 +171,9 @@ export default function VenueSelectPage() {
               className={cn(
                 "w-full h-14 px-4 text-base transition-all duration-200",
                 "border-2 border-zinc-200 rounded-md",
-                "focus:border-zinc-900 focus:outline-none",
+                "focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900",
                 "placeholder:text-zinc-400"
               )}
-              autoFocus
             />
           </div>
         )}

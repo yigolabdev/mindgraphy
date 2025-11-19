@@ -19,13 +19,12 @@ import {
   getThisWeekSchedules,
   type Schedule
 } from '@/lib/mock/admin'
+import { mockCustomers } from '@/lib/mock-data'
 import { ROUTES } from '@/lib/constants'
 import { 
   Calendar, 
-  AlertTriangle, 
-  UserX, 
-  Image as ImageIcon,
-  ArrowRight,
+  UserX,
+  Star,
   User,
   MapPin
 } from 'lucide-react'
@@ -43,6 +42,12 @@ export default function AdminDashboard() {
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+
+  // 고객만족도 계산
+  const completedCustomersWithSatisfaction = mockCustomers.filter(c => c.leadStatus === 'completed' && c.satisfaction)
+  const avgSatisfaction = completedCustomersWithSatisfaction.length > 0
+    ? completedCustomersWithSatisfaction.reduce((sum, c) => sum + (c.satisfaction || 0), 0) / completedCustomersWithSatisfaction.length
+    : 0
 
   useEffect(() => {
     // Simulate loading (reduced delay for better UX)
@@ -66,19 +71,13 @@ export default function AdminDashboard() {
               오늘의 핵심 지표와 일정을 확인하세요
             </p>
           </div>
-          <Link href={ROUTES.ADMIN_CALENDAR} className="w-full sm:w-auto">
-            <Button className="w-full sm:w-auto">
-              <Calendar className="mr-2 h-4 w-4" />
-              스케줄 캘린더로
-            </Button>
-          </Link>
         </div>
 
         {/* KPI Tiles */}
         {isLoading ? (
           <DashboardKPISkeleton />
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3">
             {/* Today's Schedules */}
             <Link href={`${ROUTES.ADMIN_CALENDAR}?date=today`}>
               <KPICard
@@ -108,77 +107,20 @@ export default function AdminDashboard() {
               />
             </Link>
 
-            {/* Urgent Deadlines */}
-            <Link href={`${ROUTES.ADMIN_PROJECTS}?sort=deadline`}>
+            {/* Customer Satisfaction */}
+            <Link href={`${ROUTES.ADMIN_CUSTOMERS}?tab=completed`}>
               <KPICard
-                title="마감 임박"
-                value={kpi.urgentDeadlines}
-                description="D-3 이내 일정"
-                icon={AlertTriangle}
-                valueClassName={kpi.urgentDeadlines > 0 ? "text-orange-700" : ""}
-                className={cn(
-                  "animate-in fade-in slide-in-from-bottom duration-700",
-                  kpi.urgentDeadlines > 0 && "ring-orange-200 bg-gradient-to-br from-orange-50 to-white"
-                )}
-                onClick={() => {}}
-              />
-            </Link>
-
-            {/* Pending Proofs */}
-            <Link href={`${ROUTES.ADMIN_PROJECTS}?status=proof_pending`}>
-              <KPICard
-                title="Proof 미완료"
-                value={kpi.pendingProofs}
-                description="업로드 대기 중"
-                icon={ImageIcon}
-                valueClassName="group-hover:text-purple-600"
-                className="animate-in fade-in slide-in-from-bottom duration-1000"
+                title="고객 평점"
+                value={avgSatisfaction > 0 ? `${avgSatisfaction.toFixed(1)} / 5.0` : '-'}
+                description={completedCustomersWithSatisfaction.length > 0 ? `${completedCustomersWithSatisfaction.length}명 평가` : '평가 없음'}
+                icon={Star}
+                valueClassName="text-yellow-600"
+                className="animate-in fade-in slide-in-from-bottom duration-700"
                 onClick={() => {}}
               />
             </Link>
           </div>
         )}
-
-        {/* Quick Actions */}
-        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-3 animate-in fade-in slide-in-from-bottom duration-500">
-          <Link href={ROUTES.ADMIN_CALENDAR} className="group">
-            <Card className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer h-full border-0 ring-1 ring-zinc-200/50">
-              <CardContent className="pt-4 md:pt-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 text-white flex-shrink-0 transition-transform group-hover:scale-110 group-hover:rotate-3">
-                    <Calendar className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm md:text-base group-hover:text-zinc-900 transition-colors">스케줄 캘린더</h3>
-                    <p className="text-xs md:text-sm text-muted-foreground truncate">
-                      전체 일정 관리
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href={ROUTES.ADMIN_CALENDAR} className="group">
-            <Card className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer h-full border-0 ring-1 ring-zinc-200/50">
-              <CardContent className="pt-4 md:pt-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900 text-white flex-shrink-0 transition-transform group-hover:scale-110 group-hover:rotate-3">
-                    <User className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm md:text-base group-hover:text-zinc-900 transition-colors">내 일정 (My)</h3>
-                    <p className="text-xs md:text-sm text-muted-foreground truncate">
-                      개인 스케줄 보기
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
 
         {/* Charts Section */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom duration-500" style={{ animationDelay: '200ms' }}>
@@ -190,15 +132,7 @@ export default function AdminDashboard() {
         {/* This Week's Schedules */}
         <Card className="border-0 ring-1 ring-zinc-200/50 shadow-sm animate-in fade-in slide-in-from-bottom duration-700">
           <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <CardTitle className="text-lg md:text-xl">이번 주 일정 (상위 10개)</CardTitle>
-              <Link href={ROUTES.ADMIN_CALENDAR} className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="w-full sm:w-auto group focus-ring">
-                  전체 보기
-                  <ArrowRight className="ml-2 h-3 w-3 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-            </div>
+            <CardTitle className="text-lg md:text-xl">이번 주 일정 (상위 10개)</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (

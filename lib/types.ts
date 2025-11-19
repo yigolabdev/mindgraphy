@@ -12,6 +12,15 @@ export interface User {
   status: 'active' | 'inactive'
 }
 
+// Note Types
+export interface Note {
+  id: string
+  content: string
+  author: 'customer' | 'admin'
+  authorName?: string
+  createdAt: string
+}
+
 // Customer & CRM Types
 export interface Customer {
   id: string
@@ -25,6 +34,7 @@ export interface Customer {
   assignedManagerId: string
   assignedManager?: User
   notes?: string
+  satisfaction?: number // 1-5점 만족도 (완료된 고객만)
   createdAt: string
 }
 

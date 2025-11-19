@@ -68,6 +68,44 @@ npm run build
 npm start
 ```
 
+## 🔧 최근 리팩토링 (2025년 1월)
+
+시스템 전반에 걸쳐 **전문가 수준의 리팩토링**이 완료되었습니다:
+
+### ✅ 주요 개선사항
+- **타입 안전성**: 완전한 TypeScript 활용 및 타입 정의 강화
+- **재사용성**: Custom Hooks와 공통 컴포넌트 추출
+- **유지보수성**: 명확한 구조와 관심사의 분리
+- **성능**: 메모이제이션 및 최적화 기법 적용
+- **접근성**: WCAG 2.1 AA 준수 유틸리티 추가
+- **에러 핸들링**: 표준화된 API 서비스 레이어 구축
+
+상세 내용은 [`REFACTORING_REPORT.md`](./REFACTORING_REPORT.md) 참조
+
+### 🆕 새로 추가된 주요 파일
+```
+hooks/
+└── use-portal-data.ts           # 포털 데이터 관리 훅
+
+lib/
+├── config/
+│   └── portal.config.ts         # 설정 중앙화
+├── hooks/
+│   └── use-intersection-observer.ts  # 성능 최적화
+├── services/
+│   └── portal-api.service.ts    # API 서비스 레이어
+└── utils/
+    ├── portal.utils.ts          # 비즈니스 로직
+    └── accessibility.utils.ts   # 접근성 유틸리티
+
+components/
+├── portal/
+│   ├── d-day-counter.tsx        # D-Day 카운터
+│   └── progress-section.tsx     # 진행 상황
+└── common/
+    └── error-boundary.tsx       # 에러 바운더리
+```
+
 ## 📁 프로젝트 구조
 
 ```

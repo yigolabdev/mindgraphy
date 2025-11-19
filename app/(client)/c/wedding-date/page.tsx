@@ -146,9 +146,11 @@ export default function WeddingDatePage() {
         setStepTransition(false)
       }, 300)
     } else {
+      // Go back to previous page based on product type
       setIsAnimating(true)
       setTimeout(() => {
-        router.push('/c/referral')
+        const previousPage = productType === 'wedding' ? '/c/process' : '/c/product-type'
+        router.push(previousPage)
       }, 400)
     }
   }

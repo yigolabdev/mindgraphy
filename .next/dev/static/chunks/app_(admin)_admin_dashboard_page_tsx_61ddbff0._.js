@@ -11,7 +11,7 @@
   "static/chunks/node_modules_recharts_es6_ba592c4d._.js",
   "static/chunks/node_modules_@radix-ui_e4bba44b._.js",
   "static/chunks/node_modules_@floating-ui_1b6e7b6d._.js",
-  "static/chunks/node_modules_8665e2d9._.js"
+  "static/chunks/node_modules_d525f401._.js"
 ],
     source: "dynamic"
 });

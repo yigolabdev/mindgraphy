@@ -58,8 +58,8 @@ export default function PackagesPage() {
     }
     
     // Navigate based on product type
-    // Hanbok has no options, so skip to referral page
-    const nextPage = productType === 'hanbok' ? '/c/referral' : '/c/options'
+    // Hanbok has no options, so skip to venue contact page
+    const nextPage = productType === 'hanbok' ? '/c/venue-contact' : '/c/options'
     setTimeout(() => {
       router.push(nextPage)
     }, 400)

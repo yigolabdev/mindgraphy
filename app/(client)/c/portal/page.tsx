@@ -11,7 +11,7 @@ import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star } fro
 // Mock data - 실제로는 API에서 가져올 데이터
 const mockCustomerData = {
   coupleName: '김철수 & 이영희',
-  weddingDate: '2025-04-12',
+  weddingDate: '2024-12-01', // currentStep에 따라 자동 조정 (0-3: 과거, 4-6: 미래)
   currentStep: 2, // 0: 일정확인중, 1: 일정확정, 2: 입금대기, 3: 촬영대기, 4: 사진선택, 5: 편집중, 6: 배송완료
   contractInfo: {
     contractNumber: 'MG-2025-001',
@@ -166,48 +166,18 @@ export default function PortalPage() {
 
   // Test functions
   const setTestStep = (step: number) => {
+    // 촬영대기(3)까지는 과거 날짜, 사진선택(4)부터는 미래 날짜
+    const newWeddingDate = step <= 3 ? '2024-12-01' : '2025-04-12'
+    const newIsPast = step <= 3
+    
     setCustomerData(prev => ({
       ...prev,
       currentStep: step,
-      photoSelectionAvailable: step === 4
+      photoSelectionAvailable: step === 4,
+      weddingDate: newWeddingDate
     }))
-  }
-
-  const togglePastDate = () => {
-    setIsPast(!isPast)
-    if (!isPast) {
-      // Set to past date
-      setCustomerData(prev => ({
-        ...prev,
-        weddingDate: '2024-12-01'
-      }))
-    } else {
-      // Set to future date
-      setCustomerData(prev => ({
-        ...prev,
-        weddingDate: '2025-04-12'
-      }))
-    }
-  }
-
-  const togglePaymentStatus = () => {
-    setCustomerData(prev => ({
-      ...prev,
-      paymentInfo: {
-        ...prev.paymentInfo,
-        isPaid: !prev.paymentInfo.isPaid
-      }
-    }))
-  }
-
-  const toggleContractStatus = () => {
-    setCustomerData(prev => ({
-      ...prev,
-      contractInfo: {
-        ...prev.contractInfo,
-        isSigned: !prev.contractInfo.isSigned
-      }
-    }))
+    
+    setIsPast(newIsPast)
   }
 
   return (
@@ -245,30 +215,9 @@ export default function PortalPage() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Date & Status Toggle */}
-            <div className="space-y-2">
-              <button
-                onClick={togglePastDate}
-                className="w-full px-3 py-2 text-xs rounded bg-zinc-800 hover:bg-zinc-700 transition-colors"
-              >
-                {isPast ? '📅 미래 날짜로 변경' : '📅 과거 날짜로 변경'}
-              </button>
-              <div className="flex gap-2">
-                <button
-                  onClick={toggleContractStatus}
-                  className="flex-1 px-3 py-2 text-xs rounded bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                >
-                  {customerData.contractInfo.isSigned ? '📝 계약 대기로 변경' : '📝 계약 완료로 변경'}
-                </button>
-                <button
-                  onClick={togglePaymentStatus}
-                  className="flex-1 px-3 py-2 text-xs rounded bg-zinc-800 hover:bg-zinc-700 transition-colors"
-                >
-                  {customerData.paymentInfo.isPaid ? '💳 입금 대기로 변경' : '💳 입금 완료로 변경'}
-                </button>
-              </div>
+              <p className="text-xs text-zinc-500 mt-2">
+                💡 촬영대기까지는 과거 날짜, 사진선택부터는 미래 날짜로 자동 전환됩니다
+              </p>
             </div>
           </div>
         </div>
@@ -307,10 +256,10 @@ export default function PortalPage() {
 
         {/* D-Day Counter */}
         <div className="text-center space-y-4 py-8">
-          {!isPast ? (
+          {customerData.currentStep <= 3 ? (
             <>
               <p className="text-sm text-zinc-500 tracking-wide">
-                특별한 날까지
+                {isPast ? '촬영일' : '특별한 날까지'}
               </p>
               <div className="space-y-2">
                 <p className="text-6xl font-light text-zinc-900 tracking-tight">
@@ -321,7 +270,7 @@ export default function PortalPage() {
                 </p>
               </div>
               <p className="text-xs text-zinc-400 pt-4 leading-relaxed">
-                소중한 순간을 함께 담을 수 있어 기쁩니다
+                {isPast ? '곧 만나뵙게 됩니다' : '소중한 순간을 함께 담을 수 있어 기쁩니다'}
               </p>
             </>
           ) : (
@@ -339,6 +288,22 @@ export default function PortalPage() {
               </p>
             </>
           )}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-zinc-200"></div>
+
+        {/* Wedding Info */}
+        <div className="space-y-4 bg-zinc-50 border border-zinc-200 p-6">
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-600">예식장</span>
+            <span className="font-medium text-zinc-900">{customerData.venue}</span>
+          </div>
+          <div className="border-t border-zinc-200"></div>
+          <div className="flex justify-between text-sm">
+            <span className="text-zinc-600">선택 패키지</span>
+            <span className="font-medium text-zinc-900">{customerData.packageName}</span>
+          </div>
         </div>
 
         {/* Divider */}
@@ -400,8 +365,34 @@ export default function PortalPage() {
         {/* Divider */}
         <div className="border-t border-zinc-200"></div>
 
-        {/* Contract Information */}
-        {(customerData.currentStep === 2 || (customerData.currentStep > 2 && !customerData.contractInfo.isSigned)) && (
+        {/* Step 0: 일정확인중 */}
+        {customerData.currentStep === 0 && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                일정 확인 중
+              </h2>
+              
+              <div className="bg-amber-50 border-2 border-amber-200 p-6 space-y-4">
+                <div className="text-center space-y-3">
+                  <p className="text-sm text-amber-900 font-medium">
+                    담당자가 일정을 확인하고 있습니다
+                  </p>
+                  <p className="text-xs text-amber-700 leading-relaxed">
+                    영업일 기준 1-2일 이내에 연락드립니다<br />
+                    급한 문의사항은 전화나 카카오톡으로 부탁드립니다
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Step 1: 일정확정 - 계약 진행 */}
+        {customerData.currentStep === 1 && (
           <>
             <div className="space-y-6">
               <h2 className="text-lg font-medium text-zinc-900 text-center">
@@ -485,8 +476,62 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Payment Information */}
-        {!customerData.paymentInfo.isPaid && (
+        {/* Step 3: 촬영대기 - 감성 메시지 */}
+        {customerData.currentStep === 3 && (
+          <>
+            <div className="space-y-6">
+              <div className="text-center space-y-6 py-8">
+                <div className="inline-block">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex items-center justify-center animate-pulse">
+                    <Camera className="w-10 h-10 text-purple-600" />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-light text-zinc-900">
+                    곧 만나뵙게 됩니다
+                  </h2>
+                  
+                  <div className="max-w-md mx-auto space-y-3">
+                    <p className="text-base text-zinc-700 leading-relaxed">
+                      두 분의 특별한 순간을 담을 준비가 되어있습니다
+                    </p>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      설렘과 행복이 가득한 그날,<br />
+                      가장 아름다운 모습을 자연스럽게 담아드리겠습니다
+                    </p>
+                  </div>
+                  
+                  <div className="pt-6 border-t border-zinc-200 max-w-sm mx-auto">
+                    <div className="bg-gradient-to-r from-zinc-50 to-white border border-zinc-200 rounded-lg p-4 space-y-2">
+                      <p className="text-xs text-zinc-500 font-medium">💡 촬영 당일 Tip</p>
+                      <ul className="text-xs text-zinc-600 space-y-1 text-left">
+                        <li className="flex items-start gap-2">
+                          <span className="text-zinc-400">•</span>
+                          <span>편안한 마음으로 자연스러운 표정과 모습을 보여주세요</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-zinc-400">•</span>
+                          <span>원하시는 컨셉이나 포즈가 있다면 미리 말씀해 주세요</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-zinc-400">•</span>
+                          <span>궁금하신 점은 언제든 작가님께 편하게 질문해 주세요</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Step 1, 3: 입금 안내 (일정확정 or 촬영대기) */}
+        {(customerData.currentStep === 1 || customerData.currentStep === 3) && !customerData.paymentInfo.isPaid && (
           <>
             <div className="space-y-6">
               <h2 className="text-lg font-medium text-zinc-900 text-center">
@@ -562,8 +607,8 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Photo Selection */}
-        {customerData.photoSelectionAvailable && (
+        {/* Step 4: 사진 선택 */}
+        {customerData.currentStep === 4 && (
           <>
             <div className="space-y-6">
               <h2 className="text-lg font-medium text-zinc-900 text-center">
@@ -604,8 +649,8 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Photographer Rating */}
-        {(customerData.currentStep >= 3 || customerData.photographerRating.rating > 0) && (
+        {/* Step 4: 작가 평가 */}
+        {customerData.currentStep === 4 && (
           <>
             <div className="space-y-6">
               <div className="text-center space-y-2">
@@ -732,7 +777,85 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Requests */}
+        {/* Step 5: 편집중 */}
+        {customerData.currentStep === 5 && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                사진 편집 중
+              </h2>
+              
+              <div className="bg-blue-50 border-2 border-blue-200 p-6 space-y-4">
+                <div className="text-center space-y-3">
+                  <p className="text-sm text-blue-900 font-medium">
+                    선택하신 사진을 정성껏 보정하고 있습니다
+                  </p>
+                  <p className="text-xs text-blue-700 leading-relaxed">
+                    아름다운 추억을 담은 앨범을 패키징하고 있으니<br />
+                    조금만 더 기다려 주세요
+                  </p>
+                  <div className="pt-4">
+                    <div className="inline-flex items-center space-x-2 text-xs text-blue-600">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                      <span>편집 진행 중...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Step 6: 배송완료 */}
+        {customerData.currentStep === 6 && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                배송 완료
+              </h2>
+              
+              <div className="bg-gradient-to-br from-zinc-50 to-white border-2 border-zinc-200 p-8 space-y-6">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center">
+                      <CheckCircle2 className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-base text-zinc-900 font-medium">
+                      모든 작업이 완료되었습니다
+                    </p>
+                    <p className="text-sm text-zinc-600 leading-relaxed">
+                      소중한 순간을 함께할 수 있어 영광이었습니다
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-zinc-200">
+                    <p className="text-xs text-zinc-500 leading-relaxed italic">
+                      "특별한 날의 아름다운 기억이<br />
+                      오래도록 행복한 추억으로 남기를 바랍니다"
+                    </p>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <p className="text-sm text-zinc-700 font-light">
+                      - 마인드그라피 올림 -
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Requests (모든 단계에서 표시) */}
         <div className="space-y-6">
           <h2 className="text-lg font-medium text-zinc-900 text-center">
             요청사항
@@ -790,21 +913,6 @@ export default function PortalPage() {
               작성한 내용은 날짜와 함께 기록됩니다<br />
               급한 문의는 전화나 카카오톡으로 부탁드립니다
             </p>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t border-zinc-200"></div>
-
-        {/* Contract Info */}
-        <div className="space-y-4 text-sm text-zinc-600">
-          <div className="flex justify-between">
-            <span>예식장</span>
-            <span className="font-medium text-zinc-900">{customerData.venue}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>선택 패키지</span>
-            <span className="font-medium text-zinc-900">{customerData.packageName}</span>
           </div>
         </div>
 

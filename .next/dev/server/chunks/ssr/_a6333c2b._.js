@@ -1258,9 +1258,7 @@ const ROUTES = {
     ADMIN_DELIVERY: '/admin/delivery',
     ADMIN_ANALYTICS: '/admin/analytics',
     // Admin - Settings
-    ADMIN_SETTINGS: '/admin/settings',
-    ADMIN_SETTINGS_PRODUCTS: '/admin/settings/products',
-    ADMIN_SETTINGS_MASTERS: '/admin/settings/masters'
+    ADMIN_SETTINGS: '/admin/settings'
 };
 const PROJECT_STATUSES = [
     'scheduled',

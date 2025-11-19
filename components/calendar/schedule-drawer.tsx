@@ -189,13 +189,27 @@ export function ScheduleDrawer({ event, open, onOpenChange }: ScheduleDrawerProp
                 </div>
                 {event.groomPhone && (
                   <div>
-                    <span className="text-muted-foreground">신랑 연락처:</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-muted-foreground">신랑 연락처:</span>
+                      {event.mainContact === 'groom' && (
+                        <Badge variant="secondary" className="text-xs h-5">
+                          대표
+                        </Badge>
+                      )}
+                    </div>
                     <p className="font-medium">{event.groomPhone}</p>
                   </div>
                 )}
                 {event.bridePhone && (
                   <div>
-                    <span className="text-muted-foreground">신부 연락처:</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-muted-foreground">신부 연락처:</span>
+                      {event.mainContact === 'bride' && (
+                        <Badge variant="secondary" className="text-xs h-5">
+                          대표
+                        </Badge>
+                      )}
+                    </div>
                     <p className="font-medium">{event.bridePhone}</p>
                   </div>
                 )}

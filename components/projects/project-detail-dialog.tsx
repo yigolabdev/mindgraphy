@@ -1,8 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProgressBar } from '@/components/common/progress-bar'
 import { DdayBadge } from '@/components/common/dday-badge'
@@ -22,10 +26,13 @@ import {
   Edit2,
   Tag,
   Package,
-  Users
+  Users,
+  TrendingUp
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { toast } from 'sonner'
+import type { ProjectStatus } from '@/lib/types'
 
 interface ProjectDetailDialogProps {
   open: boolean
@@ -38,6 +45,8 @@ export function ProjectDetailDialog({
   onOpenChange, 
   project 
 }: ProjectDetailDialogProps) {
+  const [projectStatus, setProjectStatus] = useState<ProjectStatus>(project?.projectStatus || 'scheduled')
+  
   if (!project) return null
 
   // 복수 작가 지원
@@ -51,6 +60,34 @@ export function ProjectDetailDialog({
     u => u.id === project.assignedEditorId
   )
 
+  // 프로젝트 상태 옵션
+  const projectStatusOptions = [
+    { value: 'scheduled', label: '일정 확정', desc: '촬영 예정', color: 'bg-blue-100 text-blue-800' },
+    { value: 'in_progress', label: '촬영 진행중', desc: '현재 촬영중', color: 'bg-purple-100 text-purple-800' },
+    { value: 'proof_ready', label: '사진 선택', desc: '프루프 준비 완료', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'editing', label: '편집중', desc: '사진 보정 중', color: 'bg-orange-100 text-orange-800' },
+    { value: 'completed', label: '편집 완료', desc: '작업 완료', color: 'bg-green-100 text-green-800' },
+    { value: 'delivered', label: '배송 완료', desc: '최종 배송 완료', color: 'bg-emerald-100 text-emerald-800' },
+    { value: 'cancelled', label: '취소', desc: '프로젝트 취소', color: 'bg-red-100 text-red-800' },
+    { value: 'archived', label: '보관', desc: '아카이브', color: 'bg-zinc-100 text-zinc-800' }
+  ]
+
+  const currentStatus = projectStatusOptions.find(opt => opt.value === projectStatus)
+
+  // 상태 변경 핸들러
+  const handleStatusChange = (newStatus: ProjectStatus) => {
+    const previousStatus = projectStatus
+    setProjectStatus(newStatus)
+    
+    // TODO: API 호출하여 상태 업데이트
+    const prevLabel = projectStatusOptions.find(opt => opt.value === previousStatus)?.label
+    const newLabel = projectStatusOptions.find(opt => opt.value === newStatus)?.label
+    
+    toast.success('프로젝트 상태가 변경되었습니다', {
+      description: `${prevLabel} → ${newLabel}`
+    })
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -61,8 +98,8 @@ export function ProjectDetailDialog({
             </DialogTitle>
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">{project.projectNumber}</span>
-              <Badge className={getStatusColor(project.projectStatus)}>
-                {getStatusLabel(project.projectStatus)}
+              <Badge className={getStatusColor(projectStatus)}>
+                {getStatusLabel(projectStatus)}
               </Badge>
               <DdayBadge targetDate={project.weddingDate} showIcon={false} />
             </div>
@@ -70,6 +107,55 @@ export function ProjectDetailDialog({
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
+          {/* Project Status Management */}
+          <Card className="border-2 border-zinc-200 bg-gradient-to-r from-zinc-50 to-white">
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <TrendingUp className="h-5 w-5 text-zinc-600 flex-shrink-0" />
+                  <div className="flex-1">
+                    <Label className="text-sm font-medium text-zinc-700 mb-2 block">
+                      프로젝트 상태
+                    </Label>
+                    <Select value={projectStatus} onValueChange={(value) => handleStatusChange(value as ProjectStatus)}>
+                      <SelectTrigger className="w-full md:w-[320px] h-11">
+                        <SelectValue>
+                          <div className="flex items-center gap-2">
+                            <Badge className={`${currentStatus?.color} border`}>
+                              {currentStatus?.label}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground hidden md:inline">
+                              {currentStatus?.desc}
+                            </span>
+                          </div>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {projectStatusOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${option.color} border text-xs`}>
+                                {option.label}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {option.desc}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 text-xs text-muted-foreground bg-zinc-100 px-3 py-2 rounded-md border border-zinc-200">
+                  <Clock className="h-3 w-3" />
+                  <span>포털 단계와 연동됩니다</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Progress */}
           <Card>
             <CardHeader>

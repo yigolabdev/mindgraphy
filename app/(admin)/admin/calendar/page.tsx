@@ -29,6 +29,7 @@ import {
   type ScheduleStatus,
   type ProductType
 } from '@/lib/mock/schedules'
+import { mockCustomers, mockProjects, mockContracts } from '@/lib/mock-data'
 import { 
   Plus, 
   Calendar as CalendarIcon,
@@ -53,7 +54,23 @@ export default function CalendarPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [view, setView] = useState<'month' | 'week' | 'day'>('month')
-  const [events, setEvents] = useState<ScheduleEvent[]>(mockScheduleEvents)
+  
+  // 일정이 확정된 촬영 스케줄만 필터링 (leadStatus가 'contracted' 또는 'completed'인 고객)
+  const getConfirmedSchedules = () => {
+    return mockScheduleEvents.filter(event => {
+      // contractId로 고객 찾기
+      const contract = mockContracts.find(c => c.id === event.contractId)
+      if (!contract) return false
+      
+      const customer = mockCustomers.find(c => c.id === contract.customerId)
+      if (!customer) return false
+      
+      // leadStatus가 'contracted' 또는 'completed'인 고객의 스케줄 표시 (일정이 확정되었거나 완료된 고객)
+      return customer.leadStatus === 'contracted' || customer.leadStatus === 'completed'
+    })
+  }
+  
+  const [events, setEvents] = useState<ScheduleEvent[]>(getConfirmedSchedules())
   
   // Create schedule dialog
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -229,15 +246,20 @@ export default function CalendarPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">스케줄 캘린더</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">촬영 스케줄</h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              모든 촬영 일정을 관리하세요
+              확정된 고객의 촬영 일정을 관리하세요
             </p>
+            <div className="flex items-center gap-2 mt-2">
+              <Badge variant="outline" className="text-xs">
+                촬영 전용 캘린더
+              </Badge>
+            </div>
           </div>
           {user?.role === 'admin' && (
             <Button size="sm" onClick={openCreateDialog}>
               <Plus className="mr-2 h-4 w-4" />
-              새 일정
+              새 촬영 일정
             </Button>
           )}
         </div>
@@ -591,30 +613,6 @@ export default function CalendarPage() {
               hour12: false
             }}
           />
-        </div>
-
-        {/* Legend */}
-        <div className="bg-zinc-50/50 border border-zinc-200 rounded-lg p-4">
-          <h3 className="font-semibold mb-3 text-sm">상태 범례</h3>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { status: 'reserved', label: '예약' },
-              { status: 'in_progress', label: '진행중' },
-              { status: 'editing', label: '보정중' },
-              { status: 'completed', label: '완료' }
-            ].map(({ status, label }) => {
-              const event = mockScheduleEvents.find(e => e.status === status)
-              return (
-                <div key={status} className="flex items-center gap-2">
-                  <div
-                    className="h-3 w-3 rounded"
-                    style={{ backgroundColor: event?.backgroundColor }}
-                  />
-                  <span className="text-sm">{label}</span>
-                </div>
-              )
-            })}
-          </div>
         </div>
       </div>
 

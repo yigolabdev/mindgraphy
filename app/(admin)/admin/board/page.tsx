@@ -93,8 +93,7 @@ export default function BoardPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <MessageSquare className="h-8 w-8" />
+            <h1 className="text-3xl font-bold tracking-tight">
               소통게시판
             </h1>
             <p className="text-muted-foreground mt-1">

@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { mockScheduleEvents, mockSchedulePhotographers } from '@/lib/mock/schedules'
+import type { ScheduleEvent } from '@/lib/mock/schedules'
+import type { Schedule } from '@/lib/mock/admin'
+import { ScheduleDetailDialog } from '@/components/dashboard/schedule-detail-dialog'
 import {
   Activity,
   Clock,
@@ -20,7 +23,7 @@ import {
   RefreshCw,
   Phone
 } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, differenceInDays } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -28,6 +31,8 @@ import { toast } from 'sonner'
 export default function LiveStatusPage() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
 
   // Update time every second
   useEffect(() => {
@@ -103,14 +108,71 @@ export default function LiveStatusPage() {
     return labels[status as keyof typeof labels] || status
   }
 
+  const getProductTypeLabel = (productType: string) => {
+    const labels = {
+      wedding: '일반 웨딩',
+      hanbok: '한복 & 캐주얼',
+      dress_shop: '가봉 스냅',
+      baby: '돌스냅'
+    }
+    return labels[productType as keyof typeof labels] || productType
+  }
+
+  const getProductTypeColor = (productType: string) => {
+    const colors = {
+      wedding: 'bg-pink-100 text-pink-800 border-pink-200',
+      hanbok: 'bg-purple-100 text-purple-800 border-purple-200',
+      dress_shop: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+      baby: 'bg-amber-100 text-amber-800 border-amber-200'
+    }
+    return colors[productType as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200'
+  }
+
+  // Convert ScheduleEvent to Schedule for ScheduleDetailDialog
+  const convertToSchedule = (event: ScheduleEvent): Schedule => {
+    const eventDate = format(new Date(event.start), 'yyyy-MM-dd')
+    const daysUntil = differenceInDays(new Date(event.start), new Date())
+    
+    // Map status
+    const statusMap: Record<string, Schedule['status']> = {
+      'reserved': 'assigned',
+      'in_progress': 'confirmed',
+      'completed': 'completed',
+      'editing': 'confirmed',
+      'cancelled': 'cancelled'
+    }
+    
+    return {
+      id: event.id,
+      projectId: event.projectDetailId || event.id,
+      customerName: `${event.groomName} & ${event.brideName}`,
+      date: eventDate,
+      time: event.ceremonyTime,
+      location: event.venueName,
+      photographerIds: event.photographerIds,
+      photographerNames: event.photographerNames,
+      status: statusMap[event.status] || 'assigned',
+      type: event.productType,
+      daysUntil: daysUntil,
+      hasProof: false, // ScheduleEvent doesn't have proof info
+      proofStatus: 'pending'
+    }
+  }
+
+  // Handle schedule click
+  const handleScheduleClick = (event: ScheduleEvent) => {
+    const schedule = convertToSchedule(event)
+    setSelectedSchedule(schedule)
+    setDetailDialogOpen(true)
+  }
+
   return (
     <AdminLayout align="left">
       <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Activity className="h-8 w-8 text-green-600 animate-pulse" />
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               실시간 현황판
             </h1>
             <p className="text-sm md:text-base text-muted-foreground mt-1">
@@ -208,7 +270,11 @@ export default function LiveStatusPage() {
 
             <div className="space-y-3">
               {inProgressSchedules.map((schedule) => (
-                <Card key={schedule.id} className="border-2 border-green-500 shadow-lg bg-gradient-to-r from-green-50 to-white">
+                <Card 
+                  key={schedule.id} 
+                  className="border-2 border-green-500 shadow-lg bg-gradient-to-r from-green-50 to-white cursor-pointer hover:shadow-xl transition-shadow"
+                  onClick={() => handleScheduleClick(schedule)}
+                >
                   <CardContent className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                       {/* Left: Photographer(s) */}
@@ -230,9 +296,12 @@ export default function LiveStatusPage() {
 
                       {/* Center: Schedule Info */}
                       <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <User className="h-4 w-4 text-muted-foreground" />
                           <span className="font-semibold text-lg">{schedule.groomName} & {schedule.brideName}</span>
+                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
+                            {getProductTypeLabel(schedule.productType)}
+                          </Badge>
                         </div>
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
@@ -276,7 +345,11 @@ export default function LiveStatusPage() {
 
             <div className="space-y-2">
               {upcomingSchedules.map((schedule) => (
-                <Card key={schedule.id} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
+                <Card 
+                  key={schedule.id} 
+                  className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => handleScheduleClick(schedule)}
+                >
                   <CardContent className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center gap-3">
                       {/* Left: Time */}
@@ -296,9 +369,12 @@ export default function LiveStatusPage() {
 
                       {/* Center: Info */}
                       <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <User className="h-4 w-4 text-muted-foreground" />
                           <span className="font-semibold">{schedule.groomName} & {schedule.brideName}</span>
+                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
+                            {getProductTypeLabel(schedule.productType)}
+                          </Badge>
                         </div>
                         <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
@@ -355,9 +431,14 @@ export default function LiveStatusPage() {
                         <div className="text-xs text-muted-foreground truncate">
                           {getPhotographerNames(schedule.photographerIds)}
                         </div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{format(new Date(schedule.start), 'HH:mm')}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
+                            {getProductTypeLabel(schedule.productType)}
+                          </Badge>
+                          <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{format(new Date(schedule.start), 'HH:mm')}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -501,6 +582,13 @@ export default function LiveStatusPage() {
           animation: pulse-border 2s ease-in-out infinite;
         }
       `}</style>
+
+      {/* Schedule Detail Dialog */}
+      <ScheduleDetailDialog
+        schedule={selectedSchedule}
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+      />
     </AdminLayout>
   )
 }

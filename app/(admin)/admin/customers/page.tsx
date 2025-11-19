@@ -23,6 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { CustomerDetailDialog } from '@/components/customers/customer-detail-dialog'
+import { CreateProjectDialog } from '@/components/projects/create-project-dialog'
 import { mockCustomers, mockProjects, mockContracts, mockPayments } from '@/lib/mock-data'
 import { mockProducts } from '@/lib/mock/settings'
 import { formatDate } from '@/lib/utils'
@@ -40,22 +41,21 @@ import {
   PieChart,
   SlidersHorizontal,
   ArrowUpDown,
-  CreditCard
+  CreditCard,
+  AlertCircle,
+  Bell
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMemo } from 'react'
-import { 
-  StageDistributionChart, 
-  SatisfactionTrendChart
-} from '@/components/customers/customer-trend-charts'
 
 export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCustomer, setSelectedCustomer] = useState<typeof customersWithStats[0] | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'trends'>('active')
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active')
   
   // Filter and sort states
   const [stageFilter, setStageFilter] = useState<string>('all')
@@ -105,6 +105,23 @@ export default function CustomersPage() {
     return { paid: paidAmount / 10000, total: totalAmount / 10000, percent }
   }
 
+  // 일정 미확정 여부 확인 (고객용 페이지를 통한 신청 후 일정 미확정)
+  const isScheduleUnconfirmed = (customer: Customer, projects: Project[]) => {
+    // leadStatus가 'inquiry'이면 일정 미확정 (고객이 신청했지만 관리자가 아직 승인하지 않음)
+    // 단, 작가가 배정되지 않은 프로젝트가 있으면 일정 미확정으로 간주
+    if (customer.leadStatus === 'inquiry') {
+      return true
+    }
+    
+    // contracted 상태지만 작가가 배정되지 않은 프로젝트가 있는 경우도 일정 미확정
+    const hasUnassignedProject = projects.some(p => 
+      p.projectStatus === 'scheduled' && 
+      (!p.assignedPhotographerIds || p.assignedPhotographerIds.length === 0)
+    )
+    
+    return hasUnassignedProject
+  }
+
   // 고객별 프로젝트 통계 계산
   const customersWithStats = mockCustomers.map(customer => {
     const customerProjects = mockProjects.filter(p => p.customerId === customer.id)
@@ -116,6 +133,7 @@ export default function CustomersPage() {
       p.projectStatus !== 'completed' && p.projectStatus !== 'delivered' && p.projectStatus !== 'cancelled'
     ).length
     const totalRevenue = customerContracts.reduce((sum, c) => sum + (c.totalAmount || 0), 0)
+    const scheduleUnconfirmed = isScheduleUnconfirmed(customer, customerProjects)
 
     return {
       ...customer,
@@ -125,7 +143,8 @@ export default function CustomersPage() {
       totalRevenue: totalRevenue / 10000, // 만원 단위로 변환
       latestProject: customerProjects[0],
       currentStage: getCurrentStage(customer, customerProjects, customerContracts),
-      paymentStatus: getPaymentStatus(customer, mockContracts)
+      paymentStatus: getPaymentStatus(customer, mockContracts),
+      scheduleUnconfirmed // 일정 미확정 여부
     }
   })
 
@@ -135,11 +154,11 @@ export default function CustomersPage() {
     
     // Active/Completed filter based on tab
     if (activeTab === 'active') {
-      // 진행 중: 진행 중인 프로젝트가 있는 고객
-      filtered = filtered.filter(c => c.activeProjects > 0)
+      // 진행 중: 진행 중인 프로젝트가 있거나 일정 미확정인 고객
+      filtered = filtered.filter(c => c.activeProjects > 0 || c.scheduleUnconfirmed)
     } else if (activeTab === 'completed') {
-      // 완료: 진행 중인 프로젝트가 없고, 완료된 프로젝트가 있는 고객
-      filtered = filtered.filter(c => c.activeProjects === 0 && c.completedProjects > 0)
+      // 완료: 진행 중인 프로젝트가 없고, 완료된 프로젝트가 있으며, 일정 미확정이 아닌 고객
+      filtered = filtered.filter(c => c.activeProjects === 0 && c.completedProjects > 0 && !c.scheduleUnconfirmed)
     }
     
     // Search filter
@@ -155,7 +174,10 @@ export default function CustomersPage() {
     }
     
     // Stage filter
-    if (stageFilter !== 'all') {
+    if (stageFilter === 'unconfirmed') {
+      // 일정 미확정 필터
+      filtered = filtered.filter(c => c.scheduleUnconfirmed)
+    } else if (stageFilter !== 'all') {
       filtered = filtered.filter(c => c.currentStage.label === stageFilter)
     }
     
@@ -172,8 +194,13 @@ export default function CustomersPage() {
       })
     }
     
-    // Sorting
+    // Sorting - 일정 미확정 고객이 항상 최우선
     filtered.sort((a, b) => {
+      // 1순위: 일정 미확정 고객을 최상단에
+      if (a.scheduleUnconfirmed && !b.scheduleUnconfirmed) return -1
+      if (!a.scheduleUnconfirmed && b.scheduleUnconfirmed) return 1
+      
+      // 2순위: 선택한 정렬 기준
       switch (sortBy) {
         case 'latest':
           return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
@@ -195,8 +222,15 @@ export default function CustomersPage() {
   const totalCustomers = customersWithStats.length
   const activeCustomers = customersWithStats.filter(c => c.activeProjects > 0).length
   const completedCustomers = customersWithStats.filter(c => c.completedProjects > 0 && c.activeProjects === 0).length
+  const unconfirmedCustomers = customersWithStats.filter(c => c.scheduleUnconfirmed).length
   const totalRevenue = customersWithStats.reduce((sum, c) => sum + c.totalRevenue, 0)
   const avgRevenue = totalCustomers > 0 ? totalRevenue / totalCustomers : 0
+  
+  // 고객만족도 계산 (완료된 고객만)
+  const completedCustomersWithSatisfaction = mockCustomers.filter(c => c.leadStatus === 'completed' && c.satisfaction)
+  const avgSatisfaction = completedCustomersWithSatisfaction.length > 0
+    ? completedCustomersWithSatisfaction.reduce((sum, c) => sum + (c.satisfaction || 0), 0) / completedCustomersWithSatisfaction.length
+    : 0
   
   // 단계별 분포
   const stageDistribution = {
@@ -223,6 +257,12 @@ export default function CustomersPage() {
     }
   }
 
+  const handleCreateCustomer = () => {
+    setCreateDialogOpen(false)
+    toast.success('고객이 성공적으로 등록되었습니다!')
+    // 실제 구현에서는 여기서 데이터 갱신 로직 추가
+  }
+
   return (
     <AdminLayout align="left">
       <div className="space-y-4 md:space-y-6">
@@ -236,14 +276,17 @@ export default function CustomersPage() {
               고객 정보와 진행 상황을 관리하세요
             </p>
           </div>
-          <Button className="w-full sm:w-auto">
+          <Button 
+            className="w-full sm:w-auto"
+            onClick={() => setCreateDialogOpen(true)}
+          >
             <Plus className="mr-2 h-4 w-4" />
             고객 등록
           </Button>
         </div>
 
         {/* KPI Cards */}
-        <div className="grid gap-4 md:grid-cols-3 animate-in fade-in slide-in-from-bottom duration-300">
+        <div className="grid gap-4 md:grid-cols-5 animate-in fade-in slide-in-from-bottom duration-300">
           <KPICard
             title="전체 고객"
             value={totalCustomers}
@@ -252,6 +295,29 @@ export default function CustomersPage() {
             valueClassName="group-hover:text-blue-600"
             onClick={() => {}}
           />
+          
+          {/* 일정 미확정 고객 - 긴급 알림 */}
+          <div 
+            onClick={() => {
+              setActiveTab('active')
+              setStageFilter('unconfirmed')
+            }}
+            className="cursor-pointer"
+          >
+            <KPICard
+              title="일정 미확정"
+              value={unconfirmedCustomers}
+              description={unconfirmedCustomers > 0 ? "⚠️ 긴급 확인 필요" : "모두 확정됨"}
+              icon={unconfirmedCustomers > 0 ? AlertCircle : CheckCircle}
+              valueClassName={cn(
+                unconfirmedCustomers > 0 ? "text-red-700 animate-pulse" : "text-green-600"
+              )}
+              className={cn(
+                unconfirmedCustomers > 0 && "ring-2 ring-red-300 bg-gradient-to-br from-red-50 to-white hover:ring-red-400"
+              )}
+              onClick={() => {}}
+            />
+          </div>
           
           <KPICard
             title="진행 중"
@@ -270,22 +336,32 @@ export default function CustomersPage() {
             valueClassName="text-green-600"
             onClick={() => {}}
           />
+          
+          <KPICard
+            title="고객만족도"
+            value={avgSatisfaction > 0 ? `${avgSatisfaction.toFixed(1)} / 5.0` : '-'}
+            description={completedCustomersWithSatisfaction.length > 0 ? `${completedCustomersWithSatisfaction.length}명 평가` : '평가 없음'}
+            icon={Star}
+            valueClassName="text-yellow-600"
+            onClick={() => setActiveTab('completed')}
+          />
         </div>
 
-        {/* Tabs for Active, Completed and Trends */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'active' | 'completed' | 'trends')} className="animate-in fade-in slide-in-from-bottom duration-500">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        {/* Tabs for Active and Completed */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'active' | 'completed')} className="animate-in fade-in slide-in-from-bottom duration-500">
+          <TabsList className="grid w-full max-w-xl grid-cols-2">
             <TabsTrigger value="active" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              진행 중 ({activeCustomers})
+              진행 중 ({activeCustomers + unconfirmedCustomers})
+              {unconfirmedCustomers > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 min-w-5 text-xs animate-pulse">
+                  {unconfirmedCustomers}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="completed" className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               완료 ({completedCustomers})
-            </TabsTrigger>
-            <TabsTrigger value="trends" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              트렌드 분석
             </TabsTrigger>
           </TabsList>
 
@@ -326,11 +402,16 @@ export default function CustomersPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Select value={stageFilter} onValueChange={setStageFilter}>
-                      <SelectTrigger>
+                      <SelectTrigger className={cn(
+                        stageFilter === 'unconfirmed' && "ring-2 ring-red-300 bg-red-50"
+                      )}>
                         <SelectValue placeholder="진행 단계" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">모든 단계</SelectItem>
+                        <SelectItem value="unconfirmed" className="text-red-600 font-semibold">
+                          ⚠️ 일정 미확정 ({unconfirmedCustomers})
+                        </SelectItem>
                         <SelectItem value="촬영 예정">촬영 예정</SelectItem>
                         <SelectItem value="촬영 중">촬영 중</SelectItem>
                         <SelectItem value="시안 확인">시안 확인</SelectItem>
@@ -363,7 +444,13 @@ export default function CustomersPage() {
                           <button onClick={() => setSearchQuery('')} className="ml-1 hover:text-foreground">×</button>
                         </Badge>
                       )}
-                      {stageFilter !== 'all' && (
+                      {stageFilter === 'unconfirmed' && (
+                        <Badge variant="destructive" className="gap-1 animate-pulse">
+                          ⚠️ 일정 미확정
+                          <button onClick={() => setStageFilter('all')} className="ml-1 hover:text-foreground">×</button>
+                        </Badge>
+                      )}
+                      {stageFilter !== 'all' && stageFilter !== 'unconfirmed' && (
                         <Badge variant="secondary" className="gap-1">
                           단계: {stageFilter}
                           <button onClick={() => setStageFilter('all')} className="ml-1 hover:text-foreground">×</button>
@@ -407,17 +494,19 @@ export default function CustomersPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>고객명</TableHead>
-                    <TableHead>연락처</TableHead>
+                    <TableHead>대표 연락처</TableHead>
+                    <TableHead className="text-center">입력일</TableHead>
+                    <TableHead className="text-center">촬영일</TableHead>
                     <TableHead className="text-center">상품타입</TableHead>
                     <TableHead className="text-center">패키지</TableHead>
+                    <TableHead className="text-center">일정 확정</TableHead>
                     <TableHead className="text-center">현재 단계</TableHead>
-                    <TableHead className="text-center">입금 상태</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredCustomers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         {searchQuery ? '검색 결과가 없습니다.' : '등록된 고객이 없습니다.'}
                       </TableCell>
                     </TableRow>
@@ -426,25 +515,45 @@ export default function CustomersPage() {
                       <TableRow 
                         key={customer.id}
                         onClick={() => handleViewCustomer(customer)}
-                        className="cursor-pointer hover:bg-gradient-to-r hover:from-zinc-50 hover:to-transparent transition-all animate-in fade-in slide-in-from-bottom"
+                        className={cn(
+                          "cursor-pointer transition-all animate-in fade-in slide-in-from-bottom",
+                          customer.scheduleUnconfirmed 
+                            ? "bg-gradient-to-r from-red-50 via-red-25 to-transparent border-l-4 border-l-red-500 hover:from-red-100 hover:via-red-50" 
+                            : "hover:bg-gradient-to-r hover:from-zinc-50 hover:to-transparent"
+                        )}
                         style={{ animationDelay: `${idx * 30}ms` }}
                       >
                         <TableCell>
-                          <div className="font-medium">
-                            {customer.groomName} & {customer.brideName}
+                          <div className="flex items-center gap-2">
+                            {customer.scheduleUnconfirmed && (
+                              <AlertCircle className="h-4 w-4 text-red-600 animate-pulse" />
+                            )}
+                            <div className="font-medium">
+                              {customer.groomName} & {customer.brideName}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex flex-col gap-1 text-sm">
-                            <div className="flex items-center gap-1 text-zinc-700">
-                              <PhoneCall className="h-3 w-3" />
-                              신랑: {customer.groomPhone}
-                            </div>
-                            <div className="flex items-center gap-1 text-zinc-700">
-                              <PhoneCall className="h-3 w-3" />
-                              신부: {customer.bridePhone}
-                            </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <PhoneCall className="h-3 w-3 text-muted-foreground" />
+                            <span className="font-medium">
+                              {customer.groomPhone}
+                            </span>
                           </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="text-xs text-muted-foreground">
+                            {formatDate(customer.createdAt)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {customer.latestProject?.weddingDate ? (
+                            <div className="text-xs font-medium text-blue-700">
+                              {formatDate(customer.latestProject.weddingDate)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">-</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-center">
                           {customer.latestProject?.projectType ? (
@@ -473,34 +582,27 @@ export default function CustomersPage() {
                           )}
                         </TableCell>
                         <TableCell className="text-center">
-                          <StatusBadge status={customer.currentStage.label} />
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <button
-                            onClick={() => handleCheckPayment(customer)}
-                            className="flex flex-col items-center gap-1 w-full hover:bg-muted rounded-lg p-2 transition-all focus-ring"
-                          >
-                            <div className="flex items-center gap-1">
-                              <CreditCard className="h-3 w-3" />
-                              <span className={`text-xs font-medium ${
-                                customer.paymentStatus.percent === 100 ? 'text-green-600' :
-                                customer.paymentStatus.percent > 0 ? 'text-orange-600' :
-                                'text-red-600'
-                              }`}>
-                                {customer.paymentStatus.percent}%
+                          {customer.scheduleUnconfirmed ? (
+                            <div className="flex flex-col gap-1 items-center">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border-2 border-red-300 rounded-lg">
+                                <AlertCircle className="h-4 w-4 text-red-600 animate-pulse" />
+                                <span className="text-xs font-bold text-red-700">미확정</span>
+                              </div>
+                              <span className="text-xs text-red-600 font-medium">
+                                승인 필요
                               </span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
-                              <div 
-                                className={`h-1.5 rounded-full transition-all ${
-                                  customer.paymentStatus.percent === 100 ? 'bg-green-600' :
-                                  customer.paymentStatus.percent > 0 ? 'bg-orange-500' :
-                                  'bg-red-500'
-                                }`}
-                                style={{ width: `${customer.paymentStatus.percent}%` }}
-                              />
+                          ) : (
+                            <div className="flex flex-col gap-1 items-center">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-300 rounded-lg">
+                                <CheckCircle className="h-4 w-4 text-green-600" />
+                                <span className="text-xs font-semibold text-green-700">확정</span>
+                              </div>
                             </div>
-                          </button>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <StatusBadge status={customer.currentStage.label} />
                         </TableCell>
                       </TableRow>
                     ))
@@ -569,6 +671,7 @@ export default function CustomersPage() {
                     <TableHead className="w-[110px] text-center">상품타입</TableHead>
                     <TableHead className="w-[100px] text-center">패키지</TableHead>
                     <TableHead className="w-[100px] text-center">진행상태</TableHead>
+                    <TableHead className="w-[90px] text-center">만족도</TableHead>
                     <TableHead className="w-[100px] text-center">입금현황</TableHead>
                     <TableHead className="w-[100px] text-right">매출</TableHead>
                   </TableRow>
@@ -576,7 +679,7 @@ export default function CustomersPage() {
                 <TableBody>
                   {filteredCustomers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                      <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                         완료된 고객이 없습니다
                       </TableCell>
                     </TableRow>
@@ -638,6 +741,24 @@ export default function CustomersPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
+                          {mockCustomers.find(c => c.id === customer.id)?.satisfaction ? (
+                            <div className="flex items-center justify-center gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`h-4 w-4 ${
+                                    star <= (mockCustomers.find(c => c.id === customer.id)?.satisfaction || 0)
+                                      ? 'fill-yellow-400 text-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">미평가</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
                           <button
                             onClick={() => handleCheckPayment(customer)}
                             className="flex flex-col items-center gap-1 w-full hover:bg-muted rounded-lg p-2 transition-all focus-ring"
@@ -676,91 +797,6 @@ export default function CustomersPage() {
           </CardContent>
         </Card>
           </TabsContent>
-
-          <TabsContent value="trends" className="mt-6 space-y-4">
-            {/* 단계별 고객 분포 */}
-            <StatCard title="단계별 고객 분포" icon={PieChart} animationDelay={1000}>
-              <div className="space-y-4">
-                {Object.entries(stageDistribution).map(([stage, count], idx) => {
-                  const percentage = totalCustomers > 0 ? Math.round((count / totalCustomers) * 100) : 0
-                  const colorMap: Record<string, 'blue' | 'purple' | 'yellow' | 'orange' | 'green'> = {
-                    '촬영 예정': 'blue',
-                    '촬영 중': 'purple',
-                    '시안 확인': 'yellow',
-                    '편집 중': 'orange',
-                    '완료': 'green',
-                  }
-                  
-                  return (
-                    <ProgressStat
-                      key={stage}
-                      label={stage}
-                      value={count}
-                      total={totalCustomers}
-                      percentage={percentage}
-                      color={colorMap[stage] || 'blue'}
-                      animationDelay={idx * 100}
-                    />
-                  )
-                })}
-              </div>
-            </StatCard>
-
-            {/* 추가 인사이트 카드들 */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <StatCard title="평균 프로젝트 수" animationDelay={300}>
-                <div className="text-3xl font-bold">
-                  {(customersWithStats.reduce((sum, c) => sum + c.totalProjects, 0) / totalCustomers || 0).toFixed(1)}
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">
-                  고객당 평균 촬영 횟수
-                </p>
-              </StatCard>
-
-              <StatCard title="고객 만족도" animationDelay={500}>
-                <div className="flex items-center gap-2">
-                  <div className="text-3xl font-bold">4.8</div>
-                  <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">
-                  5점 만점 기준
-                </p>
-              </StatCard>
-            </div>
-
-            {/* Trend Charts */}
-            <div className="mt-8 space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                상세 트렌드 분석
-              </h3>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <StageDistributionChart />
-                <SatisfactionTrendChart />
-              </div>
-              
-              <Card className="border-0 ring-1 ring-zinc-200/50 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-base">이번 달 하이라이트</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="text-sm">
-                    <div className="text-muted-foreground mb-1">평균 매출</div>
-                    <div className="text-2xl font-bold">
-                      {avgRevenue.toLocaleString('ko-KR')}만원
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground mb-1">활성 고객</div>
-                    <div className="text-xl font-bold text-blue-600">
-                      {activeCustomers}명
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
 
@@ -769,6 +805,14 @@ export default function CustomersPage() {
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
         customer={selectedCustomer}
+      />
+
+      {/* Create Customer Dialog */}
+      <CreateProjectDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={handleCreateCustomer}
+        title="고객 등록"
       />
     </AdminLayout>
   )
