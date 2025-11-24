@@ -3,14 +3,18 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { optionProducts } from '@/lib/mock/settings'
+import { Users, UserCheck, ChevronDown } from 'lucide-react'
 
 export default function OptionsPage() {
   const router = useRouter()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [isPhotographerInfoOpen, setIsPhotographerInfoOpen] = useState(false)
+  const [isAssignmentInfoOpen, setIsAssignmentInfoOpen] = useState(false)
   const summaryRef = useRef<HTMLDivElement>(null)
   const optionRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({})
 
@@ -118,6 +122,251 @@ export default function OptionsPage() {
             필요한 옵션을 자유롭게 선택하실 수 있습니다<br />
             선택하지 않으셔도 됩니다
           </p>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-zinc-200"></div>
+
+        {/* Info Cards - 1인/2인 촬영 */}
+        <div className="space-y-4">
+          <Card
+            className={cn(
+              "overflow-hidden transition-all duration-300 cursor-pointer border-2",
+              isPhotographerInfoOpen 
+                ? "border-zinc-900 shadow-md" 
+                : "border-zinc-200 hover:border-zinc-300"
+            )}
+            onClick={() => setIsPhotographerInfoOpen(!isPhotographerInfoOpen)}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                    isPhotographerInfoOpen 
+                      ? "bg-zinc-900 text-white" 
+                      : "bg-zinc-100 text-zinc-600"
+                  )}>
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-zinc-900">
+                      1인 촬영과 2인 촬영
+                    </h3>
+                  </div>
+                </div>
+                <ChevronDown className={cn(
+                  "h-5 w-5 text-zinc-400 transition-transform duration-300 flex-shrink-0",
+                  isPhotographerInfoOpen && "rotate-180"
+                )} />
+              </div>
+
+              <div className={cn(
+                "grid transition-all duration-300 ease-in-out",
+                isPhotographerInfoOpen 
+                  ? "grid-rows-[1fr] opacity-100 mt-4" 
+                  : "grid-rows-[0fr] opacity-0"
+              )}>
+                <div className="overflow-hidden">
+                  <div className="pt-4 border-t border-zinc-200">
+                    <div className="space-y-6 text-sm text-zinc-700 leading-relaxed">
+                      <div className="bg-zinc-50 border-l-4 border-zinc-900 p-4 rounded">
+                        <p className="font-semibold text-zinc-900 mb-2">추천 상품</p>
+                        <p className="text-zinc-700">
+                          결혼식 촬영은 행사 촬영의 특성상, 동시에 여러 중요한 순간이 발생합니다.
+                          따라서 포토그래퍼로서 <strong>2인 촬영을 추천</strong>드립니다.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2">공통 촬영 내용 (1인/2인 모두 동일)</h4>
+                        <ul className="space-y-2 ml-4">
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>기념사진 (선원판)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>예식 전체 과정 (입장 ~ 행진)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>원판사진 (가족 단체사진)</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>연회장 인사 사진</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>연출 사진 (신랑·신부 기념사진)</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2">2인 촬영만의 장점</h4>
+                        <div className="space-y-4">
+                          <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+                            <p className="font-medium text-zinc-900 mb-2">1. 동시 다발적 촬영</p>
+                            <p className="text-zinc-600 text-sm">
+                              하객맞이 시간에 한 분은 신부 대기실에서, 다른 한 분은 로비 접수대 주변에서
+                              신랑님과 혼주님 하객맞이를 동시에 촬영합니다.
+                            </p>
+                          </div>
+                          
+                          <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+                            <p className="font-medium text-zinc-900 mb-2">2. 다양한 각도와 시각</p>
+                            <p className="text-zinc-600 text-sm">
+                              입장, 행진, 연출 등 중요한 순간을 같은 곳을 다른 각도와 시각으로 담아
+                              더욱 풍성한 앨범을 만들 수 있습니다.
+                            </p>
+                          </div>
+
+                          <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+                            <p className="font-medium text-zinc-900 mb-2">3. 놓치지 않는 순간들</p>
+                            <p className="text-zinc-600 text-sm">
+                              여러 장소에서 동시에 일어나는 소중한 순간들을 빠짐없이 담을 수 있습니다.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* 작가 배정 정보 */}
+          <Card
+            className={cn(
+              "overflow-hidden transition-all duration-300 cursor-pointer border-2",
+              isAssignmentInfoOpen 
+                ? "border-zinc-900 shadow-md" 
+                : "border-zinc-200 hover:border-zinc-300"
+            )}
+            onClick={() => setIsAssignmentInfoOpen(!isAssignmentInfoOpen)}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                    isAssignmentInfoOpen 
+                      ? "bg-zinc-900 text-white" 
+                      : "bg-zinc-100 text-zinc-600"
+                  )}>
+                    <UserCheck className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-medium text-zinc-900">
+                      작가 배정 안내
+                    </h3>
+                  </div>
+                </div>
+                <ChevronDown className={cn(
+                  "h-5 w-5 text-zinc-400 transition-transform duration-300 flex-shrink-0",
+                  isAssignmentInfoOpen && "rotate-180"
+                )} />
+              </div>
+
+              <div className={cn(
+                "grid transition-all duration-300 ease-in-out",
+                isAssignmentInfoOpen 
+                  ? "grid-rows-[1fr] opacity-100 mt-4" 
+                  : "grid-rows-[0fr] opacity-0"
+              )}>
+                <div className="overflow-hidden">
+                  <div className="pt-4 border-t border-zinc-200">
+                    <div className="space-y-6 text-sm text-zinc-700 leading-relaxed">
+                      <div className="bg-zinc-50 border-l-4 border-zinc-900 p-4 rounded">
+                        <p className="font-semibold text-zinc-900 mb-2">맞춤형 배정 시스템</p>
+                        <p className="text-zinc-700">
+                          마인드그라피는 <strong>무작위 랜덤 배정이 아닌</strong>,
+                          여러 상황을 종합적으로 고려한 <strong>맞춤형 배정 시스템</strong>을 운영하고 있습니다.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2">배정 프로세스</h4>
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center flex-shrink-0 font-semibold">
+                              1
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-zinc-900 mb-1">사전 미팅</p>
+                              <p className="text-zinc-600 text-sm">
+                                두 분의 선호 스타일, 촬영 분위기, 특별한 요청사항 등을 
+                                자세히 파악합니다.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center flex-shrink-0 font-semibold">
+                              2
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-zinc-900 mb-1">작가 매칭</p>
+                              <p className="text-zinc-600 text-sm">
+                                사전 미팅 내용을 바탕으로 두 분께 가장 적합한 작가님을 
+                                신중하게 선정합니다.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center flex-shrink-0 font-semibold">
+                              3
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-zinc-900 mb-1">대표 직접 관리</p>
+                              <p className="text-zinc-600 text-sm">
+                                모든 작가 배정 과정은 마인드그라피 대표님께서 
+                                직접 진행하고 관리합니다.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2">고려 사항</h4>
+                        <ul className="space-y-2 ml-4">
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>두 분의 선호 촬영 스타일</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>예식 일정 및 장소</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>작가의 전문 분야 및 강점</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-zinc-400 mt-1">•</span>
+                            <span>특별 요청사항 및 예식 특성</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-zinc-900 text-white p-4 rounded-lg">
+                        <p className="text-sm">
+                          고객님 시각에서 랜덤처럼 보일 수 있지만,
+                          실제로는 <strong>두 분께 최적화된 작가님을 매칭</strong>하기 위한
+                          체계적인 프로세스입니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Divider */}

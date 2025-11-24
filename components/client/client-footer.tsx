@@ -11,6 +11,10 @@ export function ClientFooter() {
     router.push('/c/portfolio')
   }
 
+  const handlePortal = () => {
+    router.push('/c/login')
+  }
+
   return (
     <div className="border-t border-zinc-200">
       <div className="max-w-md mx-auto px-4">
@@ -46,6 +50,20 @@ export function ClientFooter() {
               <span>전화 상담</span>
             </a>
           </div>
+
+          {/* Portal Button */}
+          <button
+            onClick={handlePortal}
+            className={cn(
+              "w-full py-3 text-sm font-medium text-zinc-900",
+              "hover:bg-zinc-50",
+              "transition-all duration-200",
+              "active:scale-[0.98]",
+              "border-t border-zinc-200"
+            )}
+          >
+            마인드 포털
+          </button>
 
           {/* Portfolio Button */}
           <button

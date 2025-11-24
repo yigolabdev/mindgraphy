@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AdminNav } from './admin-nav'
+import { PageAccessGuard } from './page-access-guard'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Menu } from 'lucide-react'
@@ -16,7 +17,8 @@ export function AdminLayout({ children, align = 'center' }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <PageAccessGuard>
+      <div className="flex h-screen overflow-hidden bg-white">
       {/* Desktop Sidebar - hidden on mobile */}
       <div className="hidden lg:flex">
         <AdminNav />
@@ -61,6 +63,6 @@ export function AdminLayout({ children, align = 'center' }: AdminLayoutProps) {
         </main>
       </div>
     </div>
+    </PageAccessGuard>
   )
 }
-

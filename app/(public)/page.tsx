@@ -67,7 +67,7 @@ export default function HomePage() {
 
           {/* Admin Portal Card */}
           <Link 
-            href="/login"
+            href="/admin/login"
             onClick={() => handlePortalClick('admin')}
             data-branch="admin"
             data-portal="back-office"

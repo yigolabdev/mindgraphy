@@ -38,7 +38,7 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   // 사용자 권한에 따른 네비게이션 아이템
-  const navigation = getNavigationForRole(user.role)
+  const navigation = getNavigationForRole(user.role, user.permissions)
 
   const handleLogout = () => {
     logout()

@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -27,7 +28,12 @@ import {
   Tag,
   Package,
   Users,
-  TrendingUp
+  TrendingUp,
+  Image as ImageIcon,
+  Upload,
+  Share2,
+  Link as LinkIcon,
+  ClipboardList
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -171,9 +177,10 @@ export function ProjectDetailDialog({
             {/* Left Column - Tabs */}
             <div className="lg:col-span-2 space-y-4">
               <Tabs defaultValue="info" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="info">촬영 정보</TabsTrigger>
                   <TabsTrigger value="customer">고객 정보</TabsTrigger>
+                  <TabsTrigger value="details">예식 정보</TabsTrigger>
                   <TabsTrigger value="timeline">타임라인</TabsTrigger>
                 </TabsList>
 
@@ -284,6 +291,268 @@ export function ProjectDetailDialog({
                       </CardHeader>
                       <CardContent>
                         <div className="font-medium">{project.customer.email}</div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </TabsContent>
+
+                {/* Wedding Details Tab */}
+                <TabsContent value="details" className="space-y-4 mt-4">
+                  {/* Mock wedding details data - 실제로는 API에서 가져올 데이터 */}
+                  {project.weddingDetails ? (
+                    <>
+                      {/* 타임테이블 */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            당일 타임테이블
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div>
+                            <div className="text-sm text-muted-foreground mb-1">메이크업샵</div>
+                            <div className="font-medium">{project.weddingDetails.makeupShop || '미입력'}</div>
+                          </div>
+                          {project.weddingDetails.makeupStartTime && (
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">입실 시간</div>
+                                <div className="font-medium">{project.weddingDetails.makeupStartTime}</div>
+                              </div>
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">퇴실 시간</div>
+                                <div className="font-medium">{project.weddingDetails.makeupEndTime}</div>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* 예식 내용 */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">예식 진행 내용</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">선원판</span>
+                              <span className="font-medium">{project.weddingDetails.hasPreCeremonyPhoto === 'yes' ? '✓ 진행' : '진행 안함'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">주례</span>
+                              <span className="font-medium">{project.weddingDetails.hasOfficiant === 'yes' ? '✓ 있음' : '없음'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">사회자</span>
+                              <span className="font-medium">
+                                {project.weddingDetails.hasMC === 'yes' 
+                                  ? `✓ ${project.weddingDetails.mcType === 'professional' ? '전문' : '지인'}` 
+                                  : '없음'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">반지교환</span>
+                              <span className="font-medium">{project.weddingDetails.hasRingExchange === 'yes' ? '✓ 진행' : '진행 안함'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">화동</span>
+                              <span className="font-medium">{project.weddingDetails.hasFlowerGirl === 'yes' ? '✓ 있음' : '없음'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">폐백</span>
+                              <span className="font-medium">{project.weddingDetails.hasPaebaek === 'yes' ? '✓ 진행' : '진행 안함'}</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* 가족 구성 */}
+                      {(project.weddingDetails.groomFamily || project.weddingDetails.brideFamily) && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              가족 구성
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            {project.weddingDetails.groomFamily && (
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">신랑측</div>
+                                <div className="text-sm">{project.weddingDetails.groomFamily}</div>
+                              </div>
+                            )}
+                            {project.weddingDetails.brideFamily && (
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">신부측</div>
+                                <div className="text-sm">{project.weddingDetails.brideFamily}</div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 사진 스타일 */}
+                      {(project.weddingDetails.preferredStyle || project.weddingDetails.notPreferredStyle) && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                              <Camera className="h-4 w-4" />
+                              사진 스타일
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            {project.weddingDetails.preferredStyle && (
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">선호 스타일</div>
+                                <div className="text-sm bg-green-50 border border-green-200 rounded p-2">
+                                  {project.weddingDetails.preferredStyle}
+                                </div>
+                              </div>
+                            )}
+                            {project.weddingDetails.notPreferredStyle && (
+                              <div>
+                                <div className="text-sm text-muted-foreground mb-1">비선호 스타일</div>
+                                <div className="text-sm bg-red-50 border border-red-200 rounded p-2">
+                                  {project.weddingDetails.notPreferredStyle}
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 의상 정보 */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">의상 정보</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {project.weddingDetails.mainDressInfo && (
+                            <div className="bg-zinc-50 p-3 rounded">
+                              <div className="text-sm font-medium mb-2">메인 드레스</div>
+                              <div className="text-sm text-muted-foreground">
+                                {project.weddingDetails.mainDressInfo}
+                              </div>
+                            </div>
+                          )}
+                          {project.weddingDetails.receptionDressInfo && (
+                            <div className="bg-zinc-50 p-3 rounded">
+                              <div className="text-sm font-medium mb-2">연회장 의상</div>
+                              <div className="text-sm text-muted-foreground">
+                                {project.weddingDetails.receptionDressInfo}
+                              </div>
+                            </div>
+                          )}
+                          {project.weddingDetails.groomSuitInfo && (
+                            <div className="bg-zinc-50 p-3 rounded">
+                              <div className="text-sm font-medium mb-2">신랑 의상</div>
+                              <div className="text-sm text-muted-foreground">
+                                {project.weddingDetails.groomSuitInfo}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* 협력 업체 */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">협력 업체</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {project.weddingDetails.dressShop && (
+                              <div>
+                                <span className="text-muted-foreground">드레스샵: </span>
+                                <span className="font-medium">{project.weddingDetails.dressShop}</span>
+                              </div>
+                            )}
+                            {project.weddingDetails.makeupShopName && (
+                              <div>
+                                <span className="text-muted-foreground">메이크업: </span>
+                                <span className="font-medium">{project.weddingDetails.makeupShopName}</span>
+                              </div>
+                            )}
+                            {project.weddingDetails.videoTeam && (
+                              <div>
+                                <span className="text-muted-foreground">영상팀: </span>
+                                <span className="font-medium">{project.weddingDetails.videoTeam}</span>
+                              </div>
+                            )}
+                            {project.weddingDetails.planner && (
+                              <div>
+                                <span className="text-muted-foreground">플래너: </span>
+                                <span className="font-medium">{project.weddingDetails.planner}</span>
+                              </div>
+                            )}
+                          </div>
+                          {project.weddingDetails.specialRequests && (
+                            <div className="mt-3 pt-3 border-t">
+                              <div className="text-sm text-muted-foreground mb-1">특별 요청사항</div>
+                              <div className="text-sm bg-yellow-50 border border-yellow-200 rounded p-2">
+                                {project.weddingDetails.specialRequests}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* 신혼여행 */}
+                      {project.weddingDetails.honeymoonDestination && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base">신혼여행 일정</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">목적지: </span>
+                              <span className="font-medium">{project.weddingDetails.honeymoonDestination}</span>
+                            </div>
+                            {project.weddingDetails.honeymoonDeparture && (
+                              <div>
+                                <span className="text-muted-foreground">출발: </span>
+                                <span className="font-medium">{project.weddingDetails.honeymoonDeparture}</span>
+                              </div>
+                            )}
+                            {project.weddingDetails.honeymoonReturn && (
+                              <div>
+                                <span className="text-muted-foreground">귀국: </span>
+                                <span className="font-medium">{project.weddingDetails.honeymoonReturn}</span>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* 미팅 방식 */}
+                      {project.weddingDetails.meetingType && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base">미팅 방식</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-sm">
+                              {project.weddingDetails.meetingType === 'direct' && '✓ 직접 미팅 (한양대 작업실)'}
+                              {project.weddingDetails.meetingType === 'phone' && '✓ 전화 미팅'}
+                              {project.weddingDetails.meetingType === 'list' && '✓ 리스트로만 진행'}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  ) : (
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="text-center py-8 text-muted-foreground">
+                          <FileText className="h-12 w-12 mx-auto mb-3 text-zinc-300" />
+                          <p className="text-sm">아직 입력된 예식 정보가 없습니다</p>
+                          <p className="text-xs mt-2 text-zinc-400">
+                            고객이 마인드 포털에서 정보를 입력하면 여기에 표시됩니다
+                          </p>
+                        </div>
                       </CardContent>
                     </Card>
                   )}
@@ -464,6 +733,151 @@ export function ProjectDetailDialog({
                     <div className="text-sm text-muted-foreground mb-1">계약 번호</div>
                     <div className="font-medium text-sm text-muted-foreground">{project.contractId}</div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Web Gallery */}
+              <Card className="border-purple-200 bg-purple-50/30">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2 text-purple-900">
+                    <ImageIcon className="h-4 w-4" />
+                    웹 갤러리
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Mock gallery data - 실제로는 API에서 가져올 데이터 */}
+                  {project.webGallery ? (
+                    <div className="space-y-3">
+                      <div className="bg-white rounded-lg p-4 border border-purple-200 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-semibold text-zinc-900">
+                              {project.webGallery.title}
+                            </p>
+                            <p className="text-xs text-zinc-600 mt-1">
+                              {project.webGallery.photoCount}장의 사진
+                            </p>
+                          </div>
+                          <Badge className="bg-green-600">
+                            활성화됨
+                          </Badge>
+                        </div>
+                        
+                        <div className="pt-2 border-t border-purple-200">
+                          <div className="flex items-center gap-2 text-xs text-zinc-600 mb-2">
+                            <LinkIcon className="h-3 w-3" />
+                            <span>공유 링크</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={typeof window !== 'undefined' 
+                                ? window.location.origin + project.webGallery.sharedUrl 
+                                : project.webGallery.sharedUrl}
+                              readOnly
+                              className="text-xs font-mono bg-white border-purple-200"
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = typeof window !== 'undefined' 
+                                  ? window.location.origin + project.webGallery.sharedUrl 
+                                  : project.webGallery.sharedUrl
+                                window.open(url, '_blank', 'noopener,noreferrer')
+                              }}
+                              className="flex-shrink-0"
+                              title="갤러리 보기"
+                            >
+                              <ImageIcon className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={async () => {
+                                const url = typeof window !== 'undefined' 
+                                  ? window.location.origin + project.webGallery.sharedUrl 
+                                  : project.webGallery.sharedUrl
+                                try {
+                                  await navigator.clipboard.writeText(url)
+                                  toast.success('링크가 복사되었습니다')
+                                } catch (err) {
+                                  const textArea = document.createElement('textarea')
+                                  textArea.value = url
+                                  document.body.appendChild(textArea)
+                                  textArea.select()
+                                  document.execCommand('copy')
+                                  document.body.removeChild(textArea)
+                                  toast.success('링크가 복사되었습니다')
+                                }
+                              }}
+                              className="flex-shrink-0"
+                              title="링크 복사"
+                            >
+                              <Share2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+                        onClick={() => {
+                          window.location.href = `/admin/gallery/${project.id}/upload`
+                        }}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        사진 추가 및 편집
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-center py-6 bg-white rounded-lg border border-purple-200">
+                        <ImageIcon className="h-8 w-8 mx-auto mb-2 text-purple-400" />
+                        <p className="text-sm text-zinc-600 mb-1">
+                          아직 생성된 갤러리가 없습니다
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          사진을 업로드하면 갤러리가 자동으로 생성됩니다
+                        </p>
+                      </div>
+                      
+                      <Button
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={() => {
+                          window.location.href = `/admin/gallery/${project.id}/upload`
+                        }}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        갤러리 생성 및 사진 업로드
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Time Table */}
+              <Card className="border-blue-200 bg-blue-50/30">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2 text-blue-900">
+                    <ClipboardList className="h-4 w-4" />
+                    타임 테이블
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-xs text-zinc-600 leading-relaxed">
+                    촬영 당일 일정표를 관리하고<br />
+                    고객에게 공유할 수 있습니다
+                  </p>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => {
+                      window.location.href = `/admin/timetable/${project.id}`
+                    }}
+                  >
+                    <ClipboardList className="h-4 w-4 mr-2" />
+                    타임 테이블 관리
+                  </Button>
                 </CardContent>
               </Card>
 

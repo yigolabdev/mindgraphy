@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -19,7 +19,7 @@ import { ProjectDetailDialog } from '@/components/projects/project-detail-dialog
 import { CreateProjectDialog } from '@/components/projects/create-project-dialog'
 import { mockProjects } from '@/lib/mock-data'
 import { formatDate } from '@/lib/utils'
-import { Plus, Search, UserPlus, Eye, SlidersHorizontal, ArrowUpDown } from 'lucide-react'
+import { Plus, Search, UserPlus, Eye, SlidersHorizontal, ArrowUpDown, Upload, ClipboardList } from 'lucide-react'
 import { toast } from 'sonner'
 import { useMemo } from 'react'
 
@@ -35,6 +35,7 @@ export default function ProjectsPage() {
     currentPhotographerIds?: string[]
   } | null>(null)
   const [viewingProject, setViewingProject] = useState<typeof mockProjects[0] | null>(null)
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: string; name: string } | null>(null)
   
   // Filter and sort states
   const [searchQuery, setSearchQuery] = useState('')
@@ -42,6 +43,21 @@ export default function ProjectsPage() {
   const [photographerFilter, setPhotographerFilter] = useState<string>('all')
   const [packageFilter, setPackageFilter] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'latest' | 'date' | 'progress' | 'name'>('latest')
+
+  // Get current user info from session storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userStr = sessionStorage.getItem('mindgraphy_admin_user')
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr)
+          setCurrentUser(user)
+        } catch (error) {
+          console.error('Failed to parse user data:', error)
+        }
+      }
+    }
+  }, [])
   
   // Get unique photographers and packages for filters
   const photographers = useMemo(() => {
@@ -71,6 +87,15 @@ export default function ProjectsPage() {
   // Filtered and sorted projects
   const filteredProjects = useMemo(() => {
     let filtered = [...projects]
+    
+    // Role-based filter: 작가는 자신에게 배정된 프로젝트만 보기
+    if (currentUser?.role === 'photographer') {
+      filtered = filtered.filter(p => 
+        p.assignedPhotographers?.some(ph => 
+          ph.user?.email === currentUser.email || ph.userId === currentUser.id
+        )
+      )
+    }
     
     // Search filter
     if (searchQuery) {
@@ -119,7 +144,7 @@ export default function ProjectsPage() {
     })
     
     return filtered
-  }, [projects, searchQuery, statusFilter, photographerFilter, packageFilter, sortBy])
+  }, [projects, searchQuery, statusFilter, photographerFilter, packageFilter, sortBy, currentUser])
 
   const handleOpenAssignDialog = (project: typeof mockProjects[0]) => {
     setSelectedProject({
@@ -154,18 +179,25 @@ export default function ProjectsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">촬영 관리</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              {currentUser?.role === 'photographer' ? '내 촬영 목록' : '촬영 관리'}
+            </h1>
             <p className="text-sm md:text-base text-muted-foreground">
-              모든 웨딩 촬영을 관리하세요 • 총 {filteredProjects.length}개
+              {currentUser?.role === 'photographer' 
+                ? `배정된 촬영 목록 • 총 ${filteredProjects.length}개`
+                : `모든 웨딩 촬영을 관리하세요 • 총 ${filteredProjects.length}개`
+              }
             </p>
           </div>
-          <Button 
-            className="w-full sm:w-auto"
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            새 촬영 등록
-          </Button>
+          {currentUser?.role === 'admin' && (
+            <Button 
+              className="w-full sm:w-auto"
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              새 촬영 등록
+            </Button>
+          )}
         </div>
 
         {/* Filters & Sort */}
@@ -376,24 +408,49 @@ export default function ProjectsPage() {
                   </div>
 
                   <div className="flex gap-2 flex-col sm:flex-row">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm"
-                      onClick={() => handleOpenAssignDialog(project)}
-                    >
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      {project.assignedPhotographers && project.assignedPhotographers.length > 0 ? '작가 변경' : '작가 배정'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm"
-                      onClick={() => handleOpenDetailDialog(project)}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      상세보기
-                    </Button>
+                    {currentUser?.role === 'admin' ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm"
+                          onClick={() => handleOpenAssignDialog(project)}
+                        >
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          {project.assignedPhotographers && project.assignedPhotographers.length > 0 ? '작가 변경' : '작가 배정'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm"
+                          onClick={() => handleOpenDetailDialog(project)}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          상세보기
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-purple-300 text-purple-700 hover:bg-purple-50"
+                          onClick={() => window.location.href = `/admin/gallery/${project.id}/upload`}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          웹 갤러리 업로드
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-blue-300 text-blue-700 hover:bg-blue-50"
+                          onClick={() => window.location.href = `/admin/timetable/${project.id}`}
+                        >
+                          <ClipboardList className="mr-2 h-4 w-4" />
+                          타임 테이블 관리
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </CardContent>

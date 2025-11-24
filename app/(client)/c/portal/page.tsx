@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star } from 'lucide-react'
+import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star, Share2, ExternalLink, Edit, Clock } from 'lucide-react'
 
 // Mock data - 실제로는 API에서 가져올 데이터
 const mockCustomerData = {
@@ -45,6 +45,87 @@ const mockCustomerData = {
     rating: 0, // 0 means not rated yet, 1-5 stars
     review: '',
     submittedAt: null as string | null
+  },
+  webGallery: {
+    id: 'gallery-1',
+    galleryId: 'abc123',
+    title: '김철수 & 이영희 웨딩 갤러리',
+    sharedUrl: '/gallery/abc123',
+    photoCount: 12,
+    isActive: true,
+    createdAt: '2025-01-15T10:00:00Z'
+  },
+  timeTable: {
+    id: 'timetable-1',
+    projectId: 'project-1',
+    title: '2025.06.15 (토) 타임 테이블',
+    isActive: true,
+    entries: [
+      {
+        id: 'entry-1',
+        time: '06:30',
+        timeModifier: 'estimated',
+        event: '헤어.메이크업 인',
+        location: '겐그레아',
+        notes: ''
+      },
+      {
+        id: 'entry-2',
+        time: '09:30',
+        timeModifier: 'estimated',
+        event: '헤어.메이크업 아웃',
+        location: '겐그레아',
+        notes: ''
+      },
+      {
+        id: 'entry-3',
+        time: '09:50',
+        timeModifier: 'around',
+        event: '식장 도착 예정',
+        location: '',
+        notes: '네이버 AI : 5분 이동시간 예측'
+      },
+      {
+        id: 'entry-4',
+        time: '10:00',
+        timeModifier: 'exact',
+        event: '신랑님 혼주 메이크업 완료후 도착',
+        location: '플리페',
+        notes: ''
+      },
+      {
+        id: 'entry-5',
+        time: '10:00',
+        timeModifier: 'exact',
+        event: '신부님 혼주 메이크업 완료후 도착',
+        location: '(출장) 근처',
+        notes: ''
+      },
+      {
+        id: 'entry-6',
+        time: '10:00',
+        timeModifier: 'exact',
+        event: '촬영자 도착 (원판선진행)',
+        location: '',
+        notes: ''
+      },
+      {
+        id: 'entry-7',
+        time: '10:30',
+        timeModifier: 'exact',
+        event: '하객맞이 시작',
+        location: '',
+        notes: ''
+      },
+      {
+        id: 'entry-8',
+        time: '11:30',
+        timeModifier: 'exact',
+        event: '예식 시작',
+        location: '',
+        notes: ''
+      }
+    ]
   }
 }
 
@@ -242,13 +323,28 @@ export default function PortalPage() {
         )}
       >
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-light text-zinc-900 tracking-tight">
-            {customerData.coupleName}
-          </h1>
-          <p className="text-sm text-zinc-500">
-            Mind Portal
-          </p>
+        <div className="text-center space-y-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-light text-zinc-900 tracking-tight">
+              {customerData.coupleName}
+            </h1>
+            <p className="text-sm text-zinc-500">
+              Mind Portal
+            </p>
+          </div>
+          
+          {/* Terms Link */}
+          <div className="flex justify-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/c/notification')}
+              className="gap-2 text-xs border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 hover:border-blue-300"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              촬영 약관 및 안내
+            </Button>
+          </div>
         </div>
 
         {/* Divider */}
@@ -353,7 +449,7 @@ export default function PortalPage() {
             <p className="text-sm text-zinc-600 leading-relaxed">
               {customerData.currentStep === 0 && '일정을 확인하고 있습니다'}
               {customerData.currentStep === 1 && '일정이 확정되었습니다'}
-              {customerData.currentStep === 2 && '계약 진행 중입니다'}
+              {customerData.currentStep === 2 && '결제를 기다리고 있습니다'}
               {customerData.currentStep === 3 && '촬영을 기다리고 있습니다'}
               {customerData.currentStep === 4 && '사진 선택이 가능합니다'}
               {customerData.currentStep === 5 && '사진을 편집하고 있습니다'}
@@ -502,7 +598,21 @@ export default function PortalPage() {
                     </p>
                   </div>
                   
-                  <div className="pt-6 border-t border-zinc-200 max-w-sm mx-auto">
+                  <div className="pt-6 space-y-4 max-w-sm mx-auto">
+                    <Button
+                      onClick={() => router.push('/c/portal/wedding-details')}
+                      className={cn(
+                        "w-full h-12 text-base font-normal transition-all duration-300",
+                        "bg-purple-600 hover:bg-purple-700 text-white",
+                        "active:scale-[0.98]",
+                        "shadow-md hover:shadow-lg",
+                        "flex items-center justify-center gap-2"
+                      )}
+                    >
+                      <Edit className="h-5 w-5" />
+                      예식 상세 정보 입력하기
+                    </Button>
+                    
                     <div className="bg-gradient-to-r from-zinc-50 to-white border border-zinc-200 rounded-lg p-4 space-y-2">
                       <p className="text-xs text-zinc-500 font-medium">💡 촬영 당일 Tip</p>
                       <ul className="text-xs text-zinc-600 space-y-1 text-left">
@@ -530,73 +640,293 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Step 1, 3: 입금 안내 (일정확정 or 촬영대기) */}
-        {(customerData.currentStep === 1 || customerData.currentStep === 3) && !customerData.paymentInfo.isPaid && (
+        {/* Step 2: 입금 안내 (입금대기) */}
+        {customerData.currentStep === 2 && !customerData.paymentInfo.isPaid && (
           <>
             <div className="space-y-6">
               <h2 className="text-lg font-medium text-zinc-900 text-center">
-                입금 안내
+                결제 안내
               </h2>
               
-              <div className="bg-zinc-50 border-2 border-zinc-200 p-6 space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">은행</span>
-                    <span className="text-sm font-medium text-zinc-900">
-                      {customerData.paymentInfo.bankName}
-                    </span>
+              {/* 결제 금액 정보 */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-6 space-y-4 rounded-lg">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-zinc-600">결제하실 금액</p>
+                  <p className="text-3xl font-bold text-zinc-900">
+                    {formatCurrency(customerData.paymentInfo.depositAmount)}
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    계약금 ({formatCurrency(customerData.paymentInfo.amount)} 중)
+                  </p>
+                </div>
+                
+                <div className="bg-white/60 border border-blue-200 rounded-lg p-4">
+                  <div className="space-y-2 text-xs text-zinc-600">
+                    <div className="flex justify-between">
+                      <span>총 계약금액</span>
+                      <span className="font-medium text-zinc-900">
+                        {formatCurrency(customerData.paymentInfo.amount)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>계약금 (선불)</span>
+                      <span className="font-semibold text-blue-700">
+                        {formatCurrency(customerData.paymentInfo.depositAmount)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>잔금 (촬영 후)</span>
+                      <span className="font-medium text-zinc-600">
+                        {formatCurrency(customerData.paymentInfo.balanceAmount)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 결제 방법 선택 */}
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-sm font-medium text-zinc-700 mb-1">
+                    결제 수단을 선택해 주세요
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    토스페이먼츠로 안전하게 결제됩니다
+                  </p>
+                </div>
+
+                {/* 토스페이먼츠 카드 결제 버튼 */}
+                <Button
+                  onClick={() => {
+                    // TODO: 토스페이먼츠 카드 결제 연동
+                    alert('토스페이먼츠 카드 결제가 곧 지원됩니다')
+                  }}
+                  className={cn(
+                    "w-full h-14 text-base font-medium transition-all duration-300",
+                    "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white",
+                    "active:scale-[0.98]",
+                    "shadow-lg hover:shadow-xl",
+                    "flex items-center justify-between gap-3 px-6"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="h-5 w-5" />
+                    <div className="text-left">
+                      <p className="text-base font-semibold">카드 결제</p>
+                      <p className="text-xs text-blue-100 font-normal">
+                        모든 카드 / 간편결제
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-blue-100">›</span>
+                </Button>
+
+                {/* 토스페이먼츠 계좌이체 버튼 */}
+                <Button
+                  onClick={() => {
+                    // TODO: 토스페이먼츠 계좌이체 연동
+                    alert('토스페이먼츠 계좌이체가 곧 지원됩니다')
+                  }}
+                  variant="outline"
+                  className={cn(
+                    "w-full h-14 text-base font-medium transition-all duration-300",
+                    "border-2 border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-900",
+                    "active:scale-[0.98]",
+                    "shadow-sm hover:shadow-md",
+                    "flex items-center justify-between gap-3 px-6"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-base font-semibold">계좌이체</p>
+                      <p className="text-xs text-zinc-500 font-normal">
+                        실시간 계좌이체
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-zinc-400">›</span>
+                </Button>
+
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-zinc-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-white px-4 text-zinc-500">또는</span>
+                  </div>
+                </div>
+
+                {/* 무통장입금 안내 */}
+                <div className="bg-zinc-50 border border-zinc-200 p-5 space-y-3 rounded-lg">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-zinc-700 mb-3">
+                      무통장 입금 안내
+                    </p>
                   </div>
                   
-                  <div className="border-t border-zinc-200"></div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">계좌번호</span>
-                    <span className="text-sm font-medium text-zinc-900 font-mono">
-                      {customerData.paymentInfo.accountNumber}
-                    </span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-zinc-600">은행</span>
+                      <span className="font-medium text-zinc-900">
+                        {customerData.paymentInfo.bankName}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-zinc-600">계좌번호</span>
+                      <span className="font-medium text-zinc-900 font-mono">
+                        {customerData.paymentInfo.accountNumber}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-zinc-600">예금주</span>
+                      <span className="font-medium text-zinc-900">
+                        {customerData.paymentInfo.accountHolder}
+                      </span>
+                    </div>
+                    
+                    <div className="border-t border-zinc-200 pt-2 mt-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-zinc-600">입금액</span>
+                        <span className="font-bold text-zinc-900">
+                          {formatCurrency(customerData.paymentInfo.depositAmount)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="border-t border-zinc-200"></div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">예금주</span>
-                    <span className="text-sm font-medium text-zinc-900">
-                      {customerData.paymentInfo.accountHolder}
-                    </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      const accountInfo = `${customerData.paymentInfo.bankName} ${customerData.paymentInfo.accountNumber}`
+                      try {
+                        await navigator.clipboard.writeText(accountInfo)
+                        alert('계좌번호가 복사되었습니다!')
+                      } catch (err) {
+                        const textArea = document.createElement('textarea')
+                        textArea.value = accountInfo
+                        document.body.appendChild(textArea)
+                        textArea.select()
+                        document.execCommand('copy')
+                        document.body.removeChild(textArea)
+                        alert('계좌번호가 복사되었습니다!')
+                      }
+                    }}
+                    className="w-full text-xs h-9"
+                  >
+                    계좌번호 복사하기
+                  </Button>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                  <p className="text-xs text-amber-800 leading-relaxed text-center">
+                    💡 카드 결제 및 계좌이체는 즉시 확인됩니다<br />
+                    무통장 입금은 영업일 기준 1-2일 소요되며,<br />
+                    입금자명이 다를 경우 연락 부탁드립니다
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Web Gallery Link - Step 4에서 우선 표시 */}
+        {customerData.currentStep === 4 && customerData.webGallery && customerData.webGallery.isActive && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                웹 갤러리
+              </h2>
+              
+              <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 border-2 border-purple-200 p-6 space-y-4 rounded-lg">
+                <div className="text-center space-y-3">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                      <Image className="w-8 h-8 text-white" />
+                    </div>
                   </div>
                   
-                  <div className="border-t border-zinc-200"></div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">총 금액</span>
-                    <span className="text-base font-semibold text-zinc-900">
-                      {formatCurrency(customerData.paymentInfo.amount)}
-                    </span>
-                  </div>
-                  
-                  <div className="border-t border-zinc-200"></div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">계약금</span>
-                    <span className="text-sm font-medium text-zinc-900">
-                      {formatCurrency(customerData.paymentInfo.depositAmount)}
-                    </span>
-                  </div>
-                  
-                  <div className="border-t border-zinc-200"></div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-sm text-zinc-600">잔금</span>
-                    <span className="text-sm font-medium text-zinc-900">
-                      {formatCurrency(customerData.paymentInfo.balanceAmount)}
-                    </span>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-zinc-900">
+                      {customerData.webGallery.title}
+                    </h3>
+                    <p className="text-sm text-zinc-600">
+                      총 {customerData.webGallery.photoCount}장의 사진이 업로드되었습니다
+                    </p>
                   </div>
                 </div>
                 
-                <div className="pt-4 border-t-2 border-zinc-300">
-                  <p className="text-xs text-zinc-500 leading-relaxed text-center">
-                    입금 확인까지 영업일 기준 1-2일 소요됩니다<br />
-                    입금자명이 다를 경우 연락 부탁드립니다
+                <div className="space-y-3 pt-2">
+                  <Button
+                    onClick={() => {
+                      const url = typeof window !== 'undefined' 
+                        ? window.location.origin + customerData.webGallery!.sharedUrl 
+                        : customerData.webGallery!.sharedUrl
+                      window.open(url, '_blank', 'noopener,noreferrer')
+                    }}
+                    className={cn(
+                      "w-full h-12 text-base font-normal transition-all duration-300",
+                      "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white",
+                      "active:scale-[0.98]",
+                      "shadow-md hover:shadow-lg",
+                      "flex items-center justify-center gap-2"
+                    )}
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                    갤러리 보러가기
+                  </Button>
+                  
+                  <div className="bg-white/60 border border-purple-200 rounded-lg p-4 space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Share2 className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 space-y-1">
+                        <p className="text-xs font-medium text-zinc-700">
+                          지인들과 공유하기
+                        </p>
+                        <p className="text-xs text-zinc-600 leading-relaxed">
+                          아래 링크를 복사하여 가족, 친구들에게 공유하실 수 있습니다
+                        </p>
+                        <div className="mt-2 p-2 bg-zinc-50 border border-zinc-200 rounded text-xs font-mono text-zinc-700 break-all">
+                          {typeof window !== 'undefined' ? window.location.origin + customerData.webGallery!.sharedUrl : customerData.webGallery!.sharedUrl}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            const url = typeof window !== 'undefined' 
+                              ? window.location.origin + customerData.webGallery!.sharedUrl 
+                              : customerData.webGallery!.sharedUrl
+                            try {
+                              await navigator.clipboard.writeText(url)
+                              alert('링크가 클립보드에 복사되었습니다!')
+                            } catch (err) {
+                              const textArea = document.createElement('textarea')
+                              textArea.value = url
+                              document.body.appendChild(textArea)
+                              textArea.select()
+                              document.execCommand('copy')
+                              document.body.removeChild(textArea)
+                              alert('링크가 클립보드에 복사되었습니다!')
+                            }
+                          }}
+                          className="w-full mt-2 text-xs h-8"
+                        >
+                          링크 복사하기
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-zinc-500 text-center leading-relaxed">
+                    💡 갤러리는 비밀번호(대표 번호 뒤 4자리)로 보호되어 있습니다
                   </p>
                 </div>
               </div>
@@ -769,6 +1099,185 @@ export default function PortalPage() {
                     </p>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Time Table - 촬영 대기 중일 때 표시 */}
+        {customerData.currentStep === 3 && customerData.timeTable && customerData.timeTable.isActive && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                당일 타임 테이블
+              </h2>
+              
+              <div className="bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 border-2 border-blue-200 p-6 space-y-5 rounded-lg">
+                <div className="text-center space-y-3">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+                      <Clock className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-zinc-900">
+                      {customerData.timeTable.title}
+                    </h3>
+                    <p className="text-sm text-zinc-600">
+                      촬영 당일 일정표가 준비되었습니다
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-blue-200 rounded-lg p-5 space-y-4">
+                  <div className="space-y-3">
+                    {customerData.timeTable.entries.map((entry: any) => (
+                      <div key={entry.id} className="flex gap-4 text-sm">
+                        <div className="font-mono text-blue-700 font-semibold min-w-[100px] flex-shrink-0">
+                          {entry.time}
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <p className="font-medium text-zinc-900">
+                            {entry.event}
+                          </p>
+                          {entry.location && (
+                            <p className="text-zinc-600 text-xs">
+                              - 장소 : {entry.location}
+                            </p>
+                          )}
+                          {entry.notes && (
+                            <p className="text-zinc-500 text-xs italic">
+                              ({entry.notes})
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="bg-white/60 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start gap-2">
+                    <Calendar className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-xs font-medium text-zinc-700">
+                        안내사항
+                      </p>
+                      <p className="text-xs text-zinc-600 leading-relaxed">
+                        • 상기 시간은 예상 시간으로 당일 상황에 따라 변경될 수 있습니다<br />
+                        • 여유 있게 일정을 준비해 주시면 감사하겠습니다<br />
+                        • 궁금하신 사항은 언제든지 문의해 주세요
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-zinc-500 text-center leading-relaxed">
+                  💡 소중한 날을 위해 철저히 준비하겠습니다
+                </p>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
+
+        {/* Web Gallery Link - Step 5, 6에서 표시 (Step 4는 위에서 먼저 표시) */}
+        {customerData.currentStep >= 5 && customerData.webGallery && customerData.webGallery.isActive && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                웹 갤러리
+              </h2>
+              
+              <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 border-2 border-purple-200 p-6 space-y-4 rounded-lg">
+                <div className="text-center space-y-3">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                      <Image className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-zinc-900">
+                      {customerData.webGallery.title}
+                    </h3>
+                    <p className="text-sm text-zinc-600">
+                      총 {customerData.webGallery.photoCount}장의 사진이 업로드되었습니다
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3 pt-2">
+                  <Button
+                    onClick={() => {
+                      const url = typeof window !== 'undefined' 
+                        ? window.location.origin + customerData.webGallery!.sharedUrl 
+                        : customerData.webGallery!.sharedUrl
+                      window.open(url, '_blank', 'noopener,noreferrer')
+                    }}
+                    className={cn(
+                      "w-full h-12 text-base font-normal transition-all duration-300",
+                      "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white",
+                      "active:scale-[0.98]",
+                      "shadow-md hover:shadow-lg",
+                      "flex items-center justify-center gap-2"
+                    )}
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                    갤러리 보러가기
+                  </Button>
+                  
+                  <div className="bg-white/60 border border-purple-200 rounded-lg p-4 space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Share2 className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 space-y-1">
+                        <p className="text-xs font-medium text-zinc-700">
+                          지인들과 공유하기
+                        </p>
+                        <p className="text-xs text-zinc-600 leading-relaxed">
+                          아래 링크를 복사하여 가족, 친구들에게 공유하실 수 있습니다
+                        </p>
+                        <div className="mt-2 p-2 bg-zinc-50 border border-zinc-200 rounded text-xs font-mono text-zinc-700 break-all">
+                          {typeof window !== 'undefined' ? window.location.origin + customerData.webGallery!.sharedUrl : customerData.webGallery!.sharedUrl}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            const url = typeof window !== 'undefined' 
+                              ? window.location.origin + customerData.webGallery!.sharedUrl 
+                              : customerData.webGallery!.sharedUrl
+                            try {
+                              await navigator.clipboard.writeText(url)
+                              alert('링크가 클립보드에 복사되었습니다!')
+                            } catch (err) {
+                              const textArea = document.createElement('textarea')
+                              textArea.value = url
+                              document.body.appendChild(textArea)
+                              textArea.select()
+                              document.execCommand('copy')
+                              document.body.removeChild(textArea)
+                              alert('링크가 클립보드에 복사되었습니다!')
+                            }
+                          }}
+                          className="w-full mt-2 text-xs h-8"
+                        >
+                          링크 복사하기
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-zinc-500 text-center leading-relaxed">
+                    💡 갤러리는 비밀번호(대표 번호 뒤 4자리)로 보호되어 있습니다
+                  </p>
+                </div>
               </div>
             </div>
 

@@ -19,6 +19,9 @@ export default function WeddingDatePage() {
   const [isMounted, setIsMounted] = useState(false)
   const [stepTransition, setStepTransition] = useState(false)
   const [productType, setProductType] = useState<string>('wedding')
+  const [customTimeMode, setCustomTimeMode] = useState(false)
+  const [customHour, setCustomHour] = useState<number | null>(null)
+  const [customMinute, setCustomMinute] = useState<number | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -112,6 +115,9 @@ export default function WeddingDatePage() {
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time)
+    setCustomTimeMode(false)
+    setCustomHour(null)
+    setCustomMinute(null)
     
     // Scroll to next button and focus
     setTimeout(() => {
@@ -123,14 +129,79 @@ export default function WeddingDatePage() {
     }, 100)
   }
 
+  const handleCustomTimeToggle = () => {
+    setCustomTimeMode(true)
+    setSelectedTime(null)
+  }
+
+  const handleCustomHourSelect = (hour: number) => {
+    setCustomHour(hour)
+    if (customMinute !== null) {
+      const timeStr = `${String(hour).padStart(2, '0')}:${String(customMinute).padStart(2, '0')}`
+      setSelectedTime(timeStr)
+      
+      // Scroll to next button and focus
+      setTimeout(() => {
+        nextButtonRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+        nextButtonRef.current?.focus()
+      }, 100)
+    }
+  }
+
+  const handleCustomMinuteSelect = (minute: number) => {
+    setCustomMinute(minute)
+    if (customHour !== null) {
+      const timeStr = `${String(customHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+      setSelectedTime(timeStr)
+      
+      // Scroll to next button and focus
+      setTimeout(() => {
+        nextButtonRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+        nextButtonRef.current?.focus()
+      }, 100)
+    }
+  }
+
+  const formatCustomTime = (time: string) => {
+    const [hour, minute] = time.split(':')
+    const h = parseInt(hour)
+    const m = parseInt(minute)
+    
+    if (h < 12) {
+      return `오전 ${h}시${m > 0 ? ` ${m}분` : ''}`
+    } else if (h === 12) {
+      return `낮 12시${m > 0 ? ` ${m}분` : ''}`
+    } else {
+      return `오후 ${h - 12}시${m > 0 ? ` ${m}분` : ''}`
+    }
+  }
+
   const handleBack = () => {
     if (currentStep === 'time') {
-      setStepTransition(true)
-      setSelectedTime(null)
-      setTimeout(() => {
-        setCurrentStep('day')
-        setStepTransition(false)
-      }, 300)
+      if (customTimeMode) {
+        // If in custom time mode, go back to normal time selection
+        setCustomTimeMode(false)
+        setCustomHour(null)
+        setCustomMinute(null)
+        setSelectedTime(null)
+      } else {
+        // Otherwise, go back to day selection
+        setStepTransition(true)
+        setSelectedTime(null)
+        setCustomTimeMode(false)
+        setCustomHour(null)
+        setCustomMinute(null)
+        setTimeout(() => {
+          setCurrentStep('day')
+          setStepTransition(false)
+        }, 300)
+      }
     } else if (currentStep === 'day') {
       setStepTransition(true)
       setSelectedDay(null)
@@ -222,8 +293,14 @@ export default function WeddingDatePage() {
     
     if (!selectedTime) return dateStr
     
-    const timeLabel = timeSlots.find(slot => slot.value === selectedTime)?.label || selectedTime
-    return `${dateStr} ${timeLabel}`
+    // Check if it's a custom time (HH:MM format) or a predefined time slot
+    const timeLabel = timeSlots.find(slot => slot.value === selectedTime)?.label
+    if (timeLabel) {
+      return `${dateStr} ${timeLabel}`
+    } else {
+      // Custom time format
+      return `${dateStr} ${formatCustomTime(selectedTime)}`
+    }
   }
   
   // Check if the day is weekend
@@ -434,7 +511,7 @@ export default function WeddingDatePage() {
         )}
 
         {/* Time Selection */}
-        {currentStep === 'time' && (
+        {currentStep === 'time' && !customTimeMode && (
           <div 
             className={cn(
               "space-y-4 transition-all duration-300",
@@ -463,6 +540,23 @@ export default function WeddingDatePage() {
               ))}
             </div>
             
+            {/* Custom Time Button - Only for wedding (not hanbok) */}
+            {productType === 'wedding' && (
+              <button
+                onClick={handleCustomTimeToggle}
+                className={cn(
+                  "w-full p-4 text-center border-2 transition-all duration-300",
+                  "border-blue-300 bg-blue-50 hover:border-blue-600 hover:bg-blue-100",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2",
+                  "active:scale-[0.99]"
+                )}
+              >
+                <p className="text-sm font-semibold text-blue-700">
+                  ⏰ 시간 직접 입력 (10분 단위)
+                </p>
+              </button>
+            )}
+            
             <button
               onClick={() => handleUndecided('time')}
               className={cn(
@@ -476,6 +570,94 @@ export default function WeddingDatePage() {
                 시간 미정
               </p>
             </button>
+          </div>
+        )}
+
+        {/* Custom Time Selection */}
+        {currentStep === 'time' && customTimeMode && (
+          <div 
+            className={cn(
+              "space-y-6 transition-all duration-300",
+              "opacity-100 translate-x-0"
+            )}
+          >
+            {/* Instructions */}
+            <div className="text-center space-y-2">
+              <p className="text-sm font-medium text-zinc-900">
+                시간을 직접 입력해 주세요
+              </p>
+              <p className="text-xs text-zinc-500">
+                10분 단위로 입력 가능합니다
+              </p>
+            </div>
+
+            {/* Hour Selection */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-zinc-700">
+                시간
+              </label>
+              <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto custom-scrollbar">
+                {Array.from({ length: 8 }, (_, i) => i + 11).map((hour) => (
+                  <button
+                    key={hour}
+                    onClick={() => handleCustomHourSelect(hour)}
+                    className={cn(
+                      "p-3 text-center border-2 transition-all duration-300",
+                      "hover:border-zinc-900 hover:bg-zinc-50",
+                      "focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2",
+                      "active:scale-[0.95]",
+                      customHour === hour
+                        ? "border-zinc-900 bg-zinc-900 text-white"
+                        : "border-zinc-200 bg-white text-zinc-900"
+                    )}
+                  >
+                    <p className="text-sm font-medium">
+                      {hour < 12 ? `오전 ${hour}시` : hour === 12 ? '낮 12시' : `오후 ${hour - 12}시`}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Minute Selection */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-zinc-700">
+                분
+              </label>
+              <div className="grid grid-cols-6 gap-2">
+                {[0, 10, 20, 30, 40, 50].map((minute) => (
+                  <button
+                    key={minute}
+                    onClick={() => handleCustomMinuteSelect(minute)}
+                    className={cn(
+                      "p-3 text-center border-2 transition-all duration-300",
+                      "hover:border-zinc-900 hover:bg-zinc-50",
+                      "focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2",
+                      "active:scale-[0.95]",
+                      customMinute === minute
+                        ? "border-zinc-900 bg-zinc-900 text-white"
+                        : "border-zinc-200 bg-white text-zinc-900"
+                    )}
+                  >
+                    <p className="text-sm font-medium">
+                      {String(minute).padStart(2, '0')}분
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Selected Custom Time Display */}
+            {customHour !== null && customMinute !== null && (
+              <div className="p-4 bg-zinc-900 text-white text-center rounded-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="text-sm font-medium">
+                  선택된 시간
+                </p>
+                <p className="text-lg font-semibold mt-1">
+                  {formatCustomTime(`${String(customHour).padStart(2, '0')}:${String(customMinute).padStart(2, '0')}`)}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -546,7 +728,7 @@ export default function WeddingDatePage() {
               "active:scale-[0.98]"
             )}
           >
-            {currentStep === 'year' ? '이전' : '뒤로'}
+            {currentStep === 'year' ? '이전' : customTimeMode ? '목록으로' : '뒤로'}
           </button>
           
           {currentStep === 'time' && (

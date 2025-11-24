@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/hyojoonchoi/Hyojoon%20Drive/Cursor-Project/Proce/mindgraphy/app/%28admin%29/admin/settings/page.tsx"],"sourcesContent":["'use client'\n\nimport { useEffect } from 'react'\nimport { useRouter } from 'next/navigation'\nimport { ROUTES } from '@/lib/constants'\n\nexport default function SettingsPage() {\n  const router = useRouter()\n\n  useEffect(() => {\n    router.replace(ROUTES.ADMIN_SETTINGS_PRODUCTS)\n  }, [router])\n\n  return null\n}\n\n"],"names":[],"mappings":";;;;AAEA;AACA;AACA;;AAJA;;;;AAMe,SAAS;;IACtB,MAAM,SAAS,IAAA,kJAAS;IAExB,IAAA,0KAAS;kCAAC;YACR,OAAO,OAAO,CAAC,6HAAM,CAAC,uBAAuB;QAC/C;iCAAG;QAAC;KAAO;IAEX,OAAO;AACT;GARwB;;QACP,kJAAS;;;KADF","debugId":null}}]
-}

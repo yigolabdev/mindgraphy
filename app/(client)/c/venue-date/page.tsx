@@ -40,7 +40,7 @@ export default function VenueRequestPage() {
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
-      router.push('/c/venue-select')
+      router.push('/c/venue-details')
     }, 400)
   }
 
@@ -137,7 +137,7 @@ export default function VenueRequestPage() {
           </button>
 
           <p className="text-xs text-center text-zinc-400 leading-relaxed">
-            3 / 4 단계
+            4 / 4 단계
           </p>
         </div>
       </div>

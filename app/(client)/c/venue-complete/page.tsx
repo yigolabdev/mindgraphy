@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getAllClientFormData, type ClientFormData } from '@/lib/utils/session-storage'
 import { mockProducts } from '@/lib/mock/settings'
-import { User, Lock, Info } from 'lucide-react'
+import { User, Lock, Info, FileText, AlertCircle } from 'lucide-react'
 
 export default function VenueCompletePage() {
   const router = useRouter()
@@ -242,15 +242,6 @@ export default function VenueCompletePage() {
                   )}
                 </div>
               </div>
-              
-              <div className="border-t border-zinc-200"></div>
-              
-              <div className="flex justify-between">
-                <span className="text-zinc-600">예식장</span>
-                <span className="text-zinc-900 font-medium">
-                  {formData.venue}
-                </span>
-              </div>
             </div>
           </div>
         )}
@@ -269,6 +260,47 @@ export default function VenueCompletePage() {
             여러분의 특별한 날을<br />
             마인드그라피가 함께하겠습니다
           </p>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-zinc-200"></div>
+
+        {/* 촬영 약관 안내 */}
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 p-6 space-y-4">
+            <div className="flex items-center gap-2 justify-center">
+              <AlertCircle className="h-5 w-5 text-amber-600" />
+              <h3 className="text-base font-semibold text-amber-900">
+                중요 안내
+              </h3>
+            </div>
+            
+            <div className="bg-white p-4 border border-amber-200 space-y-3">
+              <p className="text-sm text-zinc-800 leading-relaxed text-center">
+                <strong className="text-amber-900">촬영 예약은 입금과 동시에 확정되며</strong><br />
+                <strong className="text-amber-900">촬영 약관에 동의하신 것으로 간주됩니다</strong>
+              </p>
+              
+              <div className="border-t border-amber-100 pt-3">
+                <p className="text-xs text-zinc-600 text-center mb-3">
+                  약관을 반드시 확인해 주세요
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/c/notification')}
+                  className="w-full gap-2 border-amber-300 text-amber-800 hover:bg-amber-50 hover:border-amber-400"
+                >
+                  <FileText className="h-4 w-4" />
+                  촬영 약관 및 안내 확인하기
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-xs text-center text-amber-800 leading-relaxed">
+              환불 정책, 촬영 일정, 결과물 제작 순서 등<br />
+              중요한 내용이 포함되어 있습니다
+            </p>
+          </div>
         </div>
 
         {/* Divider */}

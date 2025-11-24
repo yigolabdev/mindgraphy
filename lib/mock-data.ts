@@ -44,7 +44,8 @@ export const mockUsers: User[] = [
     firstName: '작가',
     lastName: '박',
     status: 'active',
-    phone: '010-3456-7890'
+    phone: '010-3456-7890',
+    permissions: ['live-status', 'calendar', 'my-schedule', 'projects', 'board', 'gallery-upload', 'timetable']
   },
   {
     id: 'photo-2',
@@ -53,7 +54,8 @@ export const mockUsers: User[] = [
     firstName: '작가',
     lastName: '최',
     status: 'active',
-    phone: '010-4567-8901'
+    phone: '010-4567-8901',
+    permissions: ['projects', 'gallery-upload', 'timetable']
   },
   {
     id: 'editor-1',
@@ -650,6 +652,47 @@ export const mockProjects: Project[] = [
     assignedEditorId: 'editor-1',
     assignedEditor: mockUsers[4],
     progress: 60,
+    webGallery: {
+      id: 'gallery-1',
+      galleryId: 'abc123',
+      title: '홍길동 & 김영희 웨딩 갤러리',
+      sharedUrl: '/gallery/abc123',
+      photoCount: 12,
+      isActive: true
+    },
+    weddingDetails: {
+      timeConfirmed: true,
+      makeupShop: '겐그레아 메이크업 본점, 서울 강남구 테헤란로',
+      makeupStartTime: '06:30',
+      makeupEndTime: '09:30',
+      hasPreCeremonyPhoto: 'yes',
+      hasOfficiant: 'yes',
+      hasMC: 'yes',
+      mcType: 'professional',
+      hasRingExchange: 'yes',
+      hasFlowerGirl: 'yes',
+      hasPaebaek: 'yes',
+      groomFamily: '아버님, 어머님, 누나, 매형, 조카 2명',
+      brideFamily: '아버님, 어머님, 오빠, 올케, 조카 1명',
+      preferredStyle: '밝고 자연스러운 느낌, 감성적이고 따뜻한 분위기. 가족들과의 행복한 순간을 자연스럽게 담아주세요.',
+      notPreferredStyle: '너무 어두운 느낌이나 과한 보정은 선호하지 않습니다.',
+      mainDressInfo: '아이보리 A라인 드레스',
+      receptionDressInfo: '핑크 볼륨감 있는 드레스',
+      groomSuitInfo: '네이비 턱시도',
+      dressShop: '더 웨딩하우스',
+      suitShop: '탑맨',
+      makeupShopName: '겐그레아',
+      planner: '웨딩플래너 김OO',
+      videoTeam: '마인드필름 (2인3캠)',
+      iphoneSnap: '',
+      otherTeam: '',
+      specialRequests: '가족사진을 많이 남기고 싶습니다. 특히 부모님과의 사진을 중요하게 생각합니다.',
+      honeymoonDestination: '몰디브',
+      honeymoonDeparture: '12.16 저녁 비행기',
+      honeymoonReturn: '12.23',
+      meetingType: 'direct',
+      invitationUrl: 'https://example.com/invitation'
+    },
     createdAt: '2025-09-06T10:00:00Z',
     updatedAt: '2025-11-02T15:30:00Z'
   },

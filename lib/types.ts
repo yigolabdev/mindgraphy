@@ -10,6 +10,7 @@ export interface User {
   avatarUrl?: string
   phone?: string
   status: 'active' | 'inactive'
+  permissions?: import('./types/auth').PagePermission[] // 작가의 경우 허용된 페이지 권한
 }
 
 // Note Types
@@ -97,6 +98,15 @@ export interface Project {
   assignedEditorId?: string
   assignedEditor?: User
   progress: number
+  webGallery?: {
+    id: string
+    galleryId: string
+    title: string
+    sharedUrl: string
+    photoCount: number
+    isActive: boolean
+  }
+  weddingDetails?: WeddingDetails  // 예식 상세 정보
   createdAt: string
   updatedAt: string
 }
@@ -195,6 +205,39 @@ export interface ProofGallerySession {
   selectionCompletedAt?: string
   status: 'pending' | 'active' | 'completed' | 'expired'
   createdAt: string
+}
+
+// Web Gallery Types (공유 가능한 웹갤러리)
+export interface WebGallery {
+  id: string
+  galleryId: string // 고유 공유 ID (URL에 사용)
+  projectId: string
+  project?: Project
+  customerId: string
+  customer?: Customer
+  title: string // 갤러리 제목 (예: "김철수 & 이영희 웨딩 갤러리")
+  password: string // 대표 번호 뒤 4자리 (해시화되어 저장)
+  sharedUrl: string // 공유 URL (예: /gallery/abc123)
+  photoCount: number
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string // 업로드한 작가 ID
+}
+
+export interface GalleryPhoto {
+  id: string
+  galleryId: string
+  gallery?: WebGallery
+  imageUrl: string
+  thumbnailUrl: string
+  fileName: string
+  fileSizeBytes: number
+  width: number
+  height: number
+  uploadedAt: string
+  uploadedBy?: string
+  order: number // 표시 순서
 }
 
 // Editing Queue Types
@@ -375,5 +418,77 @@ export interface Contract {
   brideName?: string
   signedAt?: string
   createdAt: string
+}
+
+// Time Table Types (당일 일정표)
+export type TimeModifier = 'exact' | 'estimated' | 'around' // 정확, 예상, 즈음
+
+export interface TimeTableEntry {
+  id: string
+  projectId: string
+  time: string // HH:MM 형식
+  timeModifier: TimeModifier // 정확/예상/즈음
+  event: string // 이벤트 내용
+  location?: string // 장소 (선택사항)
+  notes?: string // 추가 메모
+  order: number // 표시 순서
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TimeTable {
+  id: string
+  projectId: string
+  project?: Project
+  title: string // 예: "2025.06.15 (토) 타임 테이블"
+  entries: TimeTableEntry[]
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string // 작성한 작가 ID
+}
+
+// Wedding Details Types (예식 상세 정보)
+export interface WeddingDetails {
+  timeConfirmed: boolean
+  // 타임테이블
+  makeupShop?: string
+  makeupStartTime?: string
+  makeupEndTime?: string
+  // 예식 내용
+  hasPreCeremonyPhoto?: 'yes' | 'no'
+  hasOfficiant?: 'yes' | 'no'
+  hasMC?: 'yes' | 'no'
+  mcType?: 'professional' | 'friend'
+  hasRingExchange?: 'yes' | 'no'
+  hasFlowerGirl?: 'yes' | 'no'
+  hasPaebaek?: 'yes' | 'no'
+  // 가족 구성
+  groomFamily?: string
+  brideFamily?: string
+  // 사진 스타일
+  preferredStyle?: string
+  notPreferredStyle?: string
+  // 의상 정보
+  mainDressInfo?: string
+  receptionDressInfo?: string
+  groomSuitInfo?: string
+  // 협력 업체
+  dressShop?: string
+  suitShop?: string
+  makeupShopName?: string
+  planner?: string
+  videoTeam?: string
+  iphoneSnap?: string
+  otherTeam?: string
+  specialRequests?: string
+  // 신혼여행
+  honeymoonDeparture?: string
+  honeymoonDestination?: string
+  honeymoonReturn?: string
+  // 미팅 방식
+  meetingType?: 'direct' | 'phone' | 'list'
+  // 청첩장
+  invitationUrl?: string
 }
 

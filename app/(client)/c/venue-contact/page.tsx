@@ -74,7 +74,7 @@ export default function VenueContactPage() {
     
     // Navigate to next step
     setTimeout(() => {
-      router.push('/c/venue-select')
+      router.push('/c/venue-details')
     }, 400)
   }
 
@@ -88,7 +88,7 @@ export default function VenueContactPage() {
   // Validation
   const isBridePhoneValid = !bridePhone || /^010-\d{4}-\d{4}$/.test(bridePhone)
   const isGroomPhoneValid = !groomPhone || /^010-\d{4}-\d{4}$/.test(groomPhone)
-  const isEmailValid = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const hasAtLeastOneContact = bridePhone || groomPhone
   const hasMainContactSelected = mainContact !== null
   const isValid = isBridePhoneValid && isGroomPhoneValid && isEmailValid && hasAtLeastOneContact && hasMainContactSelected
@@ -220,7 +220,7 @@ export default function VenueContactPage() {
               htmlFor="email" 
               className="block text-sm font-medium text-zinc-700"
             >
-              이메일 <span className="text-zinc-400 font-normal">(선택)</span>
+              이메일 <span className="text-red-500">*</span>
             </label>
             <Input
               id="email"
@@ -232,10 +232,12 @@ export default function VenueContactPage() {
                 "h-12 text-base transition-all duration-200",
                 "border-2",
                 email && !isEmailValid ? "border-red-500" : "border-zinc-200",
+                !email && "border-zinc-200",
                 "focus:border-zinc-900 focus:ring-0",
                 "placeholder:text-zinc-400"
               )}
               autoComplete="email"
+              required
             />
             {email && !isEmailValid && (
               <p className="text-xs text-red-500">

@@ -58,6 +58,8 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { PhotographerPermissionsDialog } from '@/components/team/photographer-permissions-dialog'
+import type { PagePermission } from '@/lib/types/auth'
 
 export default function TeamPage() {
   const [users, setUsers] = useState<TeamUser[]>(mockTeamUsers)
@@ -65,6 +67,13 @@ export default function TeamPage() {
   const [roleFilter, setRoleFilter] = useState<TeamUserRole | 'all'>('all')
   const [statusFilter, setStatusFilter] = useState<UserStatus | 'all'>('all')
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false)
+  const [selectedPhotographer, setSelectedPhotographer] = useState<{
+    id: string
+    name: string
+    email: string
+    currentPermissions?: PagePermission[]
+  } | null>(null)
   
   const [newUser, setNewUser] = useState({
     email: '',
@@ -137,6 +146,30 @@ export default function TeamPage() {
     toast.success(
       newStatus === 'active' ? '계정이 활성화되었습니다' : '계정이 비활성화되었습니다'
     )
+  }
+
+  const handleOpenPermissionsDialog = (user: TeamUser) => {
+    setSelectedPhotographer({
+      id: user.id,
+      name: `${user.lastName}${user.firstName}`,
+      email: user.email,
+      currentPermissions: user.permissions as PagePermission[] | undefined
+    })
+    setPermissionsDialogOpen(true)
+  }
+
+  const handleSavePermissions = (photographerId: string, permissions: PagePermission[]) => {
+    // TODO: 실제 API 호출로 권한 업데이트
+    // PATCH /api/admin/team/:id/permissions
+    // Body: { permissions }
+    
+    setUsers(prev => prev.map(u => 
+      u.id === photographerId ? { ...u, permissions } : u
+    ))
+    
+    toast.success('권한이 업데이트되었습니다')
+    setPermissionsDialogOpen(false)
+    setSelectedPhotographer(null)
   }
 
   const getRoleIcon = (role: TeamUserRole) => {
@@ -314,13 +347,26 @@ export default function TeamPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            {user.role === 'photographer' && user.photographerStats && (
-                              <Link href={`/admin/team/performance?id=${user.id}`}>
-                                <Button variant="outline" size="sm">
-                                  <TrendingUp className="mr-1 h-3 w-3" />
-                                  성과
+                            {user.role === 'photographer' && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenPermissionsDialog(user)}
+                                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                >
+                                  <Shield className="mr-1 h-3 w-3" />
+                                  권한
                                 </Button>
-                              </Link>
+                                {user.photographerStats && (
+                                  <Link href={`/admin/team/performance?id=${user.id}`}>
+                                    <Button variant="outline" size="sm">
+                                      <TrendingUp className="mr-1 h-3 w-3" />
+                                      성과
+                                    </Button>
+                                  </Link>
+                                )}
+                              </>
                             )}
                             <Button
                               variant={user.status === 'active' ? 'outline' : 'default'}
@@ -449,7 +495,14 @@ export default function TeamPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Photographer Permissions Dialog */}
+      <PhotographerPermissionsDialog
+        open={permissionsDialogOpen}
+        onOpenChange={setPermissionsDialogOpen}
+        photographer={selectedPhotographer}
+        onSave={handleSavePermissions}
+      />
     </AdminLayout>
   )
 }
-
