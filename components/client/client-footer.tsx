@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { CONTACT_INFO } from '@/lib/config/portal.config'
 
 export function ClientFooter() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export function ClientFooter() {
           {/* Contact Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <a
-              href="http://pf.kakao.com/_xoxoxox"
+              href={CONTACT_INFO.kakaoChannel}
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
@@ -32,7 +33,7 @@ export function ClientFooter() {
               <span>카카오톡 문의</span>
             </a>
             <a
-              href="tel:02-2202-9966"
+              href={`tel:${CONTACT_INFO.phone}`}
               className={cn(
                 "flex items-center justify-center gap-2 px-4 py-3",
                 "border-2 border-zinc-200 bg-white",
@@ -62,7 +63,7 @@ export function ClientFooter() {
 
           {/* Instagram Link */}
           <a
-            href="https://www.instagram.com/studio.mind.graphy"
+            href={CONTACT_INFO.instagram}
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
@@ -86,8 +87,8 @@ export function ClientFooter() {
 
           {/* Contact Info */}
           <div className="space-y-2 text-center text-xs text-zinc-500">
-            <p>전화: 02-2202-9966</p>
-            <p>서울 성동구 마조로15길 6 1층</p>
+            <p>전화: {CONTACT_INFO.phone}</p>
+            <p>{CONTACT_INFO.address}</p>
           </div>
         </div>
       </div>

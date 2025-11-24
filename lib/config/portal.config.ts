@@ -11,7 +11,7 @@ import type { PortalStep } from '@/hooks/use-portal-data'
 export const CONTACT_INFO = {
   phone: '02-2202-9966',
   address: '서울 성동구 마조로15길 6 1층',
-  kakaoChannel: 'https://pf.kakao.com/_xmxjxfxj',
+  kakaoChannel: 'https://pf.kakao.com/_xfxcxfxaK',
   instagram: 'https://www.instagram.com/studio.mind.graphy',
   email: 'info@mind-graphy.com'
 } as const

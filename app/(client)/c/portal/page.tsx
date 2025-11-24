@@ -949,7 +949,7 @@ export default function PortalPage() {
                 </a>
                 <span className="text-zinc-300">|</span>
                 <a
-                  href="https://pf.kakao.com/_xjBxexj"
+                  href="https://pf.kakao.com/_xfxcxfxaK"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
