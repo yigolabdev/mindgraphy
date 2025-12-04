@@ -1,6 +1,6 @@
 import { addDays, subDays, format } from 'date-fns'
 
-export type ScheduleStatus = 'reserved' | 'on_the_way' | 'in_progress' | 'editing' | 'completed' | 'cancelled'
+export type ScheduleStatus = 'reserved' | 'on_the_way' | 'in_progress' | 'editing' | 'completed' | 'cancelled' | 'uploaded'
 export type ProductType = 'wedding' | 'hanbok' | 'dress_shop' | 'baby'
 export type VenueType = 'hotel' | 'convention' | 'outdoor' | 'studio'
 
@@ -179,10 +179,12 @@ export const mockSchedulePhotographers: SchedulePhotographer[] = [
 // Status color mapping
 const statusColors: Record<ScheduleStatus, { backgroundColor: string; borderColor: string; textColor: string }> = {
   reserved: { backgroundColor: '#dbeafe', borderColor: '#3b82f6', textColor: '#1e40af' },
+  on_the_way: { backgroundColor: '#dbeafe', borderColor: '#3b82f6', textColor: '#1e40af' },
   in_progress: { backgroundColor: '#fef3c7', borderColor: '#f59e0b', textColor: '#92400e' },
   editing: { backgroundColor: '#e9d5ff', borderColor: '#a855f7', textColor: '#6b21a8' },
   completed: { backgroundColor: '#d1fae5', borderColor: '#10b981', textColor: '#065f46' },
-  cancelled: { backgroundColor: '#f3f4f6', borderColor: '#9ca3af', textColor: '#4b5563' }
+  cancelled: { backgroundColor: '#f3f4f6', borderColor: '#9ca3af', textColor: '#4b5563' },
+  uploaded: { backgroundColor: '#f3e8ff', borderColor: '#7c3aed', textColor: '#5b21b6' }
 }
 
 const today = new Date()
@@ -908,10 +910,12 @@ export const checkConflicts = (event: ScheduleEvent): ScheduleEvent[] => {
 export const getStatusLabel = (status: ScheduleStatus): string => {
   const labels: Record<ScheduleStatus, string> = {
     reserved: '예약',
-    in_progress: '진행중',
+    on_the_way: '출발',
+    in_progress: '촬영중',
     editing: '보정중',
     completed: '완료',
-    cancelled: '취소'
+    cancelled: '취소',
+    uploaded: '업로드'
   }
   return labels[status]
 }
