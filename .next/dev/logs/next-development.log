@@ -1,8 +1,0 @@
-[00:00:00.620] Server  LOG      ✓ Ready in 426ms
-[00:00:04.151] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:04.651] Browser LOG     [PageAccessGuard] useEffect triggered for pathname: /admin/calendar/
-[00:00:04.651] Browser LOG     [PageAccessGuard] Not a login page, proceeding with session check
-[00:00:04.654] Browser LOG     [PageAccessGuard] Session string: exists
-[00:00:04.654] Browser LOG     [PageAccessGuard] Session valid, user role: admin
-[00:00:04.654] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
-[00:00:04.655] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}

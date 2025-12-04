@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/hyojoonchoi/Hyojoon%20Drive/Cursor-Project/Proce/mindgraphy/app/%28auth%29/login/layout.tsx"],"sourcesContent":["import { ReactNode } from 'react'\n\nexport default function AuthLayout({ children }: { children: ReactNode }) {\n  return <>{children}</>\n}\n\n"],"names":[],"mappings":";;;;;;AAEe,SAAS,WAAW,EAAE,QAAQ,EAA2B;IACtE,qBAAO;kBAAG;;AACZ","debugId":null}}]
-}

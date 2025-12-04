@@ -1,7 +1,8 @@
-name: Deploy to Vercel (Recommended for SSR)
+name: Deploy to S3 (Standalone Build)
 
-# ⚠️ 중요: 이 프로젝트는 동적 라우트를 사용하므로 정적 빌드(S3) 대신
-# 서버사이드 렌더링을 지원하는 플랫폼(Vercel, Netlify)을 권장합니다.
+# ⚠️ 주의: 이 방식은 권장하지 않습니다!
+# 동적 라우트를 사용하는 Next.js는 Vercel/Netlify가 적합합니다.
+# 그러나 S3 배포가 필요한 경우 standalone 빌드를 사용합니다.
 
 on:
   push:
@@ -10,15 +11,86 @@ on:
   workflow_dispatch:
 
 jobs:
-  # 이 워크플로우는 비활성화되어 있습니다.
-  # Vercel을 사용하는 경우 Vercel Git Integration을 활성화하세요:
-  # https://vercel.com/docs/deployments/git
-  
-  placeholder:
+  deploy:
     runs-on: ubuntu-latest
-    if: false # 비활성화
+    
     steps:
-      - name: Info
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js (Server Build)
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Prepare deployment files
         run: |
-          echo "이 워크플로우는 비활성화되어 있습니다."
-          echo "Vercel 또는 Netlify Git Integration을 사용하여 자동 배포하세요."
+          echo "📦 Preparing files for S3..."
+          
+          # public 폴더 복사
+          if [ -d "public" ]; then
+            cp -r public deploy_temp/
+          fi
+          
+          # .next/static 복사
+          if [ -d ".next/static" ]; then
+            mkdir -p deploy_temp/_next
+            cp -r .next/static deploy_temp/_next/
+          fi
+          
+          # 기타 정적 파일
+          if [ -f ".next/BUILD_ID" ]; then
+            cp .next/BUILD_ID deploy_temp/
+          fi
+          
+          ls -la deploy_temp/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Deploy to S3
+        run: |
+          echo "🚀 Uploading to S3..."
+          
+          # 정적 파일 업로드 (캐시 적용)
+          aws s3 sync deploy_temp s3://wedding-yigo \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html"
+          
+          # HTML 파일 업로드 (캐시 없음)
+          aws s3 sync deploy_temp s3://wedding-yigo \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --exclude "*" \
+            --include "*.html"
+          
+          echo "✅ Upload complete"
+
+      - name: Warning Message
+        run: |
+          echo "⚠️⚠️⚠️ 중요한 경고 ⚠️⚠️⚠️"
+          echo ""
+          echo "S3 정적 배포는 다음 페이지가 작동하지 않습니다:"
+          echo "- /admin/timetable/[projectId]"
+          echo "- /admin/gallery/[projectId]/upload"
+          echo "- /gallery/[galleryId]"
+          echo ""
+          echo "해결 방법:"
+          echo "1. Vercel/Netlify 사용 (권장)"
+          echo "2. API Gateway + Lambda 추가"
+          echo "3. CloudFront Functions로 라우팅 처리"
+          echo ""
+          echo "현재는 정적 파일만 배포되었습니다."
