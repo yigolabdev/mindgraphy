@@ -111,7 +111,7 @@ export default function ProductTypePage() {
               <div className="flex items-start justify-between">
                 <div className="space-y-1 flex-1">
                   <p className="text-base font-medium text-zinc-900">
-                    일반 웨딩 촬영
+                    웨딩 촬영
                   </p>
                   <p className="text-xs text-zinc-500 leading-relaxed">
                     본식 스냅 촬영 (BASIC / DATA 패키지)

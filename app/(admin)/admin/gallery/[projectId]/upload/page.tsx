@@ -34,7 +34,7 @@ export default function GalleryUploadPage() {
   })
 
   const [files, setFiles] = useState<UploadedFile[]>([])
-  const [isDragging, setIsDragging] = useState(false)
+  const [isGalleryDragActive, setIsGalleryDragActive] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [isCompleting, setIsCompleting] = useState(false)
   
@@ -43,17 +43,17 @@ export default function GalleryUploadPage() {
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragging(true)
+    setIsGalleryDragActive(true)
   }, [])
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragging(false)
+    setIsGalleryDragActive(false)
   }, [])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragging(false)
+    setIsGalleryDragActive(false)
 
     const droppedFiles = Array.from(e.dataTransfer.files)
     handleFiles(droppedFiles)
@@ -218,14 +218,14 @@ export default function GalleryUploadPage() {
               onClick={() => fileInputRef.current?.click()}
               className={cn(
                 "border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all",
-                isDragging 
+                isGalleryDragActive 
                   ? "border-blue-500 bg-blue-50" 
                   : "border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50"
               )}
             >
               <Upload className={cn(
                 "h-12 w-12 mx-auto mb-4",
-                isDragging ? "text-blue-500" : "text-zinc-400"
+                isGalleryDragActive ? "text-blue-500" : "text-zinc-400"
               )} />
               <p className="text-base font-medium text-zinc-900 mb-2">
                 사진을 드래그하여 놓거나 클릭하여 선택하세요

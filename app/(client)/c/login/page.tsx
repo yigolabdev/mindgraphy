@@ -77,6 +77,19 @@ export default function ClientLoginPage() {
     }, 400)
   }
 
+  // 테스트용 빠른 로그인
+  const handleQuickLogin = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('mindgraphy_client_phone', '010-1234-5678')
+      sessionStorage.setItem('mindgraphy_client_logged_in', 'true')
+    }
+    
+    setIsAnimating(true)
+    setTimeout(() => {
+      router.push('/c/portal')
+    }, 400)
+  }
+
   // Validate phone number and password
   const isValid = /^010-\d{4}-\d{4}$/.test(phoneNumber) && password.length >= 4
 
@@ -217,13 +230,9 @@ export default function ClientLoginPage() {
           </button>
 
           <p className="text-xs text-center text-zinc-400 leading-relaxed">
-            로그인 후 촬영 일정 및 진행 상황을 확인하실 수 있습니다
+            로그인 후 다양한 정보를 확인할 수 있습니다
           </p>
         </div>
-
-        {/* Divider */}
-        <div className="border-t border-zinc-200"></div>
-
       </div>
     </div>
   )

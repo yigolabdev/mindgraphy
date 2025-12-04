@@ -5,19 +5,41 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getAllClientFormData, type ClientFormData } from '@/lib/utils/session-storage'
+import { registerCustomerAndProject } from '@/lib/utils/customer-registration'
 import { mockProducts } from '@/lib/mock/settings'
-import { User, Lock, Info, FileText, AlertCircle } from 'lucide-react'
+import { User, Lock, Info, FileText, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function VenueCompletePage() {
   const router = useRouter()
   const [isMounted, setIsMounted] = useState(false)
   const [formData, setFormData] = useState<ClientFormData | null>(null)
   const [packageName, setPackageName] = useState('')
+  const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect(() => {
     // Load form data from session using utility function
     const data = getAllClientFormData()
     setFormData(data)
+    
+    // 고객 및 프로젝트 등록 (Mock 데이터에 추가)
+    if (data && !isRegistered) {
+      const result = registerCustomerAndProject(data)
+      
+      if (result.success) {
+        setIsRegistered(true)
+        console.log('[VenueComplete] 고객 등록 완료:', result.customer)
+        console.log('[VenueComplete] 프로젝트 생성 완료:', result.project)
+        
+        toast.success('고객 정보가 성공적으로 등록되었습니다', {
+          description: '담당자가 곧 연락드리겠습니다',
+          duration: 5000,
+        })
+      } else {
+        console.error('[VenueComplete] 고객 등록 실패')
+        toast.error('정보 등록 중 오류가 발생했습니다')
+      }
+    }
     
     // Get package name from product data
     if (data.packageId) {
@@ -116,11 +138,11 @@ export default function VenueCompletePage() {
   }
 
   const handleGoToPortal = () => {
-    // Clear session storage and go to portal
+    // Clear session storage and go to login page
     if (typeof window !== 'undefined') {
       sessionStorage.clear()
     }
-    router.push('/c/portal')
+    router.push('/c/login')
   }
 
   // 대표 연락처 가져오기

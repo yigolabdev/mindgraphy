@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useAuthStore } from '@/lib/store/auth-store'
 import { getNavigationForRole } from '@/lib/config/navigation'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -18,21 +17,45 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ROUTES } from '@/lib/constants'
 import { LogOut, Settings, User } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import type { User as UserType } from '@/lib/types/auth'
 
 export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, isAuthenticated, logout } = useAuthStore()
+  const [user, setUser] = useState<UserType | null>(null)
 
-  // 인증되지 않은 경우 로그인 페이지로 리다이렉트
+  // sessionStorage/localStorage에서 사용자 정보 가져오기
   useEffect(() => {
-    if (!isAuthenticated || !user) {
-      router.push('/login')
+    if (typeof window === 'undefined') return
+
+    const loadUser = () => {
+      // sessionStorage 먼저 확인
+      let userStr = sessionStorage.getItem('mindgraphy_admin_user')
+      
+      // 없으면 localStorage에서 복구
+      if (!userStr) {
+        userStr = localStorage.getItem('mindgraphy_admin_user')
+        if (userStr) {
+          sessionStorage.setItem('mindgraphy_admin_user', userStr)
+        }
+      }
+
+      if (userStr) {
+        try {
+          const userData = JSON.parse(userStr)
+          setUser(userData)
+        } catch (error) {
+          console.error('[AdminNav] Failed to parse user data:', error)
+        }
+      }
     }
-  }, [isAuthenticated, user, router])
+
+    loadUser()
+  }, [])
 
   // 로딩 중이거나 사용자가 없으면 렌더링하지 않음
+  // (PageAccessGuard가 이미 인증을 처리하므로 여기서는 리다이렉트 안 함)
   if (!user) {
     return null
   }
@@ -41,8 +64,12 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
   const navigation = getNavigationForRole(user.role, user.permissions)
 
   const handleLogout = () => {
-    logout()
-    router.push('/login')
+    // sessionStorage와 localStorage 모두 클리어
+    sessionStorage.removeItem('mindgraphy_admin_user')
+    localStorage.removeItem('mindgraphy_admin_user')
+    
+    // 로그인 페이지로 이동
+    window.location.href = '/admin/login'
   }
 
   // 사용자 이름의 첫 글자

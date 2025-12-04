@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, ArrowRight, Calendar } from 'lucide-react'
@@ -11,10 +13,92 @@ const STORAGE_KEY = 'mindgraphy-last-portal'
 type Portal = 'client' | 'admin' | null
 
 export default function HomePage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  // 유입 경로 자동 추적 (향후 백엔드 연동 대비)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    // UTM 파라미터 확인
+    const utmSource = searchParams.get('utm_source')
+    const utmMedium = searchParams.get('utm_medium')
+    const utmCampaign = searchParams.get('utm_campaign')
+    const source = searchParams.get('source')
+    
+    // 유입 경로 결정
+    let sourceChannel = ''
+    
+    if (utmSource) {
+      // UTM 파라미터가 있는 경우
+      sourceChannel = utmSource
+      if (utmMedium) sourceChannel += ` (${utmMedium})`
+      if (utmCampaign) sourceChannel += ` - ${utmCampaign}`
+    } else if (source) {
+      // 간단한 source 파라미터
+      sourceChannel = source
+    } else if (document.referrer) {
+      // Referrer 확인
+      try {
+        const referrerUrl = new URL(document.referrer)
+        const referrerDomain = referrerUrl.hostname
+        
+        // 주요 플랫폼 매핑
+        if (referrerDomain.includes('instagram.com')) {
+          sourceChannel = 'Instagram'
+        } else if (referrerDomain.includes('facebook.com')) {
+          sourceChannel = 'Facebook'
+        } else if (referrerDomain.includes('naver.com')) {
+          sourceChannel = 'Naver'
+        } else if (referrerDomain.includes('google.com')) {
+          sourceChannel = 'Google'
+        } else if (referrerDomain.includes('kakao.com')) {
+          sourceChannel = 'Kakao'
+        } else {
+          sourceChannel = referrerDomain
+        }
+      } catch (e) {
+        sourceChannel = '직접 방문'
+      }
+    } else {
+      sourceChannel = '직접 방문'
+    }
+    
+    // sessionStorage에 저장 (향후 고객 등록 시 사용)
+    sessionStorage.setItem('mindgraphy_source_channel', sourceChannel)
+    console.log('[HomePage] 유입 경로 추적:', sourceChannel)
+  }, [searchParams])
+  
   const handlePortalClick = (portal: Portal) => {
     if (portal) {
       localStorage.setItem(STORAGE_KEY, portal)
     }
+  }
+  
+  const handleAdminPortalClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    handlePortalClick('admin')
+    
+    // 세션 체크 후 적절한 페이지로 직접 이동
+    if (typeof window !== 'undefined') {
+      const adminUser = sessionStorage.getItem('mindgraphy_admin_user')
+      if (adminUser) {
+        try {
+          const userData = JSON.parse(adminUser)
+          if (userData && userData.role) {
+            // 이미 로그인되어 있으면 바로 프로젝트 페이지로
+            router.push('/admin/projects')
+            return
+          }
+        } catch (error) {
+          // 파싱 오류 시 세션 제거
+          sessionStorage.removeItem('mindgraphy_admin_user')
+        }
+      }
+    }
+    
+    // 세션이 없으면 로그인 페이지로
+    router.push('/admin/login')
   }
 
   return (
@@ -66,12 +150,11 @@ export default function HomePage() {
           </Link>
 
           {/* Admin Portal Card */}
-          <Link 
-            href="/admin/login"
-            onClick={() => handlePortalClick('admin')}
+          <div 
+            onClick={handleAdminPortalClick}
             data-branch="admin"
             data-portal="back-office"
-            className="block group"
+            className="block group cursor-pointer"
           >
             <Card className="h-full border-2 transition-all hover:border-zinc-900 hover:shadow-xl relative overflow-hidden cursor-pointer">
               <div className="absolute right-0 top-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-zinc-100 opacity-50 transition-transform group-hover:scale-150" />
@@ -96,7 +179,7 @@ export default function HomePage() {
                 </div>
               </CardContent>
             </Card>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

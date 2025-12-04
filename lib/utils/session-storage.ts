@@ -90,18 +90,45 @@ export interface ClientFormData {
   weddingDate: string | null
   weddingTime: string | null
   weddingDateInfo: string | null
+  weddingVenue: string | null // venue 대신 weddingVenue 사용
   venue: string | null
   venueRequest: string | null
   
   // Referral
   referralSource: string | null
+  specialRequests: string | null // 특별 요청사항 추가
 }
 
 export function getAllClientFormData(): ClientFormData {
+  if (typeof window === 'undefined') {
+    return {} as ClientFormData
+  }
+  
+  // venue 정보 통합 (venue_name + venue_hall)
+  const venueName = sessionStorage.getItem('mindgraphy_venue_name') || ''
+  const venueHall = sessionStorage.getItem('mindgraphy_venue_hall') || ''
+  const weddingVenue = venueName && venueHall 
+    ? `${venueName} ${venueHall}`.trim()
+    : venueName || venueHall || getSessionItem('VENUE') || null
+  
+  const venueRequest = getSessionItem('VENUE_REQUEST')
+  
+  // 유입 경로 결정
+  const sourceChannel = sessionStorage.getItem('mindgraphy_source_channel') || getSessionItem('REFERRAL_SOURCE')
+  const clientType = getSessionItem('CLIENT_TYPE')
+  let referralSource = sourceChannel || '고객용 페이지'
+  
+  // clientType에 따라 유입 경로 구체화
+  if (!sourceChannel && clientType === 'venue') {
+    referralSource = '웨딩홀 제휴'
+  } else if (!sourceChannel && clientType === 'direct') {
+    referralSource = '고객용 페이지 (직접 문의)'
+  }
+  
   return {
     // Product Selection
     productType: getSessionItem('PRODUCT_TYPE'),
-    clientType: getSessionItem('CLIENT_TYPE'),
+    clientType: clientType,
     packageId: getSessionItem('PACKAGE'),
     optionIds: getSessionJSON<string[]>('OPTIONS') || [],
     
@@ -118,11 +145,13 @@ export function getAllClientFormData(): ClientFormData {
     weddingDate: getSessionItem('WEDDING_DATE'),
     weddingTime: getSessionItem('WEDDING_TIME'),
     weddingDateInfo: getSessionItem('WEDDING_DATE_INFO'),
-    venue: getSessionItem('VENUE'),
-    venueRequest: getSessionItem('VENUE_REQUEST'),
+    weddingVenue: weddingVenue,
+    venue: weddingVenue,
+    venueRequest: venueRequest,
     
     // Referral
-    referralSource: getSessionItem('REFERRAL_SOURCE'),
+    referralSource: referralSource,
+    specialRequests: venueRequest, // venueRequest를 specialRequests로도 사용
   }
 }
 

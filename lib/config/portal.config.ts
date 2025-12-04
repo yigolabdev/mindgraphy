@@ -126,7 +126,7 @@ export const SESSION_KEYS = {
  * Product type labels
  */
 export const PRODUCT_TYPE_LABELS = {
-  wedding: '일반 웨딩',
+  wedding: '웨딩',
   hanbok: '한복 & 캐주얼',
   dress_shop: '가봉 스냅',
   baby: '돌스냅'

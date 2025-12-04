@@ -20,11 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Calendar, User, MapPin, Clock, Package, Camera, Tag, Users as UsersIcon, CheckCircle } from 'lucide-react'
+import { Calendar, User, MapPin, Clock, Package, Camera, Tag, Users as UsersIcon, CheckCircle, Building2, UserPlus, CreditCard, Wallet } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { mockPhotographers } from '@/lib/mock-data'
 import { mockProducts } from '@/lib/mock/settings'
+import { getActiveVenuePartners, getVenuePartnerTypeLabel } from '@/lib/mock/venue-partners'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import type { ProjectType } from '@/lib/types'
@@ -37,7 +38,7 @@ interface CreateProjectDialogProps {
   title?: string
 }
 
-type Step = 'product' | 'package' | 'details' | 'additional' | 'confirm'
+type Step = 'product' | 'package' | 'details' | 'additional' | 'payment' | 'confirm'
 
 export function CreateProjectDialog({
   open,
@@ -72,9 +73,17 @@ export function CreateProjectDialog({
     venueAddress: '',
     photographerIds: [] as string[],
     
-    // 유입 경로 & 추가 정보 (고객용 페이지와 동일)
-    referralSource: '',
-    specialRequests: ''
+    // 유입 경로 타입 (3가지)
+    sourceType: '' as 'client-direct' | 'venue-referral' | 'manual-registration' | '',
+    venuePartnerId: '', // 제휴처 선택 (sourceType이 'venue-referral'인 경우)
+    referralSource: '', // 구체적인 유입 경로
+    specialRequests: '',
+
+    // 결제 정보 (수동 등록 시)
+    paymentStatus: 'unpaid' as 'unpaid' | 'paid' | 'partial',
+    paymentMethod: '' as 'transfer' | 'card' | 'cash' | '',
+    paymentAmount: '',
+    isPortalAccountCreated: false
   })
 
   // Get packages and options based on productType
@@ -165,9 +174,26 @@ export function CreateProjectDialog({
         return true
       
       case 'additional':
-        if (!formData.referralSource) {
-          toast.error('유입 경로를 선택해주세요')
+        if (!formData.sourceType) {
+          toast.error('고객 유입 경로 타입을 선택해주세요')
           return false
+        }
+        if (formData.sourceType === 'venue-referral' && !formData.venuePartnerId) {
+          toast.error('제휴처를 선택해주세요')
+          return false
+        }
+        return true
+
+      case 'payment':
+        if (formData.sourceType === 'manual-registration') {
+          if (!formData.paymentStatus) {
+            toast.error('결제 상태를 선택해주세요')
+            return false
+          }
+          if (formData.paymentStatus !== 'unpaid' && !formData.paymentMethod) {
+            toast.error('결제 방식을 선택해주세요')
+            return false
+          }
         }
         return true
       
@@ -179,15 +205,29 @@ export function CreateProjectDialog({
   const handleNext = () => {
     if (!validateStep(step)) return
     
-    const steps: Step[] = ['product', 'package', 'details', 'additional', 'confirm']
+    const steps: Step[] = ['product', 'package', 'details', 'additional', 'payment', 'confirm']
     const currentIndex = steps.indexOf(step)
+
+    // 수동 등록이 아닌 경우 payment 단계 건너뛰기
+    if (step === 'additional' && formData.sourceType !== 'manual-registration') {
+      setStep('confirm')
+      return
+    }
+
     if (currentIndex < steps.length - 1) {
       setStep(steps[currentIndex + 1])
     }
   }
 
   const handleBack = () => {
-    const steps: Step[] = ['product', 'package', 'details', 'additional', 'confirm']
+    const steps: Step[] = ['product', 'package', 'details', 'additional', 'payment', 'confirm']
+    
+    // 수동 등록이 아닌 경우 payment 단계 건너뛰고 additional로 이동
+    if (step === 'confirm' && formData.sourceType !== 'manual-registration') {
+      setStep('additional')
+      return
+    }
+
     const currentIndex = steps.indexOf(step)
     if (currentIndex > 0) {
       setStep(steps[currentIndex - 1])
@@ -199,17 +239,42 @@ export function CreateProjectDialog({
     
     try {
       // TODO: 실제 API 호출로 변경
-      // 관리자 직접 등록 시 leadStatus는 'contracted' (바로 확정)
-      // sourceChannel은 '관리자 직접 등록'
+      // sourceType에 따라 leadStatus 결정
+      const leadStatus = formData.sourceType === 'manual-registration' ? 'contracted' : 'inquiry'
+      
+      // sourceChannel 설정
+      let sourceChannel = formData.referralSource || ''
+      if (formData.sourceType === 'venue-referral' && formData.venuePartnerId) {
+        const partner = getActiveVenuePartners().find(p => p.id === formData.venuePartnerId)
+        sourceChannel = partner?.name || formData.referralSource
+      } else if (formData.sourceType === 'manual-registration') {
+        sourceChannel = formData.referralSource || '수동 등록'
+      }
+      
+      // 포털 계정 생성 여부 결정 (수동 등록이고 결제 완료/부분 결제 시 자동 생성)
+      const shouldCreatePortalAccount = formData.sourceType === 'manual-registration' && 
+                                       (formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
+
       console.log('등록 데이터:', {
         ...formData,
-        leadStatus: 'contracted', // 관리자 직접 등록은 바로 확정
-        sourceChannel: '관리자 직접 등록'
+        leadStatus,
+        sourceChannel,
+        sourceType: formData.sourceType,
+        venuePartnerId: formData.venuePartnerId,
+        portalAccountCreated: shouldCreatePortalAccount
       })
       
       await new Promise(resolve => setTimeout(resolve, 1000))
       
-      toast.success('고객이 등록되고 일정이 확정되었습니다!')
+      let message = '고객이 등록되었습니다!'
+      if (formData.sourceType === 'manual-registration') {
+        message = '고객이 등록되고 일정이 확정되었습니다!'
+        if (shouldCreatePortalAccount) {
+          message += ' (포털 계정 자동 생성됨)'
+        }
+      }
+      
+      toast.success(message)
       
       // Reset form
       setFormData({
@@ -228,8 +293,14 @@ export function CreateProjectDialog({
         weddingVenue: '',
         venueAddress: '',
         photographerIds: [],
+        sourceType: '',
+        venuePartnerId: '',
         referralSource: '',
-        specialRequests: ''
+        specialRequests: '',
+        paymentStatus: 'unpaid',
+        paymentMethod: '',
+        paymentAmount: '',
+        isPortalAccountCreated: false
       })
       setStep('product')
       
@@ -250,13 +321,14 @@ export function CreateProjectDialog({
       case 'package': return '패키지와 추가 옵션을 선택해주세요'
       case 'details': return '촬영 날짜, 장소, 담당 작가를 선택해주세요'
       case 'additional': return '유입 경로와 특별 요청사항을 입력해주세요'
+      case 'payment': return '결제 정보를 입력해주세요 (수동 등록 시 필수)'
       case 'confirm': return '입력한 정보를 확인해주세요'
     }
   }
 
   const getProductTypeLabel = (type: ProjectType) => {
     const labels: Record<ProjectType, string> = {
-      wedding: '일반 웨딩',
+      wedding: '웨딩',
       hanbok: '한복 & 캐주얼',
       dress_shop: '가봉 스냅',
       baby: '돌스냅',
@@ -278,28 +350,32 @@ export function CreateProjectDialog({
 
         {/* Progress Steps */}
         <div className="flex items-center justify-between mb-6">
-          {(['product', 'package', 'details', 'additional', 'confirm'] as Step[]).map((s, idx) => (
+          {(['product', 'package', 'details', 'additional', 'payment', 'confirm'] as Step[]).map((s, idx) => {
+             // 수동 등록이 아닌 경우 payment 스텝 숨기기 (UI 상에서는 보이지 않게 처리하거나 disabled 처리)
+             if (s === 'payment' && formData.sourceType !== 'manual-registration') return null;
+             
+             return (
             <div key={s} className="flex items-center flex-1">
               <div className={cn(
                 "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-all",
                 step === s 
                   ? "bg-zinc-900 text-white scale-110" 
-                  : idx < (['product', 'package', 'details', 'additional', 'confirm'] as Step[]).indexOf(step)
+                  : idx < (['product', 'package', 'details', 'additional', 'payment', 'confirm'] as Step[]).indexOf(step)
                   ? "bg-green-600 text-white"
                   : "bg-zinc-200 text-zinc-500"
               )}>
                 {idx + 1}
               </div>
-              {idx < 4 && (
+              {idx < 5 && (
                 <div className={cn(
                   "flex-1 h-1 mx-2 transition-all",
-                  idx < (['product', 'package', 'details', 'additional', 'confirm'] as Step[]).indexOf(step)
+                  idx < (['product', 'package', 'details', 'additional', 'payment', 'confirm'] as Step[]).indexOf(step)
                     ? "bg-green-600"
                     : "bg-zinc-200"
                 )} />
               )}
             </div>
-          ))}
+          )})}
         </div>
 
         <div className="space-y-6">
@@ -629,27 +705,138 @@ export function CreateProjectDialog({
           {/* Step 4: Additional Info */}
           {step === 'additional' && (
             <div className="space-y-6">
-              {/* Referral Source */}
-              <div className="space-y-2">
-                <Label htmlFor="referralSource" className="flex items-center gap-2">
-                  <UsersIcon className="h-4 w-4" />
-                  유입 경로 *
+              {/* Source Type Selection */}
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  고객 유입 경로 타입 *
                 </Label>
-                <Select value={formData.referralSource} onValueChange={(v) => handleChange('referralSource', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="유입 경로를 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Instagram">Instagram</SelectItem>
-                    <SelectItem value="Naver Blog">Naver Blog</SelectItem>
-                    <SelectItem value="Facebook">Facebook</SelectItem>
-                    <SelectItem value="웨딩홀 제휴">웨딩홀 제휴</SelectItem>
-                    <SelectItem value="지인 추천">지인 추천</SelectItem>
-                    <SelectItem value="Google 검색">Google 검색</SelectItem>
-                    <SelectItem value="기타">기타</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChange('sourceType', 'client-direct')
+                      handleChange('venuePartnerId', '')
+                    }}
+                    className={cn(
+                      "p-4 border-2 rounded-lg transition-all text-left hover:border-zinc-400",
+                      formData.sourceType === 'client-direct'
+                        ? "border-zinc-900 bg-zinc-50"
+                        : "border-zinc-200 bg-white"
+                    )}
+                  >
+                    <UserPlus className={cn(
+                      "h-5 w-5 mb-2",
+                      formData.sourceType === 'client-direct' ? "text-zinc-900" : "text-zinc-400"
+                    )} />
+                    <div className="font-semibold text-sm mb-1">고객 직접 문의</div>
+                    <div className="text-xs text-zinc-500">고객용 페이지</div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => handleChange('sourceType', 'venue-referral')}
+                    className={cn(
+                      "p-4 border-2 rounded-lg transition-all text-left hover:border-zinc-400",
+                      formData.sourceType === 'venue-referral'
+                        ? "border-zinc-900 bg-zinc-50"
+                        : "border-zinc-200 bg-white"
+                    )}
+                  >
+                    <Building2 className={cn(
+                      "h-5 w-5 mb-2",
+                      formData.sourceType === 'venue-referral' ? "text-zinc-900" : "text-zinc-400"
+                    )} />
+                    <div className="font-semibold text-sm mb-1">웨딩홀/플래너</div>
+                    <div className="text-xs text-zinc-500">제휴처 소개</div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChange('sourceType', 'manual-registration')
+                      handleChange('venuePartnerId', '')
+                    }}
+                    className={cn(
+                      "p-4 border-2 rounded-lg transition-all text-left hover:border-zinc-400",
+                      formData.sourceType === 'manual-registration'
+                        ? "border-zinc-900 bg-zinc-50"
+                        : "border-zinc-200 bg-white"
+                    )}
+                  >
+                    <User className={cn(
+                      "h-5 w-5 mb-2",
+                      formData.sourceType === 'manual-registration' ? "text-zinc-900" : "text-zinc-400"
+                    )} />
+                    <div className="font-semibold text-sm mb-1">수동 등록</div>
+                    <div className="text-xs text-zinc-500">관리자 직접 입력</div>
+                  </button>
+                </div>
               </div>
+
+              {/* Venue Partner Selection (제휴처인 경우만) */}
+              {formData.sourceType === 'venue-referral' && (
+                <div className="space-y-2">
+                  <Label htmlFor="venuePartnerId" className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    제휴처 선택 *
+                  </Label>
+                  <Select value={formData.venuePartnerId} onValueChange={(v) => handleChange('venuePartnerId', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="제휴 웨딩홀/플래너를 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getActiveVenuePartners().map(partner => (
+                        <SelectItem key={partner.id} value={partner.id}>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {getVenuePartnerTypeLabel(partner.type)}
+                            </Badge>
+                            {partner.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Referral Source (구체적인 유입 경로) */}
+              {formData.sourceType === 'client-direct' && (
+                <div className="space-y-2">
+                  <Label htmlFor="referralSource" className="flex items-center gap-2">
+                    <UsersIcon className="h-4 w-4" />
+                    구체적인 유입 경로
+                  </Label>
+                  <Select value={formData.referralSource} onValueChange={(v) => handleChange('referralSource', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="유입 경로를 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Instagram">Instagram</SelectItem>
+                      <SelectItem value="Naver Blog">Naver Blog</SelectItem>
+                      <SelectItem value="Facebook">Facebook</SelectItem>
+                      <SelectItem value="Google 검색">Google 검색</SelectItem>
+                      <SelectItem value="Kakao">Kakao</SelectItem>
+                      <SelectItem value="지인 추천">지인 추천</SelectItem>
+                      <SelectItem value="고객용 페이지">고객용 페이지</SelectItem>
+                      <SelectItem value="기타">기타</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {formData.sourceType === 'manual-registration' && (
+                <div className="space-y-2">
+                  <Label htmlFor="referralSource">등록 사유 (선택)</Label>
+                  <Input
+                    id="referralSource"
+                    placeholder="예: 전화 문의, 오프라인 상담 등"
+                    value={formData.referralSource}
+                    onChange={(e) => handleChange('referralSource', e.target.value)}
+                  />
+                </div>
+              )}
 
               {/* Special Requests */}
               <div className="space-y-2">
@@ -666,7 +853,113 @@ export function CreateProjectDialog({
             </div>
           )}
 
-          {/* Step 5: Confirm */}
+          {/* Step 5: Payment Info (Manual Registration Only) */}
+          {step === 'payment' && formData.sourceType === 'manual-registration' && (
+            <div className="space-y-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 mb-4">
+                <h4 className="font-semibold mb-1 flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  결제 정보 입력 안내
+                </h4>
+                <p>
+                  수동으로 등록하는 경우 결제 상태를 직접 입력해야 합니다.<br/>
+                  '입금 완료' 또는 '현장 결제(일부)' 상태로 저장 시 <strong>포털 계정이 자동으로 생성</strong>되며,<br/>
+                  고객은 '촬영 대기' 상태부터 확인할 수 있습니다.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  결제 상태 *
+                </Label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChange('paymentStatus', 'paid')
+                      // 입금 완료 시 기본값 설정
+                      if (!formData.paymentMethod) handleChange('paymentMethod', 'transfer')
+                    }}
+                    className={cn(
+                      "p-4 rounded-lg border-2 transition-all text-left",
+                      formData.paymentStatus === 'paid'
+                        ? "border-green-600 bg-green-50 ring-1 ring-green-600"
+                        : "border-zinc-200 hover:border-zinc-300"
+                    )}
+                  >
+                    <div className="font-semibold text-green-700">입금 완료</div>
+                    <div className="text-xs text-green-600 mt-1">전액 결제됨</div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => handleChange('paymentStatus', 'partial')}
+                    className={cn(
+                      "p-4 rounded-lg border-2 transition-all text-left",
+                      formData.paymentStatus === 'partial'
+                        ? "border-orange-500 bg-orange-50 ring-1 ring-orange-500"
+                        : "border-zinc-200 hover:border-zinc-300"
+                    )}
+                  >
+                    <div className="font-semibold text-orange-700">예약금 입금</div>
+                    <div className="text-xs text-orange-600 mt-1">일부 결제됨</div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChange('paymentStatus', 'unpaid')
+                      handleChange('paymentMethod', '')
+                      handleChange('paymentAmount', '')
+                    }}
+                    className={cn(
+                      "p-4 rounded-lg border-2 transition-all text-left",
+                      formData.paymentStatus === 'unpaid'
+                        ? "border-zinc-900 bg-zinc-50 ring-1 ring-zinc-900"
+                        : "border-zinc-200 hover:border-zinc-300"
+                    )}
+                  >
+                    <div className="font-semibold">미입금</div>
+                    <div className="text-xs text-muted-foreground mt-1">추후 결제 예정</div>
+                  </button>
+                </div>
+              </div>
+
+              {formData.paymentStatus !== 'unpaid' && (
+                <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      결제 방식 *
+                    </Label>
+                    <Select value={formData.paymentMethod} onValueChange={(v) => handleChange('paymentMethod', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="결제 방식 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="transfer">계좌 이체</SelectItem>
+                        <SelectItem value="card">카드 결제</SelectItem>
+                        <SelectItem value="cash">현금 (현장)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentAmount">결제 금액 (선택)</Label>
+                    <Input
+                      id="paymentAmount"
+                      type="text"
+                      placeholder="예: 500,000"
+                      value={formData.paymentAmount}
+                      onChange={(e) => handleChange('paymentAmount', e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 6: Confirm */}
           {step === 'confirm' && (
             <div className="space-y-4">
               <div className="bg-zinc-50 rounded-lg p-6 space-y-6">
@@ -779,14 +1072,105 @@ export function CreateProjectDialog({
                   </div>
                 </div>
 
-                {/* Additional Info */}
+                {/* Payment Info (Manual Only) */}
+                {formData.sourceType === 'manual-registration' && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold text-sm text-zinc-500 mb-3">결제 및 계정 정보</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-500">결제 상태:</span>
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            formData.paymentStatus === 'paid' ? 'bg-green-50 text-green-700 border-green-200' :
+                            formData.paymentStatus === 'partial' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                            'bg-zinc-50 text-zinc-700 border-zinc-200'
+                          )}
+                        >
+                          {formData.paymentStatus === 'paid' ? '입금 완료' :
+                           formData.paymentStatus === 'partial' ? '예약금 입금' : '미입금'}
+                        </Badge>
+                      </div>
+                      {formData.paymentStatus !== 'unpaid' && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <span className="text-zinc-500">결제 방식:</span>
+                            <span className="ml-2 font-medium">
+                              {formData.paymentMethod === 'transfer' ? '계좌 이체' :
+                               formData.paymentMethod === 'card' ? '카드 결제' :
+                               formData.paymentMethod === 'cash' ? '현금' : '-'}
+                            </span>
+                          </div>
+                          {formData.paymentAmount && (
+                            <div>
+                              <span className="text-zinc-500">결제 금액:</span>
+                              <span className="ml-2 font-medium">{formData.paymentAmount}원</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="mt-3 bg-zinc-100 rounded p-3 flex items-start gap-2">
+                        <div className={cn(
+                          "mt-0.5 rounded-full p-0.5",
+                          (formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
+                            ? "bg-green-200 text-green-700"
+                            : "bg-zinc-300 text-zinc-500"
+                        )}>
+                          <CheckCircle className="h-3 w-3" />
+                        </div>
+                        <div>
+                          <span className={cn(
+                            "font-medium",
+                            (formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
+                              ? "text-green-700"
+                              : "text-zinc-500"
+                          )}>
+                            {(formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
+                              ? '포털 계정이 자동으로 생성됩니다.'
+                              : '미입금 상태에서는 포털 계정이 생성되지 않습니다.'}
+                          </span>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {(formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
+                              ? '고객은 로그인 후 "촬영 대기" 상태부터 확인 가능합니다.'
+                              : '결제 완료 후 계정이 활성화됩니다.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="border-t pt-4">
-                  <h3 className="font-semibold text-sm text-zinc-500 mb-3">추가 정보</h3>
+                  <h3 className="font-semibold text-sm text-zinc-500 mb-3">유입 정보</h3>
                   <div className="space-y-2 text-sm">
                     <div>
-                      <span className="text-zinc-500">유입 경로:</span>
-                      <span className="ml-2 font-medium">{formData.referralSource}</span>
+                      <span className="text-zinc-500">유입 타입:</span>
+                      <Badge className="ml-2" variant="outline">
+                        {formData.sourceType === 'client-direct' && '고객 직접 문의'}
+                        {formData.sourceType === 'venue-referral' && '웨딩홀/플래너 제휴'}
+                        {formData.sourceType === 'manual-registration' && '수동 등록'}
+                      </Badge>
                     </div>
+                    {formData.sourceType === 'venue-referral' && formData.venuePartnerId && (
+                      <div>
+                        <span className="text-zinc-500">제휴처:</span>
+                        <span className="ml-2 font-medium">
+                          {getActiveVenuePartners().find(p => p.id === formData.venuePartnerId)?.name}
+                        </span>
+                      </div>
+                    )}
+                    {formData.sourceType === 'client-direct' && formData.referralSource && (
+                      <div>
+                        <span className="text-zinc-500">구체적 경로:</span>
+                        <span className="ml-2 font-medium">{formData.referralSource}</span>
+                      </div>
+                    )}
+                    {formData.sourceType === 'manual-registration' && formData.referralSource && (
+                      <div>
+                        <span className="text-zinc-500">등록 사유:</span>
+                        <span className="ml-2 font-medium">{formData.referralSource}</span>
+                      </div>
+                    )}
                     {formData.specialRequests && (
                       <div>
                         <span className="text-zinc-500">특별 요청사항:</span>

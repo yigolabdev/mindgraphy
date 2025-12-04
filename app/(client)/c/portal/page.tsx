@@ -6,7 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star, Share2, ExternalLink, Edit, Clock } from 'lucide-react'
+import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star, Share2, ExternalLink, Edit, Clock, MapPin, Home, User, Phone } from 'lucide-react'
+import { mockProducts } from '@/lib/mock/settings'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { getAllClientFormData } from '@/lib/utils/session-storage'
+import { 
+  getCustomerByPhone, 
+  getProjectByCustomerId, 
+  mapLeadStatusToCurrentStep 
+} from '@/lib/utils/customer-registration'
+import type { Customer, Project } from '@/lib/types'
 
 // Mock data - 실제로는 API에서 가져올 데이터
 const mockCustomerData = {
@@ -30,6 +40,8 @@ const mockCustomerData = {
   },
   venue: '서울 그랜드 웨딩홀',
   packageName: 'new BASIC',
+  // Mock으로 옵션 추가 (테스트용)
+  optionIds: ['option-3', 'option-2'],
   requestHistory: [
     {
       id: '1',
@@ -150,9 +162,85 @@ export default function PortalPage() {
   const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
   const [review, setReview] = useState('')
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  const [realCustomer, setRealCustomer] = useState<Customer | null>(null)
+  const [realProject, setRealProject] = useState<Project | null>(null)
+  
+  // 앨범 수령 주소지 정보
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    recipientName: '',
+    recipientPhone: '',
+    postalCode: '',
+    address: '',
+    detailAddress: '',
+    deliveryRequest: ''
+  })
+  const [isAddressSaved, setIsAddressSaved] = useState(false)
+
+  // 로그인 확인 및 실제 고객 데이터 로드
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLoggedIn = sessionStorage.getItem('mindgraphy_client_logged_in')
+      
+      if (!isLoggedIn) {
+        router.replace('/c/login')
+        return
+      }
+      
+      // 로그인한 전화번호로 고객 데이터 조회
+      const phone = sessionStorage.getItem('mindgraphy_client_phone')
+      if (phone) {
+        const customer = getCustomerByPhone(phone)
+        if (customer) {
+          setRealCustomer(customer)
+          
+          // 고객의 프로젝트 조회
+          const project = getProjectByCustomerId(customer.id)
+          if (project) {
+            setRealProject(project)
+            
+            // leadStatus와 projectStatus를 기반으로 currentStep 계산
+            const calculatedStep = mapLeadStatusToCurrentStep(
+              customer.leadStatus,
+              project.projectStatus,
+              false // TODO: 실제 결제 상태 확인
+            )
+            
+            // Mock 데이터 업데이트
+            setCustomerData(prev => ({
+              ...prev,
+              currentStep: calculatedStep,
+              coupleName: `${customer.groomName} & ${customer.brideName}`,
+              venue: project.weddingVenue || prev.venue,
+              weddingDate: project.weddingDate || prev.weddingDate,
+              packageName: project.packageId || prev.packageName
+            }))
+          }
+        }
+      }
+      
+      setIsCheckingAuth(false)
+    }
+  }, [router])
 
   useEffect(() => {
+    if (isCheckingAuth) return
+    
     setIsMounted(true)
+    
+    // Load selected options from real project, session storage, or mock data
+    if (realProject && realProject.optionIds && realProject.optionIds.length > 0) {
+      setSelectedOptions(realProject.optionIds)
+    } else {
+      const formData = getAllClientFormData()
+      if (formData && formData.optionIds && formData.optionIds.length > 0) {
+        setSelectedOptions(formData.optionIds)
+      } else if (mockCustomerData.optionIds) {
+        // Fallback to mock data
+        setSelectedOptions(mockCustomerData.optionIds)
+      }
+    }
     
     // Calculate days until wedding
     const today = new Date()
@@ -168,7 +256,19 @@ export default function PortalPage() {
     // Load existing rating
     setRating(customerData.photographerRating.rating)
     setReview(customerData.photographerRating.review)
-  }, [customerData.weddingDate, customerData.photographerRating])
+    
+    // Load saved delivery address from localStorage
+    const savedAddress = localStorage.getItem('mindgraphy_delivery_address')
+    if (savedAddress) {
+      try {
+        const parsed = JSON.parse(savedAddress)
+        setDeliveryAddress(parsed)
+        setIsAddressSaved(true)
+      } catch (e) {
+        console.error('Failed to parse saved address:', e)
+      }
+    }
+  }, [isCheckingAuth, realProject, customerData.weddingDate, customerData.photographerRating.rating, customerData.photographerRating.review])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ko-KR').format(amount) + '원'
@@ -189,6 +289,50 @@ export default function PortalPage() {
 
   const handlePhotoSelection = () => {
     router.push('/c/portal/photos')
+  }
+  
+  const handleSaveAddress = () => {
+    console.log('[Portal] handleSaveAddress called with:', deliveryAddress)
+    
+    // Validation
+    if (!deliveryAddress.recipientName.trim()) {
+      console.log('[Portal] Validation failed: recipientName')
+      alert('수령인 이름을 입력해 주세요')
+      return
+    }
+    if (!deliveryAddress.recipientPhone.trim()) {
+      console.log('[Portal] Validation failed: recipientPhone')
+      alert('연락처를 입력해 주세요')
+      return
+    }
+    if (!deliveryAddress.postalCode.trim()) {
+      console.log('[Portal] Validation failed: postalCode')
+      alert('우편번호를 입력해 주세요')
+      return
+    }
+    if (!deliveryAddress.address.trim()) {
+      console.log('[Portal] Validation failed: address')
+      alert('주소를 입력해 주세요')
+      return
+    }
+    if (!deliveryAddress.detailAddress.trim()) {
+      console.log('[Portal] Validation failed: detailAddress')
+      alert('상세주소를 입력해 주세요')
+      return
+    }
+    
+    console.log('[Portal] All validations passed, saving address...')
+    
+    // Save to localStorage
+    localStorage.setItem('mindgraphy_delivery_address', JSON.stringify(deliveryAddress))
+    setIsAddressSaved(true)
+    
+    console.log('[Portal] Address saved successfully:', deliveryAddress)
+    alert('앨범 수령 주소가 저장되었습니다')
+  }
+  
+  const handleEditAddress = () => {
+    setIsAddressSaved(false)
   }
 
   const handleAddRequest = () => {
@@ -242,7 +386,7 @@ export default function PortalPage() {
     if (typeof window !== 'undefined') {
       sessionStorage.clear()
     }
-    router.push('/c/product-type')
+    router.push('/c/login')
   }
 
   // Test functions
@@ -259,6 +403,18 @@ export default function PortalPage() {
     }))
     
     setIsPast(newIsPast)
+  }
+
+  // 로그인 확인 중
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900"></div>
+          <p className="text-sm text-zinc-600">로그인 확인 중...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -400,6 +556,29 @@ export default function PortalPage() {
             <span className="text-zinc-600">선택 패키지</span>
             <span className="font-medium text-zinc-900">{customerData.packageName}</span>
           </div>
+          
+          {/* 선택한 옵션 표시 */}
+          {selectedOptions.length > 0 && (
+            <>
+              <div className="border-t border-zinc-200"></div>
+              <div className="space-y-2">
+                <span className="text-sm text-zinc-600">선택 옵션</span>
+                <div className="space-y-1.5">
+                  {selectedOptions.map((optionId) => {
+                    const option = mockProducts.find(p => p.id === optionId)
+                    return option ? (
+                      <div key={optionId} className="flex items-start gap-2">
+                        <span className="text-zinc-400 text-sm mt-0.5">•</span>
+                        <span className="text-sm font-medium text-zinc-900">
+                          {option.title}
+                        </span>
+                      </div>
+                    ) : null
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Divider */}
@@ -974,6 +1153,200 @@ export default function PortalPage() {
               </div>
             </div>
 
+            {/* 앨범 수령 주소지 입력 */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium text-zinc-900">
+                  앨범 수령 주소지
+                </h2>
+                {isAddressSaved && (
+                  <Button
+                    onClick={handleEditAddress}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    수정
+                  </Button>
+                )}
+              </div>
+              
+              {isAddressSaved ? (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 p-6 space-y-4 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-800 mb-4">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span className="font-medium">주소가 저장되었습니다</span>
+                  </div>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start gap-3">
+                      <User className="h-4 w-4 text-green-700 mt-0.5" />
+                      <div>
+                        <div className="text-xs text-green-700 mb-0.5">수령인</div>
+                        <div className="font-medium text-green-900">{deliveryAddress.recipientName}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <Phone className="h-4 w-4 text-green-700 mt-0.5" />
+                      <div>
+                        <div className="text-xs text-green-700 mb-0.5">연락처</div>
+                        <div className="font-medium text-green-900">{deliveryAddress.recipientPhone}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <MapPin className="h-4 w-4 text-green-700 mt-0.5" />
+                      <div className="flex-1">
+                        <div className="text-xs text-green-700 mb-0.5">배송 주소</div>
+                        <div className="font-medium text-green-900">
+                          [{deliveryAddress.postalCode}] {deliveryAddress.address}
+                        </div>
+                        <div className="font-medium text-green-900 mt-1">
+                          {deliveryAddress.detailAddress}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {deliveryAddress.deliveryRequest && (
+                      <div className="flex items-start gap-3">
+                        <FileText className="h-4 w-4 text-green-700 mt-0.5" />
+                        <div>
+                          <div className="text-xs text-green-700 mb-0.5">배송 요청사항</div>
+                          <div className="text-green-900">{deliveryAddress.deliveryRequest}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white border-2 border-zinc-300 p-6 space-y-5 rounded-lg">
+                  <p className="text-sm text-zinc-600 text-center leading-relaxed">
+                    앨범을 수령하실 주소를 입력해 주세요
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {/* 수령인 정보 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="recipientName" className="text-sm font-medium text-zinc-700 flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          수령인 <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="recipientName"
+                          placeholder="이름을 입력하세요"
+                          value={deliveryAddress.recipientName}
+                          onChange={(e) => setDeliveryAddress(prev => ({ ...prev, recipientName: e.target.value }))}
+                          className="h-11"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="recipientPhone" className="text-sm font-medium text-zinc-700 flex items-center gap-1">
+                          <Phone className="h-3 w-3" />
+                          연락처 <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="recipientPhone"
+                          placeholder="010-0000-0000"
+                          value={deliveryAddress.recipientPhone}
+                          onChange={(e) => setDeliveryAddress(prev => ({ ...prev, recipientPhone: e.target.value }))}
+                          className="h-11"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* 주소 입력 */}
+                    <div className="space-y-2">
+                      <Label htmlFor="postalCode" className="text-sm font-medium text-zinc-700 flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        우편번호 <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="postalCode"
+                          placeholder="우편번호"
+                          value={deliveryAddress.postalCode}
+                          onChange={(e) => setDeliveryAddress(prev => ({ ...prev, postalCode: e.target.value }))}
+                          className="h-11 flex-1"
+                          maxLength={5}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-11 px-6 whitespace-nowrap"
+                          onClick={() => alert('우편번호 검색 기능은 추후 구현 예정입니다')}
+                        >
+                          우편번호 검색
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="address" className="text-sm font-medium text-zinc-700 flex items-center gap-1">
+                        <Home className="h-3 w-3" />
+                        주소 <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="address"
+                        placeholder="주소를 입력하세요"
+                        value={deliveryAddress.address}
+                        onChange={(e) => setDeliveryAddress(prev => ({ ...prev, address: e.target.value }))}
+                        className="h-11"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="detailAddress" className="text-sm font-medium text-zinc-700">
+                        상세주소 <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="detailAddress"
+                        placeholder="상세주소를 입력하세요 (예: 101동 1001호)"
+                        value={deliveryAddress.detailAddress}
+                        onChange={(e) => setDeliveryAddress(prev => ({ ...prev, detailAddress: e.target.value }))}
+                        className="h-11"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="deliveryRequest" className="text-sm font-medium text-zinc-700">
+                        배송 요청사항 <span className="text-zinc-400 text-xs font-normal">(선택)</span>
+                      </Label>
+                      <Textarea
+                        id="deliveryRequest"
+                        placeholder="배송 시 요청사항을 입력하세요 (예: 부재 시 경비실에 맡겨주세요)"
+                        value={deliveryAddress.deliveryRequest}
+                        onChange={(e) => setDeliveryAddress(prev => ({ ...prev, deliveryRequest: e.target.value }))}
+                        className="resize-none"
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <Button
+                      onClick={handleSaveAddress}
+                      className={cn(
+                        "w-full h-12 text-base font-normal transition-all duration-300",
+                        "bg-green-600 hover:bg-green-700 text-white",
+                        "active:scale-[0.98]",
+                        "shadow-md hover:shadow-lg"
+                      )}
+                    >
+                      <Home className="mr-2 h-5 w-5" />
+                      주소 저장하기
+                    </Button>
+                    
+                    <p className="text-xs text-zinc-500 text-center leading-relaxed pt-2">
+                      앨범은 사진 선택 및 보정 완료 후<br />
+                      등록하신 주소로 배송됩니다
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Divider */}
             <div className="border-t border-zinc-200"></div>
           </>
@@ -1437,57 +1810,6 @@ export default function PortalPage() {
           >
             로그아웃
           </Button>
-        </div>
-      </div>
-
-      {/* Footer - 기존 ClientFooter 컴포넌트 사용 */}
-      <div className="max-w-2xl mx-auto px-4 pb-12">
-        <div className="border-t border-zinc-200 pt-8">
-          <div className="space-y-6 text-center">
-            {/* Contact Info */}
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-zinc-900">
-                문의하기
-              </p>
-              <div className="flex justify-center gap-4">
-                <a
-                  href="tel:02-2202-9966"
-                  className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
-                >
-                  📞 02-2202-9966
-                </a>
-                <span className="text-zinc-300">|</span>
-                <a
-                  href="https://pf.kakao.com/_xfxcxfxaK"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
-                >
-                  💬 카카오톡 문의
-                </a>
-              </div>
-            </div>
-
-            {/* Address */}
-            <p className="text-xs text-zinc-400">
-              서울 성동구 마조로15길 6 1층
-            </p>
-
-            {/* Instagram */}
-            <div>
-              <a
-                href="https://www.instagram.com/studio.mind.graphy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-                @studio.mind.graphy
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </div>

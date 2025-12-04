@@ -51,34 +51,10 @@ export function ClientFooter() {
             </a>
           </div>
 
-          {/* Portal Button */}
-          <button
-            onClick={handlePortal}
-            className={cn(
-              "w-full py-3 text-sm font-medium text-zinc-900",
-              "hover:bg-zinc-50",
-              "transition-all duration-200",
-              "active:scale-[0.98]",
-              "border-t border-zinc-200"
-            )}
-          >
-            마인드 포털
-          </button>
-
-          {/* Portfolio Button */}
-          <button
-            onClick={handlePortfolio}
-            className={cn(
-              "w-full py-3 text-sm font-medium text-zinc-600",
-              "hover:text-zinc-900 hover:bg-zinc-50",
-              "transition-all duration-200",
-              "active:scale-[0.98]",
-              "border-t border-zinc-200"
-            )}
-          >
-            포트폴리오 보기
-          </button>
-
+          {/* Portal Button - Removed */}
+          
+          {/* Portfolio Button - Removed */}
+          
           {/* Instagram Link */}
           <a
             href={CONTACT_INFO.instagram}

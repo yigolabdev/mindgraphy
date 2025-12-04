@@ -9,12 +9,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
-import { Calendar, Clock, Users, Camera, Heart, Upload, ArrowLeft } from 'lucide-react'
+import { Calendar, Clock, Users, Camera, Heart, Upload, ArrowLeft, Save } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function WeddingDetailsPage() {
   const router = useRouter()
   const [isMounted, setIsMounted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   // 촬영 시간 확인
   const [timeConfirmed, setTimeConfirmed] = useState(false)
@@ -72,7 +74,75 @@ export default function WeddingDetailsPage() {
 
   useEffect(() => {
     setIsMounted(true)
+    // Load saved draft
+    const savedDraft = localStorage.getItem('wedding_details_draft')
+    if (savedDraft) {
+      try {
+        const data = JSON.parse(savedDraft)
+        setTimeConfirmed(data.timeConfirmed || false)
+        setMakeupShop(data.timetable?.makeupShop || '')
+        setMakeupStartTime(data.timetable?.makeupStartTime || '')
+        setMakeupEndTime(data.timetable?.makeupEndTime || '')
+        setHasPreCeremonyPhoto(data.ceremony?.hasPreCeremonyPhoto || '')
+        setHasOfficiant(data.ceremony?.hasOfficiant || '')
+        setHasMC(data.ceremony?.hasMC || '')
+        setMcType(data.ceremony?.mcType || '')
+        setHasRingExchange(data.ceremony?.hasRingExchange || '')
+        setHasFlowerGirl(data.ceremony?.hasFlowerGirl || '')
+        setHasPaebaek(data.ceremony?.hasPaebaek || '')
+        setGroomFamily(data.family?.groomFamily || '')
+        setBrideFamily(data.family?.brideFamily || '')
+        setPreferredStyle(data.photoStyle?.preferredStyle || '')
+        setNotPreferredStyle(data.photoStyle?.notPreferredStyle || '')
+        setMainDressColor(data.styling?.mainDressColor || '')
+        setMainDressStyle(data.styling?.mainDressStyle || '')
+        setReceptionDressColor(data.styling?.receptionDressColor || '')
+        setReceptionDressStyle(data.styling?.receptionDressStyle || '')
+        setGroomSuitInfo(data.styling?.groomSuitInfo || '')
+        setDressShop(data.vendors?.dressShop || '')
+        setSuitShop(data.vendors?.suitShop || '')
+        setMakeupShopName(data.vendors?.makeupShopName || '')
+        setPlanner(data.vendors?.planner || '')
+        setVideoTeam(data.vendors?.videoTeam || '')
+        setIphoneSnap(data.vendors?.iphoneSnap || '')
+        setOtherTeam(data.vendors?.otherTeam || '')
+        setSpecialEvents(data.vendors?.specialEvents || '')
+        setSpecialRequests(data.vendors?.specialRequests || '')
+        setHoneymoonDeparture(data.honeymoon?.honeymoonDeparture || '')
+        setHoneymoonDestination(data.honeymoon?.honeymoonDestination || '')
+        setHoneymoonReturn(data.honeymoon?.honeymoonReturn || '')
+        setMeetingType(data.meetingType || '')
+        setInvitationUrl(data.invitationUrl || '')
+        
+        toast.success('임시 저장된 내용을 불러왔습니다.')
+      } catch (e) {
+        console.error('Failed to parse draft', e)
+      }
+    }
   }, [])
+
+  const handleSaveDraft = () => {
+    setIsSaving(true)
+    const formData = {
+      timeConfirmed,
+      timetable: { makeupShop, makeupStartTime, makeupEndTime },
+      ceremony: { hasPreCeremonyPhoto, hasOfficiant, hasMC, mcType, hasRingExchange, hasFlowerGirl, hasPaebaek },
+      family: { groomFamily, brideFamily },
+      photoStyle: { preferredStyle, notPreferredStyle },
+      styling: { mainDressColor, mainDressStyle, receptionDressColor, receptionDressStyle, groomSuitInfo },
+      vendors: { dressShop, suitShop, makeupShopName, planner, videoTeam, iphoneSnap, otherTeam, specialEvents, specialRequests },
+      honeymoon: { honeymoonDeparture, honeymoonDestination, honeymoonReturn },
+      meetingType,
+      invitationUrl,
+    }
+    
+    localStorage.setItem('wedding_details_draft', JSON.stringify(formData))
+    
+    setTimeout(() => {
+      setIsSaving(false)
+      toast.success('임시 저장되었습니다. 나중에 다시 이어서 작성할 수 있습니다.')
+    }, 500)
+  }
 
   const handleSubmit = async () => {
     if (!timeConfirmed) {
@@ -174,14 +244,26 @@ export default function WeddingDetailsPage() {
       )}>
         {/* Header */}
         <div className="space-y-4">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/c/portal')}
-            className="mb-4 -ml-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            포털로 돌아가기
-          </Button>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => router.push('/c/portal')}
+              className="mb-4 -ml-2"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              포털로 돌아가기
+            </Button>
+            
+            <Button
+              onClick={handleSaveDraft}
+              disabled={isSaving}
+              variant="outline"
+              className="mb-4 bg-white/80 backdrop-blur-sm border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 shadow-sm fixed top-24 right-4 z-50"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? '저장 중...' : '임시 저장'}
+            </Button>
+          </div>
           
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-light text-zinc-900 tracking-tight">
@@ -189,6 +271,9 @@ export default function WeddingDetailsPage() {
             </h1>
             <p className="text-sm text-zinc-600">
               촬영 준비를 위해 필요한 정보를 입력해주세요
+            </p>
+            <p className="text-xs text-blue-600 mt-2 bg-blue-50 px-3 py-1 rounded-full inline-block">
+              💡 상세히 적어주실수록 당일 촬영에 큰 도움이 되어 더 좋은 결과물을 얻으실 수 있습니다
             </p>
           </div>
         </div>

@@ -22,6 +22,12 @@ export interface Note {
   createdAt: string
 }
 
+// Customer Source Types
+export type CustomerSourceType = 
+  | 'client-direct'      // 고객용 페이지에서 직접 문의
+  | 'venue-referral'     // 웨딩홀/플래너 제휴
+  | 'manual-registration' // 업무 시스템 수동 등록
+
 // Customer & CRM Types
 export interface Customer {
   id: string
@@ -30,7 +36,9 @@ export interface Customer {
   groomPhone: string
   bridePhone: string
   email: string
-  sourceChannel: string
+  sourceChannel: string // 구체적인 유입 경로 (예: "인스타그램", "서울신라호텔", "수동등록")
+  sourceType: CustomerSourceType // 유입 경로 타입
+  venuePartnerId?: string // 제휴 웨딩홀/플래너 ID (sourceType이 'venue-referral'인 경우)
   leadStatus: 'inquiry' | 'consultation' | 'proposal' | 'contracted' | 'completed' | 'cancelled'
   assignedManagerId: string
   assignedManager?: User

@@ -55,10 +55,8 @@ export default function VenueDetailsPage() {
     }, 400)
   }
 
-  // Validation
-  const isValid = 
-    venueName.trim().length > 0 && 
-    venueHall.trim().length > 0
+  // Validation - 예식장 이름만 필수
+  const isValid = venueName.trim().length > 0
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 overflow-hidden">
@@ -113,9 +111,12 @@ export default function VenueDetailsPage() {
                 "focus:border-zinc-900 focus:ring-0",
                 "placeholder:text-zinc-400"
               )}
-              autoFocus
               required
+              autoFocus
             />
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              예식이 진행될 예식장 이름을 입력해 주세요
+            </p>
           </div>
         </div>
 
@@ -129,7 +130,7 @@ export default function VenueDetailsPage() {
               htmlFor="venue-hall" 
               className="block text-sm font-medium text-zinc-700"
             >
-              예식 홀 이름 <span className="text-red-500">*</span>
+              예식 홀 이름 <span className="text-zinc-400 font-normal">(선택)</span>
             </label>
             <Input
               id="venue-hall"
@@ -143,10 +144,9 @@ export default function VenueDetailsPage() {
                 "focus:border-zinc-900 focus:ring-0",
                 "placeholder:text-zinc-400"
               )}
-              required
             />
             <p className="text-xs text-zinc-500 leading-relaxed">
-              예식이 진행될 홀 이름을 입력해 주세요
+              예식홀 이름이 있다면 입력해 주세요
             </p>
           </div>
         </div>

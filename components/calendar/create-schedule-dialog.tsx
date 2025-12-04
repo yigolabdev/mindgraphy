@@ -41,7 +41,7 @@ interface CreateScheduleDialogProps {
 }
 
 const productTypes: { value: ProductType; label: string; description: string }[] = [
-  { value: 'wedding', label: '일반 웨딩', description: '웨딩 촬영' },
+  { value: 'wedding', label: '웨딩', description: '웨딩 촬영' },
   { value: 'hanbok', label: '한복 & 캐주얼', description: '한복 촬영' },
   { value: 'dress_shop', label: '가봉 스냅', description: '드레스 샵 촬영' },
   { value: 'baby', label: '돌스냅', description: '돌 촬영' },

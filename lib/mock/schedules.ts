@@ -1,6 +1,6 @@
 import { addDays, subDays, format } from 'date-fns'
 
-export type ScheduleStatus = 'reserved' | 'in_progress' | 'editing' | 'completed' | 'cancelled'
+export type ScheduleStatus = 'reserved' | 'on_the_way' | 'in_progress' | 'editing' | 'completed' | 'cancelled'
 export type ProductType = 'wedding' | 'hanbok' | 'dress_shop' | 'baby'
 export type VenueType = 'hotel' | 'convention' | 'outdoor' | 'studio'
 
@@ -919,7 +919,7 @@ export const getStatusLabel = (status: ScheduleStatus): string => {
 // Get product type label
 export const getProductTypeLabel = (productType: ProductType): string => {
   const labels: Record<ProductType, string> = {
-    wedding: '일반 웨딩',
+    wedding: '웨딩',
     hanbok: '한복 & 캐주얼',
     dress_shop: '가봉 스냅',
     baby: '돌스냅'

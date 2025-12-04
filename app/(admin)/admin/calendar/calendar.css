@@ -1,0 +1,195 @@
+.fc {
+  font-family: inherit;
+}
+.fc .fc-button {
+  background-color: #18181b;
+  border-color: #18181b;
+  color: white;
+  text-transform: capitalize;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+.fc .fc-button:hover {
+  background-color: #27272a;
+  border-color: #27272a;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #27272a;
+  border-color: #27272a;
+}
+.fc .fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 1.5em;
+  padding-right: 280px;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .fc .fc-toolbar.fc-header-toolbar {
+    padding-right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .fc .fc-toolbar-chunk:first-child {
+    order: 2;
+  }
+  .fc .fc-toolbar-chunk:nth-child(2) {
+    order: 1;
+    margin-bottom: 8px;
+  }
+  .fc .fc-toolbar-chunk:last-child {
+    order: 3;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem;
+  }
+  .fc .fc-button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+.fc .fc-toolbar-chunk:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fc .fc-viewSelector-button {
+  background-color: white !important;
+  border: 1px solid #e4e4e7 !important;
+  color: #18181b !important;
+  font-size: 14px !important;
+  padding: 8px 16px !important;
+  margin-left: 4px !important;
+}
+.fc .fc-viewSelector-button:hover {
+  background-color: #fafafa !important;
+  border-color: #d4d4d8 !important;
+}
+.fc .fc-viewSelector-button.fc-button-active {
+  background-color: #18181b !important;
+  border-color: #18181b !important;
+  color: white !important;
+}
+@media (max-width: 768px) {
+  .fc .fc-viewSelector-button {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    margin-left: 2px !important;
+  }
+}
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: #e4e4e7;
+}
+.fc .fc-daygrid-day-number {
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.fc .fc-col-header-cell {
+  background-color: #fafafa;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 4px;
+  border-color: #e4e4e7;
+}
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: #eff6ff;
+}
+.fc .fc-daygrid-day:hover {
+  background-color: #fafaf9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.fc .fc-scrollgrid {
+  border-color: #e4e4e7;
+}
+.fc-event {
+  cursor: pointer;
+  border: none;
+  font-size: 13px;
+  padding: 0;
+  margin-bottom: 4px;
+  font-weight: 500;
+  border-left-width: 4px !important;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  height: auto !important; /* Allow height to grow */
+  min-height: min-content;
+}
+.fc-event:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  z-index: 5;
+}
+.fc-daygrid-event {
+  white-space: normal !important;
+  align-items: flex-start;
+}
+.fc-timegrid-slot {
+  font-size: 13px;
+  height: 3em;
+}
+.fc-timegrid-slot-label {
+  color: #71717a;
+}
+.fc .fc-daygrid-day-frame {
+  min-height: 200px; /* Increased min-height for larger events */
+}
+@media (max-width: 768px) {
+  .fc .fc-daygrid-day-frame {
+    min-height: 120px;
+  }
+  .fc .fc-daygrid-day-number {
+    padding: 6px;
+    font-size: 13px;
+  }
+  .fc .fc-col-header-cell {
+    font-size: 12px;
+    padding: 8px 2px;
+  }
+  .fc-event {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+}
+@media (min-width: 768px) {
+  /* Ensure rows can expand */
+  .fc .fc-daygrid-day-frame {
+    height: auto !important;
+    min-height: 200px;
+  }
+}
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem;
+  }
+  .fc .fc-button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .fc .fc-daygrid-day-number {
+    padding: 6px;
+    font-size: 12px;
+  }
+  .fc-event {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+}
+

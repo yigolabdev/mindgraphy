@@ -43,7 +43,11 @@ import {
   ArrowUpDown,
   CreditCard,
   AlertCircle,
-  Bell
+  Bell,
+  Tag,
+  Building2,
+  UserPlus,
+  User
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -60,6 +64,7 @@ export default function CustomersPage() {
   // Filter and sort states
   const [stageFilter, setStageFilter] = useState<string>('all')
   const [satisfactionFilter, setSatisfactionFilter] = useState<string>('all')
+  const [sourceFilter, setSourceFilter] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'latest' | 'name' | 'projects' | 'revenue'>('latest')
 
   // 현재 진행 단계 계산
@@ -194,6 +199,11 @@ export default function CustomersPage() {
       })
     }
     
+    // Source type filter
+    if (sourceFilter !== 'all') {
+      filtered = filtered.filter(c => c.sourceType === sourceFilter)
+    }
+    
     // Sorting - 일정 미확정 고객이 항상 최우선
     filtered.sort((a, b) => {
       // 1순위: 일정 미확정 고객을 최상단에
@@ -216,7 +226,7 @@ export default function CustomersPage() {
     })
     
     return filtered
-  }, [customersWithStats, searchQuery, stageFilter, satisfactionFilter, sortBy, activeTab])
+  }, [customersWithStats, searchQuery, stageFilter, satisfactionFilter, sourceFilter, sortBy, activeTab])
 
   // KPI 계산
   const totalCustomers = customersWithStats.length
@@ -239,6 +249,13 @@ export default function CustomersPage() {
     '시안 확인': customersWithStats.filter(c => c.currentStage.label === '시안 확인').length,
     '편집 중': customersWithStats.filter(c => c.currentStage.label === '편집 중').length,
     '완료': customersWithStats.filter(c => c.currentStage.label === '완료').length,
+  }
+  
+  // 유입 경로별 분포
+  const sourceDistribution = {
+    'client-direct': customersWithStats.filter(c => c.sourceType === 'client-direct').length,
+    'venue-referral': customersWithStats.filter(c => c.sourceType === 'venue-referral').length,
+    'manual-registration': customersWithStats.filter(c => c.sourceType === 'manual-registration').length,
   }
 
   const handleViewCustomer = (customer: typeof customersWithStats[0]) => {
@@ -347,6 +364,76 @@ export default function CustomersPage() {
           />
         </div>
 
+        {/* 유입 경로 통계 */}
+        <Card className="border border-zinc-200 bg-white animate-in fade-in slide-in-from-bottom duration-400">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Tag className="h-4 w-4 text-zinc-600" />
+              유입 경로별 현황
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              <button
+                onClick={() => {
+                  setActiveTab('active')
+                  setSourceFilter('client-direct')
+                }}
+                className="group p-4 bg-zinc-50 border-2 border-zinc-200 rounded-lg hover:border-zinc-400 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <UserPlus className="h-4 w-4 text-zinc-600" />
+                  <span className="text-xs font-medium text-zinc-600">고객 직접 문의</span>
+                </div>
+                <div className="text-2xl font-bold text-zinc-900 group-hover:text-zinc-700">
+                  {sourceDistribution['client-direct']}
+                </div>
+                <div className="text-xs text-zinc-500 mt-1">
+                  {totalCustomers > 0 ? Math.round((sourceDistribution['client-direct'] / totalCustomers) * 100) : 0}%
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab('active')
+                  setSourceFilter('venue-referral')
+                }}
+                className="group p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:border-blue-400 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-xs font-medium text-blue-700">웨딩홀/플래너</span>
+                </div>
+                <div className="text-2xl font-bold text-blue-900 group-hover:text-blue-700">
+                  {sourceDistribution['venue-referral']}
+                </div>
+                <div className="text-xs text-blue-600 mt-1">
+                  {totalCustomers > 0 ? Math.round((sourceDistribution['venue-referral'] / totalCustomers) * 100) : 0}%
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab('active')
+                  setSourceFilter('manual-registration')
+                }}
+                className="group p-4 bg-purple-50 border-2 border-purple-200 rounded-lg hover:border-purple-400 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="h-4 w-4 text-purple-600" />
+                  <span className="text-xs font-medium text-purple-700">수동 등록</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-900 group-hover:text-purple-700">
+                  {sourceDistribution['manual-registration']}
+                </div>
+                <div className="text-xs text-purple-600 mt-1">
+                  {totalCustomers > 0 ? Math.round((sourceDistribution['manual-registration'] / totalCustomers) * 100) : 0}%
+                </div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Tabs for Active and Completed */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'active' | 'completed')} className="animate-in fade-in slide-in-from-bottom duration-500">
           <TabsList className="grid w-full max-w-xl grid-cols-2">
@@ -400,7 +487,7 @@ export default function CustomersPage() {
                     <SlidersHorizontal className="h-4 w-4" />
                     <span className="font-medium">필터:</span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Select value={stageFilter} onValueChange={setStageFilter}>
                       <SelectTrigger className={cn(
                         stageFilter === 'unconfirmed' && "ring-2 ring-red-300 bg-red-50"
@@ -418,6 +505,18 @@ export default function CustomersPage() {
                         <SelectItem value="편집 중">편집 중</SelectItem>
                         <SelectItem value="완료">완료</SelectItem>
                         <SelectItem value="대기">대기</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="유입 경로" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">모든 유입 경로</SelectItem>
+                        <SelectItem value="client-direct">고객 직접 문의</SelectItem>
+                        <SelectItem value="venue-referral">웨딩홀/플래너 제휴</SelectItem>
+                        <SelectItem value="manual-registration">수동 등록</SelectItem>
                       </SelectContent>
                     </Select>
                     
@@ -528,8 +627,27 @@ export default function CustomersPage() {
                             {customer.scheduleUnconfirmed && (
                               <AlertCircle className="h-4 w-4 text-red-600 animate-pulse" />
                             )}
-                            <div className="font-medium">
-                              {customer.groomName} & {customer.brideName}
+                            <div className="flex flex-col gap-1">
+                              <div className="font-medium">
+                                {customer.groomName} & {customer.brideName}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                {customer.sourceType === 'client-direct' && (
+                                  <Badge variant="outline" className="text-xs bg-zinc-50 text-zinc-700 border-zinc-300">
+                                    고객문의
+                                  </Badge>
+                                )}
+                                {customer.sourceType === 'venue-referral' && (
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
+                                    제휴
+                                  </Badge>
+                                )}
+                                {customer.sourceType === 'manual-registration' && (
+                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-300">
+                                    수동등록
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
@@ -563,7 +681,7 @@ export default function CustomersPage() {
                               customer.latestProject.projectType === 'baby' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                               'bg-zinc-50 text-zinc-700 border-zinc-200'
                             }>
-                              {customer.latestProject.projectType === 'wedding' ? '일반 웨딩' :
+                              {customer.latestProject.projectType === 'wedding' ? '웨딩' :
                                customer.latestProject.projectType === 'hanbok' ? '한복 & 캐주얼' :
                                customer.latestProject.projectType === 'dress_shop' ? '가봉 스냅' :
                                customer.latestProject.projectType === 'baby' ? '돌스냅' : '-'}
@@ -717,7 +835,7 @@ export default function CustomersPage() {
                               customer.latestProject.projectType === 'baby' ? 'bg-blue-50 text-blue-700 border-blue-200' :
                               'bg-zinc-50 text-zinc-700 border-zinc-200'
                             }>
-                              {customer.latestProject.projectType === 'wedding' ? '일반 웨딩' :
+                              {customer.latestProject.projectType === 'wedding' ? '웨딩' :
                                customer.latestProject.projectType === 'hanbok' ? '한복 & 캐주얼' :
                                customer.latestProject.projectType === 'dress_shop' ? '가봉 스냅' :
                                customer.latestProject.projectType === 'baby' ? '돌스냅' : '-'}

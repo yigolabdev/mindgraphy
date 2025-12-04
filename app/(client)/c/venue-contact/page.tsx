@@ -10,7 +10,9 @@ type MainContact = 'bride' | 'groom' | null
 
 export default function VenueContactPage() {
   const router = useRouter()
+  const [brideName, setBrideName] = useState('')
   const [bridePhone, setBridePhone] = useState('')
+  const [groomName, setGroomName] = useState('')
   const [groomPhone, setGroomPhone] = useState('')
   const [email, setEmail] = useState('')
   const [mainContact, setMainContact] = useState<MainContact>(null)
@@ -23,12 +25,16 @@ export default function VenueContactPage() {
     
     // Load saved data if exists
     if (typeof window !== 'undefined') {
+      const savedBrideName = sessionStorage.getItem('mindgraphy_bride_name')
       const savedBridePhone = sessionStorage.getItem('mindgraphy_bride_phone')
+      const savedGroomName = sessionStorage.getItem('mindgraphy_groom_name')
       const savedGroomPhone = sessionStorage.getItem('mindgraphy_groom_phone')
       const savedEmail = sessionStorage.getItem('mindgraphy_email')
       const savedMainContact = sessionStorage.getItem('mindgraphy_main_contact') as MainContact
       
+      if (savedBrideName) setBrideName(savedBrideName)
       if (savedBridePhone) setBridePhone(savedBridePhone)
+      if (savedGroomName) setGroomName(savedGroomName)
       if (savedGroomPhone) setGroomPhone(savedGroomPhone)
       if (savedEmail) setEmail(savedEmail)
       if (savedMainContact) setMainContact(savedMainContact)
@@ -66,7 +72,9 @@ export default function VenueContactPage() {
     
     // Store the data
     if (typeof window !== 'undefined') {
+      sessionStorage.setItem('mindgraphy_bride_name', brideName)
       sessionStorage.setItem('mindgraphy_bride_phone', bridePhone)
+      sessionStorage.setItem('mindgraphy_groom_name', groomName)
       sessionStorage.setItem('mindgraphy_groom_phone', groomPhone)
       sessionStorage.setItem('mindgraphy_email', email)
       sessionStorage.setItem('mindgraphy_main_contact', mainContact || '')
@@ -86,12 +94,14 @@ export default function VenueContactPage() {
   }
 
   // Validation
+  const isBrideNameValid = brideName.trim().length >= 2
+  const isGroomNameValid = groomName.trim().length >= 2
   const isBridePhoneValid = !bridePhone || /^010-\d{4}-\d{4}$/.test(bridePhone)
   const isGroomPhoneValid = !groomPhone || /^010-\d{4}-\d{4}$/.test(groomPhone)
   const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const hasAtLeastOneContact = bridePhone || groomPhone
   const hasMainContactSelected = mainContact !== null
-  const isValid = isBridePhoneValid && isGroomPhoneValid && isEmailValid && hasAtLeastOneContact && hasMainContactSelected
+  const isValid = isBrideNameValid && isGroomNameValid && isBridePhoneValid && isGroomPhoneValid && isEmailValid && hasAtLeastOneContact && hasMainContactSelected
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 overflow-hidden">
@@ -129,9 +139,41 @@ export default function VenueContactPage() {
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="text-base font-medium text-zinc-900">
-              신부 연락처
+              신부 정보
             </h3>
             
+            {/* 신부 이름 */}
+            <div className="space-y-3">
+              <label 
+                htmlFor="bride-name" 
+                className="block text-sm font-medium text-zinc-700"
+              >
+                성함 <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="bride-name"
+                type="text"
+                value={brideName}
+                onChange={(e) => setBrideName(e.target.value)}
+                placeholder="신부 성함"
+                className={cn(
+                  "h-12 text-base transition-all duration-200",
+                  "border-2",
+                  brideName && !isBrideNameValid ? "border-red-500" : "border-zinc-200",
+                  "focus:border-zinc-900 focus:ring-0",
+                  "placeholder:text-zinc-400"
+                )}
+                autoComplete="name"
+                required
+              />
+              {brideName && !isBrideNameValid && (
+                <p className="text-xs text-red-500">
+                  최소 2글자 이상 입력해주세요
+                </p>
+              )}
+            </div>
+            
+            {/* 신부 전화번호 */}
             <div className="space-y-3">
               <label 
                 htmlFor="bride-phone" 
@@ -171,9 +213,41 @@ export default function VenueContactPage() {
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="text-base font-medium text-zinc-900">
-              신랑 연락처
+              신랑 정보
             </h3>
             
+            {/* 신랑 이름 */}
+            <div className="space-y-3">
+              <label 
+                htmlFor="groom-name" 
+                className="block text-sm font-medium text-zinc-700"
+              >
+                성함 <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="groom-name"
+                type="text"
+                value={groomName}
+                onChange={(e) => setGroomName(e.target.value)}
+                placeholder="신랑 성함"
+                className={cn(
+                  "h-12 text-base transition-all duration-200",
+                  "border-2",
+                  groomName && !isGroomNameValid ? "border-red-500" : "border-zinc-200",
+                  "focus:border-zinc-900 focus:ring-0",
+                  "placeholder:text-zinc-400"
+                )}
+                autoComplete="name"
+                required
+              />
+              {groomName && !isGroomNameValid && (
+                <p className="text-xs text-red-500">
+                  최소 2글자 이상 입력해주세요
+                </p>
+              )}
+            </div>
+            
+            {/* 신랑 전화번호 */}
             <div className="space-y-3">
               <label 
                 htmlFor="groom-phone" 
@@ -294,7 +368,7 @@ export default function VenueContactPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-base font-medium text-zinc-900">
-                    신부 연락처
+                    {brideName || '신부'} 연락처
                   </p>
                   <p className="text-xs text-zinc-500 mt-0.5">
                     {bridePhone}
@@ -334,7 +408,7 @@ export default function VenueContactPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-base font-medium text-zinc-900">
-                    신랑 연락처
+                    {groomName || '신랑'} 연락처
                   </p>
                   <p className="text-xs text-zinc-500 mt-0.5">
                     {groomPhone}

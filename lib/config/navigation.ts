@@ -20,71 +20,68 @@ export interface NavItem {
   icon: LucideIcon
   badge?: number
   roles: UserRole[] // 접근 가능한 기본 권한
-  permission?: PagePermission // 작가에게 세부 권한 부여 시 사용
+  permission?: PagePermission // 직원에게 세부 권한 부여 시 사용
 }
 
-// 전체 네비게이션 아이템
+/**
+ * 전체 네비게이션 아이템
+ * - 관리자는 모든 페이지 접근 가능
+ * - 직원은 권한이 부여된 페이지만 접근 가능
+ */
 export const navigationItems: NavItem[] = [
-  // 관리자 전용
   {
     title: '대시보드',
     href: '/admin/dashboard',
     icon: LayoutDashboard,
-    roles: ['admin'],
+    roles: ['admin', 'staff'],
     permission: 'dashboard',
   },
   
-  // 실시간 현황판
   {
     title: '실시간 현황판',
     href: '/admin/live-status',
     icon: Activity,
-    roles: ['admin', 'photographer'],
+    roles: ['admin', 'staff'],
     permission: 'live-status',
   },
   
-  // 공통 (권한에 따라 기능 차이)
   {
     title: '촬영 캘린더',
     href: '/admin/calendar',
     icon: Camera,
-    roles: ['admin', 'photographer'],
+    roles: ['admin', 'staff'],
     permission: 'calendar',
   },
   
-  // 관리자 전용
   {
     title: '일정 관리',
     href: '/admin/schedule',
     icon: CalendarCheck,
-    roles: ['admin'],
+    roles: ['admin', 'staff'],
     permission: 'schedule',
   },
   
-  // 작가 전용
   {
     title: '내 일정',
     href: '/admin/my',
     icon: ClipboardList,
-    roles: ['photographer'],
+    roles: ['admin', 'staff'],
     permission: 'my-schedule',
   },
   
-  // 관리자 + 작가 (작가는 배정된 프로젝트만)
   {
     title: '촬영 관리',
     href: '/admin/projects',
     icon: FolderOpen,
-    roles: ['admin', 'photographer'],
+    roles: ['admin', 'staff'],
     permission: 'projects',
   },
   
-  // 관리자 전용
   {
     title: '고객 관리',
     href: '/admin/customers',
     icon: UserCircle,
-    roles: ['admin'],
+    roles: ['admin', 'staff'],
     permission: 'customers',
   },
   
@@ -92,7 +89,7 @@ export const navigationItems: NavItem[] = [
     title: '팀 관리',
     href: '/admin/team',
     icon: Users,
-    roles: ['admin'],
+    roles: ['admin', 'staff'],
     permission: 'team',
   },
   
@@ -100,7 +97,7 @@ export const navigationItems: NavItem[] = [
     title: '소통게시판',
     href: '/admin/board',
     icon: MessageSquare,
-    roles: ['admin', 'photographer'],
+    roles: ['admin', 'staff'],
     permission: 'board',
   },
   
@@ -108,38 +105,46 @@ export const navigationItems: NavItem[] = [
     title: '설정',
     href: '/admin/settings',
     icon: Settings,
-    roles: ['admin'],
+    roles: ['admin', 'staff'],
     permission: 'settings',
   },
 ]
 
-// 역할 및 권한에 따른 네비게이션 필터링
+/**
+ * 역할 및 권한에 따른 네비게이션 필터링
+ * - 관리자: 모든 네비게이션 아이템 접근 가능
+ * - 직원: 관리자가 부여한 권한에 따라 네비게이션 아이템 필터링
+ */
 export function getNavigationForRole(role: UserRole, userPermissions?: PagePermission[]): NavItem[] {
   // 관리자는 모든 네비게이션 아이템 접근 가능
   if (role === 'admin') {
-    return navigationItems.filter((item) => item.roles.includes(role))
+    return navigationItems.filter((item) => item.roles.includes('admin'))
   }
   
-  // 작가의 경우 권한 체크
-  if (role === 'photographer' && userPermissions) {
+  // 직원은 권한이 부여된 항목만 접근 가능
+  if (role === 'staff' && userPermissions) {
     return navigationItems.filter((item) => {
-      // 기본적으로 작가 역할이 포함되어 있어야 함
-      if (!item.roles.includes(role)) return false
+      // roles에 staff가 포함되어 있어야 함
+      if (!item.roles.includes('staff')) return false
       
       // permission이 정의되어 있으면 사용자 권한에 포함되어 있어야 함
       if (item.permission) {
         return userPermissions.includes(item.permission)
       }
       
-      return true
+      return false
     })
   }
   
-  // 권한이 없는 작가는 기본 역할만으로 필터링
-  return navigationItems.filter((item) => item.roles.includes(role))
+  // 권한이 없는 직원은 빈 배열 반환
+  return []
 }
 
-// 페이지 접근 권한 체크
+/**
+ * 페이지 접근 권한 체크
+ * - 관리자: 모든 페이지 접근 가능
+ * - 직원: 관리자가 부여한 권한이 있는 페이지만 접근 가능
+ */
 export function hasPageAccess(
   path: string, 
   role: UserRole, 
@@ -150,45 +155,36 @@ export function hasPageAccess(
     return true
   }
   
-  // 웹 갤러리 업로드 페이지
-  if (path.startsWith('/admin/gallery/')) {
-    if (role === 'photographer') {
-      return userPermissions?.includes('gallery-upload') ?? false
+  // 직원의 경우 권한 체크
+  if (role === 'staff') {
+    // 권한이 없으면 접근 불가
+    if (!userPermissions || userPermissions.length === 0) {
+      return false
     }
-    return true
-  }
-  
-  // 타임 테이블 페이지
-  if (path.startsWith('/admin/timetable/')) {
-    if (role === 'photographer') {
-      return userPermissions?.includes('timetable') ?? false
+    
+    // 웹 갤러리 업로드 페이지
+    if (path.startsWith('/admin/gallery/')) {
+      return userPermissions.includes('gallery-upload')
     }
-    return true
-  }
-  
-  // 네비게이션 아이템 찾기
-  const item = navigationItems.find((item) => path.startsWith(item.href))
-  
-  // 네비게이션에 없는 경로
-  if (!item) {
-    // 설정 페이지는 관리자만
-    if (path.startsWith('/admin/settings')) {
-      return role === 'admin'
+    
+    // 타임 테이블 페이지
+    if (path.startsWith('/admin/timetable/')) {
+      return userPermissions.includes('timetable')
     }
-    return true
-  }
-  
-  // 기본 역할 체크
-  if (!item.roles.includes(role)) {
+    
+    // 네비게이션 아이템 찾기
+    const item = navigationItems.find((item) => path.startsWith(item.href))
+    
+    if (item && item.permission) {
+      return userPermissions.includes(item.permission)
+    }
+    
+    // 매칭되는 네비게이션 아이템이 없으면 접근 불가
     return false
   }
   
-  // 작가의 경우 세부 권한 체크
-  if (role === 'photographer' && item.permission && userPermissions) {
-    return userPermissions.includes(item.permission)
-  }
-  
-  return true
+  // 알 수 없는 역할은 접근 불가
+  return false
 }
 
 // 모든 권한 목록 반환 (관리자용 UI에서 사용)

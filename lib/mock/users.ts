@@ -1,6 +1,17 @@
-import type { User } from '@/lib/types/auth'
+import type { User, PagePermission } from '@/lib/types/auth'
 
-export type TeamUserRole = 'admin' | 'photographer' | 'editor' | 'coordinator'
+/**
+ * 팀 관리용 역할 타입
+ * - admin: 관리자 (대표)
+ * - staff: 직원
+ */
+export type TeamUserRole = 'admin' | 'staff'
+
+/**
+ * 직원의 직책 타입
+ */
+export type JobTitle = 'photographer' | 'editor' | 'coordinator' | 'other'
+
 export type UserStatus = 'active' | 'inactive' | 'on_leave'
 
 export interface TeamUser {
@@ -16,8 +27,12 @@ export interface TeamUser {
   avatar?: string
   password?: string // For mock login only
   
-  // Photographer specific
-  photographerStats?: {
+  // Staff specific
+  jobTitle?: JobTitle // 직원인 경우 직책 (작가, 에디터, 코디네이터 등)
+  permissions?: PagePermission[] // 직원인 경우 관리자가 부여한 권한
+  
+  // Performance stats (작가, 에디터 등)
+  stats?: {
     totalProjects: number
     completedProjects: number
     ongoingProjects: number
@@ -41,20 +56,22 @@ export const mockTeamUsers: TeamUser[] = [
     phone: '010-1234-5678',
     joinDate: '2023-01-15',
     lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    password: 'admin123',
+    password: 'admin1234',
   },
   {
     id: 'photo-1',
     email: 'photographer1@mindgraphy.com',
     firstName: '작가',
     lastName: '박',
-    role: 'photographer',
+    role: 'staff',
+    jobTitle: 'photographer',
     status: 'active',
     phone: '010-2345-6789',
     joinDate: '2023-03-10',
     lastLogin: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 mins ago
-    password: 'photo123',
-    photographerStats: {
+    password: 'photo1234',
+    permissions: ['projects', 'gallery-upload', 'timetable', 'calendar', 'board'],
+    stats: {
       totalProjects: 87,
       completedProjects: 82,
       ongoingProjects: 5,
@@ -70,12 +87,14 @@ export const mockTeamUsers: TeamUser[] = [
     email: 'choi@mindgraphy.com',
     firstName: '작가',
     lastName: '최',
-    role: 'photographer',
+    role: 'staff',
+    jobTitle: 'photographer',
     status: 'active',
     phone: '010-3456-7890',
     joinDate: '2023-05-20',
     lastLogin: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-    photographerStats: {
+    permissions: ['projects', 'gallery-upload', 'calendar'],
+    stats: {
       totalProjects: 65,
       completedProjects: 60,
       ongoingProjects: 5,
@@ -91,12 +110,14 @@ export const mockTeamUsers: TeamUser[] = [
     email: 'kim@mindgraphy.com',
     firstName: '작가',
     lastName: '김',
-    role: 'photographer',
+    role: 'staff',
+    jobTitle: 'photographer',
     status: 'active',
     phone: '010-4567-8901',
     joinDate: '2023-07-01',
     lastLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-    photographerStats: {
+    permissions: ['projects', 'timetable', 'calendar', 'board'],
+    stats: {
       totalProjects: 52,
       completedProjects: 48,
       ongoingProjects: 4,
@@ -112,12 +133,14 @@ export const mockTeamUsers: TeamUser[] = [
     email: 'lee@mindgraphy.com',
     firstName: '작가',
     lastName: '이',
-    role: 'photographer',
+    role: 'staff',
+    jobTitle: 'photographer',
     status: 'on_leave',
     phone: '010-5678-9012',
     joinDate: '2023-09-15',
     lastLogin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
-    photographerStats: {
+    permissions: [],
+    stats: {
       totalProjects: 28,
       completedProjects: 26,
       ongoingProjects: 2,
@@ -133,34 +156,40 @@ export const mockTeamUsers: TeamUser[] = [
     email: 'editor1@mindgraphy.com',
     firstName: '에디터',
     lastName: '정',
-    role: 'editor',
+    role: 'staff',
+    jobTitle: 'editor',
     status: 'active',
     phone: '010-6789-0123',
     joinDate: '2023-04-05',
     lastLogin: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+    permissions: ['projects', 'board'],
   },
   {
     id: 'coordinator-1',
     email: 'coord1@mindgraphy.com',
     firstName: '코디네이터',
     lastName: '윤',
-    role: 'coordinator',
+    role: 'staff',
+    jobTitle: 'coordinator',
     status: 'active',
     phone: '010-7890-1234',
     joinDate: '2023-06-12',
     lastLogin: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
+    permissions: ['calendar', 'schedule', 'customers', 'board'],
   },
   {
     id: 'photo-5',
     email: 'inactive@mindgraphy.com',
     firstName: '작가',
     lastName: '강',
-    role: 'photographer',
+    role: 'staff',
+    jobTitle: 'photographer',
     status: 'inactive',
     phone: '010-8901-2345',
     joinDate: '2023-02-20',
     lastLogin: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
-    photographerStats: {
+    permissions: [],
+    stats: {
       totalProjects: 15,
       completedProjects: 15,
       ongoingProjects: 0,
@@ -175,13 +204,22 @@ export const mockTeamUsers: TeamUser[] = [
 
 // Helper functions
 export const getRoleLabel = (role: TeamUserRole) => {
-  const labels = {
+  const labels: Record<TeamUserRole, string> = {
     admin: '관리자',
-    photographer: '사진작가',
-    editor: '에디터',
-    coordinator: '코디네이터'
+    staff: '직원'
   }
   return labels[role]
+}
+
+export const getJobTitleLabel = (jobTitle?: JobTitle) => {
+  if (!jobTitle) return '-'
+  const labels: Record<JobTitle, string> = {
+    photographer: '사진작가',
+    editor: '에디터',
+    coordinator: '코디네이터',
+    other: '기타'
+  }
+  return labels[jobTitle]
 }
 
 export const getStatusLabel = (status: UserStatus) => {
@@ -244,10 +282,12 @@ export const mockLogin = async (email: string, password: string): Promise<User |
     id: teamUser.id,
     email: teamUser.email,
     name: `${teamUser.lastName}${teamUser.firstName}`,
-    role: teamUser.role === 'admin' ? 'admin' : 'photographer', // Map role
+    role: teamUser.role, // 'admin' or 'staff'
+    jobTitle: teamUser.jobTitle,
     avatar: teamUser.avatar,
     phone: teamUser.phone,
-    assignedProjects: teamUser.role === 'photographer' ? [] : undefined
+    assignedProjects: teamUser.role === 'staff' ? [] : undefined,
+    permissions: teamUser.permissions
   }
 
   return user

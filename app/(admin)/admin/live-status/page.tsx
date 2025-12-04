@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { mockScheduleEvents, mockSchedulePhotographers } from '@/lib/mock/schedules'
+import { applyScheduleUpdates } from '@/lib/utils/schedule-storage'
 import type { ScheduleEvent } from '@/lib/mock/schedules'
 import type { Schedule } from '@/lib/mock/admin'
 import { ScheduleDetailDialog } from '@/components/dashboard/schedule-detail-dialog'
@@ -21,7 +22,8 @@ import {
   UserCheck,
   Coffee,
   RefreshCw,
-  Phone
+  Phone,
+  UploadCloud
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -54,17 +56,20 @@ export default function LiveStatusPage() {
     }, 500)
   }
 
-  // Get today's schedules
+  // Get today's schedules with localStorage updates applied
   const today = format(new Date(), 'yyyy-MM-dd')
-  const todaySchedules = mockScheduleEvents.filter(event => {
+  const allSchedulesWithUpdates = applyScheduleUpdates(mockScheduleEvents)
+  const todaySchedules = allSchedulesWithUpdates.filter(event => {
     const eventDate = format(new Date(event.start), 'yyyy-MM-dd')
     return eventDate === today
   })
 
   // Group by status
-  const inProgressSchedules = todaySchedules.filter(s => s.status === 'in_progress')
+  const inProgressSchedules = todaySchedules.filter(s => 
+    ['on_the_way', 'in_progress', 'completed'].includes(s.status)
+  )
   const upcomingSchedules = todaySchedules.filter(s => s.status === 'reserved')
-  const completedSchedules = todaySchedules.filter(s => s.status === 'completed')
+  const completedSchedules = todaySchedules.filter(s => s.status === 'uploaded')
 
   // Find available photographers (no schedule today and status is 'available')
   const photographersWithSchedules = todaySchedules.flatMap(s => s.photographerIds || []).filter(Boolean)
@@ -88,44 +93,25 @@ export default function LiveStatusPage() {
       .join(', ')
   }
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      reserved: 'bg-blue-100 text-blue-800 border-blue-200',
-      in_progress: 'bg-green-100 text-green-800 border-green-200',
-      completed: 'bg-gray-100 text-gray-800 border-gray-200',
-      editing: 'bg-purple-100 text-purple-800 border-purple-200'
+  // Update status map for conversion
+  const getDetailedStatus = (status: string) => {
+    switch (status) {
+      case 'on_the_way': return { label: '이동중', icon: MapPin, className: 'text-yellow-600 bg-yellow-100' }
+      case 'in_progress': return { label: '촬영중', icon: Play, className: 'text-green-600 bg-green-100' }
+      case 'completed': return { label: '촬영완료', icon: CheckCircle2, className: 'text-blue-600 bg-blue-100' }
+      case 'uploaded': return { label: '완료', icon: UploadCloud, className: 'text-purple-600 bg-purple-100' }
+      default: return { label: '예정', icon: Clock, className: 'text-zinc-600 bg-zinc-100' }
     }
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-  }
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      reserved: '예정',
-      in_progress: '진행중',
-      completed: '완료',
-      editing: '편집중'
-    }
-    return labels[status as keyof typeof labels] || status
   }
 
   const getProductTypeLabel = (productType: string) => {
     const labels = {
-      wedding: '일반 웨딩',
+      wedding: '웨딩',
       hanbok: '한복 & 캐주얼',
       dress_shop: '가봉 스냅',
       baby: '돌스냅'
     }
     return labels[productType as keyof typeof labels] || productType
-  }
-
-  const getProductTypeColor = (productType: string) => {
-    const colors = {
-      wedding: 'bg-pink-100 text-pink-800 border-pink-200',
-      hanbok: 'bg-purple-100 text-purple-800 border-purple-200',
-      dress_shop: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-      baby: 'bg-amber-100 text-amber-800 border-amber-200'
-    }
-    return colors[productType as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200'
   }
 
   // Convert ScheduleEvent to Schedule for ScheduleDetailDialog
@@ -136,6 +122,7 @@ export default function LiveStatusPage() {
     // Map status
     const statusMap: Record<string, Schedule['status']> = {
       'reserved': 'assigned',
+      'on_the_way': 'confirmed',
       'in_progress': 'confirmed',
       'completed': 'completed',
       'editing': 'confirmed',
@@ -168,420 +155,336 @@ export default function LiveStatusPage() {
 
   return (
     <AdminLayout align="left">
-      <div className="space-y-4 md:space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              실시간 현황판
+      <div className="space-y-6 md:space-y-8 pb-20 md:pb-0">
+        {/* Stylish Header with Clock Widget */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500">
+              Live Status
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground mt-1">
-              오늘의 촬영 현황을 실시간으로 확인하세요
+            <p className="text-base text-muted-foreground">
+              실시간 촬영 현황 모니터링
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <div className="text-right">
-                <div className="text-2xl font-bold font-mono">
-                  {format(currentTime, 'HH:mm:ss')}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {format(currentTime, 'yyyy년 M월 d일 (EEEE)', { locale: ko })}
-                </div>
+          
+          <div className="flex items-center gap-4 bg-white rounded-2xl shadow-sm border border-zinc-100 p-2 pr-4">
+            <div className="bg-zinc-900 text-white rounded-xl px-4 py-2 text-center min-w-[100px]">
+              <div className="text-xl font-bold font-mono tracking-widest">
+                {format(currentTime, 'HH:mm:ss')}
               </div>
+            </div>
+            <div className="text-sm font-medium text-zinc-600">
+              {format(currentTime, 'yyyy년 M월 d일 EEEE', { locale: ko })}
             </div>
             <Button
               onClick={handleRefresh}
               size="icon"
-              variant="outline"
+              variant="ghost"
               disabled={isRefreshing}
-              className="h-12 w-12"
+              className="h-8 w-8 ml-2 hover:bg-zinc-100 rounded-full"
             >
-              <RefreshCw className={cn("h-5 w-5", isRefreshing && "animate-spin")} />
-              <span className="sr-only">새로고침</span>
+              <RefreshCw className={cn("h-4 w-4 text-zinc-400", isRefreshing && "animate-spin text-zinc-900")} />
             </Button>
           </div>
         </div>
 
-        {/* Statistics */}
+        {/* Modern Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">전체 일정</CardTitle>
-              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{todaySchedules.length}</div>
-              <p className="text-xs text-muted-foreground">
-                오늘 총 일정 수
-              </p>
+          <Card className="relative overflow-hidden border-0 shadow-sm bg-gradient-to-br from-white to-zinc-50 hover:shadow-md transition-all group">
+            <div className="absolute right-0 top-0 h-24 w-24 bg-zinc-100 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-zinc-500">전체 일정</p>
+                <div className="h-8 w-8 rounded-full bg-zinc-100 flex items-center justify-center">
+                  <CalendarIcon className="h-4 w-4 text-zinc-600" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-zinc-900">{todaySchedules.length}</div>
+              <p className="text-xs text-zinc-400 mt-1">Total Schedules</p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow border-green-200 bg-green-50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">진행중</CardTitle>
-              <Play className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-700">{inProgressSchedules.length}</div>
-              <p className="text-xs text-green-600">
-                현재 촬영중
-              </p>
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-zinc-900 text-white hover:shadow-xl transition-all group">
+            <div className="absolute right-0 top-0 h-32 w-32 bg-zinc-800/50 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-zinc-300">진행중</p>
+                <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm animate-pulse">
+                  <Activity className="h-4 w-4 text-white" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold">{inProgressSchedules.length}</div>
+              <p className="text-xs text-zinc-400 mt-1">Active Now</p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow border-blue-200 bg-blue-50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">예정</CardTitle>
-              <Clock className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-700">{upcomingSchedules.length}</div>
-              <p className="text-xs text-blue-600">
-                대기중인 일정
-              </p>
+          <Card className="relative overflow-hidden border-0 shadow-sm bg-white hover:shadow-md transition-all group">
+            <div className="absolute right-0 bottom-0 h-24 w-24 bg-blue-50 rounded-tl-full -mr-4 -mb-4 transition-transform group-hover:scale-110" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-zinc-500">예정</p>
+                <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
+                  <Clock className="h-4 w-4 text-blue-600" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-zinc-900">{upcomingSchedules.length}</div>
+              <p className="text-xs text-zinc-400 mt-1">Upcoming</p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow border-gray-200 bg-gray-50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">완료</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-gray-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-700">{completedSchedules.length}</div>
-              <p className="text-xs text-gray-600">
-                촬영 완료
-              </p>
+          <Card className="relative overflow-hidden border-0 shadow-sm bg-white hover:shadow-md transition-all group">
+            <div className="absolute right-0 bottom-0 h-24 w-24 bg-purple-50 rounded-tl-full -mr-4 -mb-4 transition-transform group-hover:scale-110" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-zinc-500">완료</p>
+                <div className="h-8 w-8 rounded-full bg-purple-50 flex items-center justify-center">
+                  <CheckCircle2 className="h-4 w-4 text-purple-600" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-zinc-900">{completedSchedules.length}</div>
+              <p className="text-xs text-zinc-400 mt-1">Completed</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* In Progress */}
-        {inProgressSchedules.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <Play className="h-5 w-5 text-green-600" />
-              진행중인 촬영
-              <Badge className="bg-green-600 animate-pulse">{inProgressSchedules.length}</Badge>
-            </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Active & Upcoming (2/3 width) */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* In Progress Section */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  진행중인 촬영
+                </h2>
+                <Badge variant="secondary" className="font-mono">{inProgressSchedules.length}</Badge>
+              </div>
 
-            <div className="space-y-3">
-              {inProgressSchedules.map((schedule) => (
-                <Card 
-                  key={schedule.id} 
-                  className="border-2 border-green-500 shadow-lg bg-gradient-to-r from-green-50 to-white cursor-pointer hover:shadow-xl transition-shadow"
-                  onClick={() => handleScheduleClick(schedule)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                      {/* Left: Photographer(s) */}
-                      <div className="flex items-center gap-3 md:w-48 flex-shrink-0">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white flex-shrink-0">
-                          <User className="h-6 w-6" />
+              {inProgressSchedules.length > 0 ? (
+                <div className="grid gap-4">
+                  {inProgressSchedules.map((schedule) => (
+                    <div 
+                      key={schedule.id}
+                      onClick={() => handleScheduleClick(schedule)}
+                      className="group relative bg-white rounded-2xl p-5 shadow-sm border border-zinc-100 hover:shadow-md transition-all cursor-pointer overflow-hidden"
+                    >
+                      <div className="absolute top-0 left-0 w-1 h-full bg-zinc-900" />
+                      <div className="flex flex-col md:flex-row gap-6 relative z-10">
+                        {/* Photographer Info */}
+                        <div className="flex items-center gap-4 md:w-1/3 md:border-r md:border-zinc-100 md:pr-6">
+                          <div className="relative">
+                            <div className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 text-xl font-bold">
+                              {schedule.photographerNames?.[0]?.charAt(0) || <User className="h-6 w-6" />}
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+                              <div className={cn(
+                                "w-3 h-3 rounded-full",
+                                schedule.status === 'in_progress' ? "bg-green-500 animate-pulse" : "bg-yellow-500"
+                              )} />
+                            </div>
+                          </div>
+                          <div>
+                            <p className="font-bold text-zinc-900">{getPhotographerNames(schedule.photographerIds)}</p>
+                            <div className={cn(
+                              "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium mt-1",
+                              getDetailedStatus(schedule.status).className
+                            )}>
+                              {(() => {
+                                const StatusIcon = getDetailedStatus(schedule.status).icon
+                                return <StatusIcon className="h-3 w-3" />
+                              })()}
+                              {getDetailedStatus(schedule.status).label}
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-semibold">{getPhotographerNames(schedule.photographerIds)}</div>
-                          <Badge className={cn("text-xs pulse-badge", getStatusColor(schedule.status))}>
-                            <Play className="mr-1 h-3 w-3" />
-                            촬영중
-                          </Badge>
+
+                        {/* Schedule Info */}
+                        <div className="flex-1 grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-lg tracking-tight">
+                                {schedule.groomName} <span className="text-zinc-400">&</span> {schedule.brideName}
+                              </span>
+                              <Badge variant="outline" className="text-[10px] h-5">
+                                {getProductTypeLabel(schedule.productType)}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-zinc-500">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {schedule.venueName}
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col justify-center sm:items-end">
+                            <div className="flex items-center gap-2 text-sm font-medium bg-zinc-50 px-3 py-1.5 rounded-lg w-fit">
+                              <Clock className="h-3.5 w-3.5 text-zinc-500" />
+                              {format(new Date(schedule.start), 'HH:mm')} - {format(new Date(schedule.end), 'HH:mm')}
+                            </div>
+                            {schedule.specialRequests && (
+                              <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
+                                <Activity className="h-3 w-3" />
+                                특이사항 있음
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200">
+                  <p className="text-zinc-500">현재 진행중인 촬영이 없습니다.</p>
+                </div>
+              )}
+            </section>
 
-                      {/* Divider */}
-                      <div className="hidden md:block h-12 w-px bg-gray-200" />
+            {/* Upcoming Section */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-zinc-400" />
+                  대기중인 일정
+                </h2>
+                <Badge variant="secondary" className="font-mono">{upcomingSchedules.length}</Badge>
+              </div>
 
-                      {/* Center: Schedule Info */}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-semibold text-lg">{schedule.groomName} & {schedule.brideName}</span>
-                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
-                            {getProductTypeLabel(schedule.productType)}
-                          </Badge>
+              <div className="grid gap-3">
+                {upcomingSchedules.map((schedule) => (
+                  <div 
+                    key={schedule.id}
+                    onClick={() => handleScheduleClick(schedule)}
+                    className="bg-white rounded-xl p-4 shadow-sm border border-zinc-100 hover:border-zinc-300 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center gap-4"
+                  >
+                    <div className="flex items-center gap-4 min-w-[140px]">
+                      <div className="text-center bg-zinc-50 rounded-lg px-3 py-2 min-w-[80px]">
+                        <div className="text-lg font-bold text-zinc-900 font-mono">
+                          {format(new Date(schedule.start), 'HH:mm')}
                         </div>
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            <span className="font-mono">{format(new Date(schedule.start), 'HH:mm')} - {format(new Date(schedule.end), 'HH:mm')}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{schedule.venueName}</span>
-                          </div>
-                        </div>
-                        {schedule.specialRequests && (
-                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
-                            💡 {schedule.specialRequests}
-                          </div>
-                        )}
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Start</div>
                       </div>
+                    </div>
 
-                      {/* Right: Package Info */}
-                      <div className="flex flex-col gap-1 md:w-32 text-sm">
-                        <Badge variant="outline" className="text-xs">
-                          {schedule.packageName}
+                    <div className="flex-1 border-l border-zinc-100 pl-4 sm:pl-0 sm:border-l-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-zinc-900">
+                          {schedule.groomName} & {schedule.brideName}
+                        </span>
+                        <span className="text-xs text-zinc-400">•</span>
+                        <span className="text-xs text-zinc-600">{schedule.venueName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] border-zinc-200 text-zinc-500">
+                          {getProductTypeLabel(schedule.productType)}
                         </Badge>
+                        <span className="text-xs text-zinc-400">
+                          담당: {getPhotographerNames(schedule.photographerIds)}
+                        </span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                ))}
+                {upcomingSchedules.length === 0 && (
+                  <div className="text-center py-8 bg-zinc-50/50 rounded-xl border border-dashed border-zinc-200">
+                    <p className="text-zinc-400 text-sm">대기중인 일정이 없습니다.</p>
+                  </div>
+                )}
+              </div>
+            </section>
           </div>
-        )}
 
-        {/* Upcoming */}
-        {upcomingSchedules.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              예정된 촬영
-              <Badge className="bg-blue-600">{upcomingSchedules.length}</Badge>
-            </h2>
+          {/* Right Column: Completed & Photographers (1/3 width) */}
+          <div className="space-y-8">
+            {/* Completed Section */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold tracking-tight flex items-center gap-2 text-zinc-700">
+                  <CheckCircle2 className="h-5 w-5 text-zinc-400" />
+                  완료된 촬영
+                </h2>
+                <span className="text-xs font-medium text-zinc-500">{completedSchedules.length}건</span>
+              </div>
 
-            <div className="space-y-2">
-              {upcomingSchedules.map((schedule) => (
-                <Card 
-                  key={schedule.id} 
-                  className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => handleScheduleClick(schedule)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex flex-col md:flex-row md:items-center gap-3">
-                      {/* Left: Time */}
-                      <div className="flex items-center gap-3 md:w-40 flex-shrink-0">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600 font-mono">
-                            {format(new Date(schedule.start), 'HH:mm')}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {format(new Date(schedule.end), 'HH:mm')} 종료
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Divider */}
-                      <div className="hidden md:block h-12 w-px bg-gray-200" />
-
-                      {/* Center: Info */}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-semibold">{schedule.groomName} & {schedule.brideName}</span>
-                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
-                            {getProductTypeLabel(schedule.productType)}
-                          </Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{schedule.venueName}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Badge variant="outline" className="text-xs">
-                              {schedule.packageName}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: Photographer(s) */}
-                      <div className="flex items-center gap-2 md:w-36">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white flex-shrink-0">
-                          <User className="h-5 w-5" />
-                        </div>
-                        <div className="text-sm">
-                          <div className="font-medium">{getPhotographerNames(schedule.photographerIds)}</div>
-                          <div className="text-xs text-muted-foreground">담당 작가</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Completed */}
-        {completedSchedules.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-gray-600" />
-              완료된 촬영
-              <Badge variant="outline">{completedSchedules.length}</Badge>
-            </h2>
-
-            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-              {completedSchedules.map((schedule) => (
-                <Card key={schedule.id} className="opacity-75 hover:opacity-100 transition-opacity">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 text-white flex-shrink-0">
-                        <CheckCircle2 className="h-4 w-4" />
+              <div className="space-y-2">
+                {completedSchedules.map((schedule) => {
+                  const statusInfo = getDetailedStatus(schedule.status)
+                  const StatusIcon = statusInfo.icon
+                  
+                  return (
+                    <div 
+                      key={schedule.id}
+                      className="bg-white rounded-lg p-3 border border-zinc-100 shadow-sm flex items-center gap-3 opacity-75 hover:opacity-100 transition-opacity"
+                    >
+                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0", 
+                        schedule.status === 'uploaded' ? "bg-purple-50 text-purple-600" : "bg-blue-50 text-blue-600"
+                      )}>
+                        <StatusIcon className="h-4 w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">
+                        <div className="font-medium text-sm text-zinc-900 truncate">
                           {schedule.groomName} & {schedule.brideName}
                         </div>
-                        <div className="text-xs text-muted-foreground truncate">
+                        <div className="text-xs text-zinc-500 flex items-center gap-1">
                           {getPhotographerNames(schedule.photographerIds)}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge className={cn("text-xs border", getProductTypeColor(schedule.productType))}>
-                            {getProductTypeLabel(schedule.productType)}
-                          </Badge>
-                          <div className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{format(new Date(schedule.start), 'HH:mm')}</span>
-                          </div>
+                          <span className="w-0.5 h-0.5 bg-zinc-300 rounded-full" />
+                          {format(new Date(schedule.start), 'HH:mm')}
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Available Photographers */}
-        {availablePhotographers.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <UserCheck className="h-5 w-5 text-emerald-600" />
-                  촬영 가능한 작가
-                  <Badge className="bg-emerald-600">{availablePhotographers.length}</Badge>
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  오늘 스케줄 없음 • 즉시 연락 가능
-                </p>
+                  )
+                })}
+                {completedSchedules.length === 0 && (
+                  <p className="text-sm text-zinc-400">아직 완료된 촬영이 없습니다.</p>
+                )}
               </div>
-            </div>
+            </section>
 
-            {/* 횡 스크롤 리스트 */}
-            <div className="relative">
-              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar">
+            {/* Available Photographers */}
+            <section>
+              <h2 className="text-lg font-bold tracking-tight mb-4 text-zinc-700">대기 작가</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-1 gap-3">
                 {availablePhotographers.map((photographer) => (
-                  <Card 
-                    key={photographer.id} 
-                    className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white flex-shrink-0 w-[240px] snap-start hover:shadow-lg hover:scale-105 hover:border-emerald-400 transition-all duration-200"
-                  >
-                    <CardContent className="p-5">
-                      <div className="space-y-3">
-                        {/* 이름과 상태 */}
-                        <div>
-                          <div className="font-bold text-lg text-zinc-900 mb-2">{photographer.name}</div>
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full w-fit">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>촬영 가능</span>
-                          </div>
-                        </div>
-                        
-                        {/* 연락처 */}
-                        {photographer.phone && (
-                          <a 
-                            href={`tel:${photographer.phone}`}
-                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 -mx-2 rounded-lg transition-all font-medium group"
-                          >
-                            <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                            <span>{photographer.phone}</span>
-                          </a>
-                        )}
+                  <div key={photographer.id} className="bg-white rounded-lg p-3 border border-zinc-200 flex items-center gap-3 hover:border-green-300 transition-colors group">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center font-bold text-zinc-500">
+                        {photographer.name.charAt(0)}
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">{photographer.name}</div>
+                      <div className="text-xs text-zinc-500">대기중</div>
+                    </div>
+                    {photographer.phone && (
+                      <a href={`tel:${photographer.phone}`} className="p-2 text-zinc-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                        <Phone className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
                 ))}
+                {availablePhotographers.length === 0 && (
+                  <p className="text-sm text-zinc-400">현재 대기중인 작가가 없습니다.</p>
+                )}
               </div>
-            </div>
+            </section>
+
+            {/* On Leave Photographers */}
+            {photographersOnLeave.length > 0 && (
+              <section className="pt-4 border-t border-zinc-100">
+                <h2 className="text-sm font-bold tracking-tight mb-3 text-zinc-500">휴무/휴가</h2>
+                <div className="flex flex-wrap gap-2">
+                  {photographersOnLeave.map((photographer) => (
+                    <div key={photographer.id} className="bg-zinc-50 rounded-full px-3 py-1 border border-zinc-200 flex items-center gap-2 opacity-60">
+                      <div className="w-2 h-2 bg-zinc-400 rounded-full" />
+                      <span className="text-xs font-medium text-zinc-600">{photographer.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
-        )}
-
-        {/* Photographers on Leave */}
-        {photographersOnLeave.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Coffee className="h-5 w-5 text-amber-600" />
-                  휴가/휴무 작가
-                  <Badge variant="outline" className="border-amber-600 text-amber-700">{photographersOnLeave.length}</Badge>
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  현재 휴무 중 • 연락 불가
-                </p>
-              </div>
-            </div>
-
-            {/* 횡 스크롤 리스트 */}
-            <div className="relative">
-              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar">
-                {photographersOnLeave.map((photographer) => (
-                  <Card 
-                    key={photographer.id} 
-                    className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-white flex-shrink-0 w-[240px] snap-start hover:shadow-md transition-all duration-200 opacity-75 hover:opacity-100"
-                  >
-                    <CardContent className="p-5">
-                      <div className="space-y-3">
-                        {/* 이름과 상태 */}
-                        <div>
-                          <div className="font-bold text-lg text-zinc-900 mb-2">{photographer.name}</div>
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full w-fit">
-                            <Coffee className="h-3.5 w-3.5" />
-                            <span>휴무 중</span>
-                          </div>
-                        </div>
-                        
-                        {/* 연락처 (비활성화) */}
-                        {photographer.phone && (
-                          <div className="flex items-center gap-2 text-sm text-zinc-400 p-2 -mx-2 rounded-lg">
-                            <Phone className="h-4 w-4" />
-                            <span>{photographer.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {todaySchedules.length === 0 && availablePhotographers.length === 0 && photographersOnLeave.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <CalendarIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold mb-2">오늘 일정이 없습니다</h3>
-              <p className="text-sm text-muted-foreground">
-                편안한 하루 보내세요!
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes pulse-border {
-          0%, 100% {
-            border-color: rgb(34 197 94);
-          }
-          50% {
-            border-color: rgb(134 239 172);
-          }
-        }
-
-        .pulse-badge {
-          animation: pulse-border 2s ease-in-out infinite;
-        }
-      `}</style>
 
       {/* Schedule Detail Dialog */}
       <ScheduleDetailDialog

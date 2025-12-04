@@ -34,6 +34,7 @@ import {
 import {
   mockTeamUsers,
   getRoleLabel,
+  getJobTitleLabel,
   formatRelativeTime,
   type TeamUser,
   type TeamUserRole,
@@ -50,6 +51,7 @@ import {
   UserCog,
   UserCheck,
   UserX,
+  UserCircle,
   TrendingUp,
   Award,
   DollarSign,
@@ -79,7 +81,8 @@ export default function TeamPage() {
     email: '',
     firstName: '',
     lastName: '',
-    role: 'photographer' as TeamUserRole,
+    role: 'staff' as TeamUserRole,
+    jobTitle: 'photographer' as 'photographer' | 'editor' | 'coordinator' | 'other',
     phone: '',
     password: ''
   })
@@ -100,11 +103,11 @@ export default function TeamPage() {
   // Statistics
   const totalUsers = users.length
   const activeUsers = users.filter(u => u.status === 'active').length
-  const photographers = users.filter(u => u.role === 'photographer').length
-  const avgPhotographerRating = users
-    .filter(u => u.role === 'photographer' && u.photographerStats)
-    .reduce((sum, u) => sum + (u.photographerStats?.averageRating || 0), 0) / 
-    users.filter(u => u.role === 'photographer' && u.photographerStats).length
+  const staffCount = users.filter(u => u.role === 'staff').length
+  const staffWithStats = users.filter(u => u.role === 'staff' && u.stats)
+  const avgStaffRating = staffWithStats.length > 0
+    ? staffWithStats.reduce((sum, u) => sum + (u.stats?.averageRating || 0), 0) / staffWithStats.length
+    : 0
 
   const handleCreateUser = () => {
     if (!newUser.email || !newUser.firstName || !newUser.lastName || !newUser.password) {
@@ -118,9 +121,11 @@ export default function TeamPage() {
       firstName: newUser.firstName,
       lastName: newUser.lastName,
       role: newUser.role,
+      jobTitle: newUser.role === 'staff' ? newUser.jobTitle : undefined,
       status: 'active',
       phone: newUser.phone,
       joinDate: new Date().toISOString().split('T')[0],
+      permissions: newUser.role === 'staff' ? [] : undefined, // 직원은 빈 권한으로 시작
     }
 
     setUsers(prev => [user, ...prev])
@@ -130,7 +135,8 @@ export default function TeamPage() {
       email: '',
       firstName: '',
       lastName: '',
-      role: 'photographer',
+      role: 'staff',
+      jobTitle: 'photographer',
       phone: '',
       password: ''
     })
@@ -173,13 +179,22 @@ export default function TeamPage() {
   }
 
   const getRoleIcon = (role: TeamUserRole) => {
-    const icons = {
+    const icons: Record<TeamUserRole, typeof Shield> = {
       admin: Shield,
-      photographer: Camera,
-      editor: Edit3,
-      coordinator: UserCog
+      staff: UserCog
     }
     const Icon = icons[role]
+    return <Icon className="h-4 w-4" />
+  }
+  
+  const getJobTitleIcon = (jobTitle?: string) => {
+    const icons: Record<string, typeof Camera> = {
+      photographer: Camera,
+      editor: Edit3,
+      coordinator: UserCog,
+      other: UserCircle
+    }
+    const Icon = jobTitle && icons[jobTitle] ? icons[jobTitle] : UserCircle
     return <Icon className="h-4 w-4" />
   }
 
@@ -220,17 +235,17 @@ export default function TeamPage() {
           />
 
           <KPICard
-            title="사진작가"
-            value={photographers}
-            description="총 작가 수"
-            icon={Camera}
+            title="직원"
+            value={staffCount}
+            description="총 직원 수"
+            icon={Users}
             onClick={() => {}}
           />
 
           <KPICard
             title="평균 평점"
-            value={avgPhotographerRating.toFixed(1)}
-            description="작가 평점"
+            value={avgStaffRating > 0 ? avgStaffRating.toFixed(1) : '-'}
+            description="직원 평균 평점"
             icon={Award}
             onClick={() => {}}
           />
@@ -257,9 +272,7 @@ export default function TeamPage() {
                 <SelectContent>
                   <SelectItem value="all">모든 역할</SelectItem>
                   <SelectItem value="admin">관리자</SelectItem>
-                  <SelectItem value="photographer">사진작가</SelectItem>
-                  <SelectItem value="editor">에디터</SelectItem>
-                  <SelectItem value="coordinator">코디네이터</SelectItem>
+                  <SelectItem value="staff">직원</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -288,6 +301,7 @@ export default function TeamPage() {
                     <TableHead className="min-w-[200px]">사용자</TableHead>
                     <TableHead className="min-w-[150px]">이메일</TableHead>
                     <TableHead className="min-w-[100px]">역할</TableHead>
+                    <TableHead className="min-w-[100px]">직책</TableHead>
                     <TableHead className="min-w-[100px]">상태</TableHead>
                     <TableHead className="min-w-[120px]">마지막 로그인</TableHead>
                     <TableHead className="min-w-[100px]">가입일</TableHead>
@@ -337,6 +351,16 @@ export default function TeamPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
+                          {user.role === 'staff' && user.jobTitle ? (
+                            <Badge variant="secondary" className="flex items-center gap-1 w-fit">
+                              {getJobTitleIcon(user.jobTitle)}
+                              {getJobTitleLabel(user.jobTitle)}
+                            </Badge>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
                           <StatusBadge status={user.status} />
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
@@ -347,7 +371,8 @@ export default function TeamPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            {user.role === 'photographer' && (
+                            {/* 직원에게 권한 버튼 표시 */}
+                            {user.role === 'staff' && (
                               <>
                                 <Button
                                   variant="outline"
@@ -358,7 +383,8 @@ export default function TeamPage() {
                                   <Shield className="mr-1 h-3 w-3" />
                                   권한
                                 </Button>
-                                {user.photographerStats && (
+                                {/* 성과 통계가 있는 직원(작가, 에디터 등)의 경우 성과 버튼 표시 */}
+                                {user.stats && (
                                   <Link href={`/admin/team/performance?id=${user.id}`}>
                                     <Button variant="outline" size="sm">
                                       <TrendingUp className="mr-1 h-3 w-3" />
@@ -462,12 +488,27 @@ export default function TeamPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">관리자</SelectItem>
-                  <SelectItem value="photographer">사진작가</SelectItem>
-                  <SelectItem value="editor">에디터</SelectItem>
-                  <SelectItem value="coordinator">코디네이터</SelectItem>
+                  <SelectItem value="staff">직원</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {newUser.role === 'staff' && (
+              <div className="space-y-2">
+                <Label htmlFor="jobTitle">직책 *</Label>
+                <Select value={newUser.jobTitle} onValueChange={(v) => setNewUser({...newUser, jobTitle: v as typeof newUser.jobTitle})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="photographer">사진작가</SelectItem>
+                    <SelectItem value="editor">에디터</SelectItem>
+                    <SelectItem value="coordinator">코디네이터</SelectItem>
+                    <SelectItem value="other">기타</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="password">임시 비밀번호 *</Label>

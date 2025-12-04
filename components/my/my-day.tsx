@@ -26,7 +26,7 @@ import {
   CheckCheck,
   Camera,
   Mail,
-  Tag
+  UploadCloud
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -35,23 +35,24 @@ import { toast } from 'sonner'
 
 interface MyDayProps {
   schedule: MySchedule[]
-  onStatusChange?: (scheduleId: string, newStatus: 'in_progress' | 'completed') => void
+  onStatusChange?: (scheduleId: string, newStatus: 'on_the_way' | 'in_progress' | 'completed' | 'uploaded') => void
+  onScheduleClick?: (schedule: MySchedule) => void
 }
 
-export function MyDay({ schedule, onStatusChange }: MyDayProps) {
+export function MyDay({ schedule, onStatusChange, onScheduleClick }: MyDayProps) {
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean
     scheduleId: string
-    action: 'start' | 'complete'
+    action: 'depart' | 'start' | 'complete' | 'upload'
     title: string
   }>({
     open: false,
     scheduleId: '',
-    action: 'start',
+    action: 'depart',
     title: ''
   })
 
-  const handleStatusChangeClick = (item: MySchedule, action: 'start' | 'complete') => {
+  const handleStatusChangeClick = (item: MySchedule, action: 'depart' | 'start' | 'complete' | 'upload') => {
     setConfirmDialog({
       open: true,
       scheduleId: item.id,
@@ -61,15 +62,31 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
   }
 
   const handleConfirm = () => {
-    const newStatus = confirmDialog.action === 'start' ? 'in_progress' : 'completed'
+    let newStatus: 'on_the_way' | 'in_progress' | 'completed' | 'uploaded'
+    let message: string
     
-    if (onStatusChange) {
-      onStatusChange(confirmDialog.scheduleId, newStatus)
+    switch (confirmDialog.action) {
+      case 'depart':
+        newStatus = 'on_the_way'
+        message = '촬영지로 출발했습니다!'
+        break
+      case 'start':
+        newStatus = 'in_progress'
+        message = '촬영을 시작했습니다!'
+        break
+      case 'complete':
+        newStatus = 'completed'
+        message = '촬영이 완료되었습니다!'
+        break
+      case 'upload':
+        newStatus = 'uploaded'
+        message = '파일 업로드가 완료되었습니다!'
+        break
     }
     
-    const message = confirmDialog.action === 'start' 
-      ? '촬영을 시작했습니다!' 
-      : '촬영이 완료되었습니다!'
+    if (onStatusChange) {
+      onStatusChange(confirmDialog.scheduleId, newStatus!)
+    }
     
     toast.success(message)
     setConfirmDialog({ ...confirmDialog, open: false })
@@ -88,8 +105,10 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
   const getStatusColor = (status: string) => {
     const colors = {
       upcoming: 'bg-blue-100 text-blue-800 border-blue-200',
+      on_the_way: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       in_progress: 'bg-green-100 text-green-800 border-green-200',
-      completed: 'bg-gray-100 text-gray-800 border-gray-200'
+      completed: 'bg-gray-100 text-gray-800 border-gray-200',
+      uploaded: 'bg-slate-100 text-slate-800 border-slate-200'
     }
     return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800'
   }
@@ -97,15 +116,17 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
   const getStatusLabel = (status: string) => {
     const labels = {
       upcoming: '예정',
-      in_progress: '진행중',
-      completed: '완료'
+      on_the_way: '이동중',
+      in_progress: '촬영중',
+      completed: '촬영완료',
+      uploaded: '업로드완료'
     }
     return labels[status as keyof typeof labels] || status
   }
 
   const getProductTypeLabel = (type: string) => {
     const labels = {
-      wedding: '일반 웨딩 촬영',
+      wedding: '웨딩 촬영',
       hanbok: 'HANBOK & CASUAL',
       dress_shop: 'DRESS SHOP',
       baby: 'BABY 돌스냅'
@@ -133,7 +154,9 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
         </h2>
 
         {schedule.map((item) => (
-          <Card key={item.id} className="overflow-hidden">
+          <Card key={item.id} className="overflow-hidden transition-all hover:shadow-md cursor-pointer" onClick={() => {
+            if (onScheduleClick) onScheduleClick(item)
+          }}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
@@ -237,17 +260,6 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
                 </div>
               )}
 
-              {/* Referral Source */}
-              {item.referralSource && (
-                <div className="flex items-start gap-2 text-sm">
-                  <Tag className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <div>
-                    <span className="text-muted-foreground">유입 경로:</span>
-                    <span className="ml-2 font-medium">{item.referralSource}</span>
-                  </div>
-                </div>
-              )}
-
               {/* Special Requests */}
               {item.specialRequests && (
                 <div className="flex items-start gap-2 text-sm bg-yellow-50 border border-yellow-200 rounded-lg p-3">
@@ -289,10 +301,19 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
                 )}
               </div>
 
-              {/* Start/Complete Button */}
-              {item.status !== 'completed' && (
-                <div className="pt-2">
+              {/* Status Action Buttons - 4 Stages: Depart → Start → Complete → Upload */}
+              {item.status !== 'uploaded' && (
+                <div className="pt-2" onClick={(e) => e.stopPropagation()}>
                   {item.status === 'upcoming' ? (
+                    <Button
+                      onClick={() => handleStatusChangeClick(item, 'depart')}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700"
+                      size="lg"
+                    >
+                      <MapPin className="mr-2 h-5 w-5" />
+                      촬영지 출발
+                    </Button>
+                  ) : item.status === 'on_the_way' ? (
                     <Button
                       onClick={() => handleStatusChangeClick(item, 'start')}
                       className="w-full bg-green-600 hover:bg-green-700"
@@ -310,6 +331,15 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
                       <CheckCheck className="mr-2 h-5 w-5" />
                       촬영 완료
                     </Button>
+                  ) : item.status === 'completed' ? (
+                    <Button
+                      onClick={() => handleStatusChangeClick(item, 'upload')}
+                      className="w-full bg-purple-600 hover:bg-purple-700"
+                      size="lg"
+                    >
+                      <UploadCloud className="mr-2 h-5 w-5" />
+                      파일 업로드
+                    </Button>
                   ) : null}
                 </div>
               )}
@@ -324,20 +354,38 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              {confirmDialog.action === 'start' ? (
+              {confirmDialog.action === 'depart' ? (
+                <>
+                  <MapPin className="h-5 w-5 text-yellow-600" />
+                  촬영지 출발 확인
+                </>
+              ) : confirmDialog.action === 'start' ? (
                 <>
                   <Play className="h-5 w-5 text-green-600" />
                   촬영 시작 확인
                 </>
-              ) : (
+              ) : confirmDialog.action === 'complete' ? (
                 <>
                   <CheckCheck className="h-5 w-5 text-blue-600" />
                   촬영 완료 확인
                 </>
+              ) : (
+                <>
+                  <UploadCloud className="h-5 w-5 text-purple-600" />
+                  파일 업로드 확인
+                </>
               )}
             </DialogTitle>
             <DialogDescription>
-              {confirmDialog.action === 'start' ? (
+              {confirmDialog.action === 'depart' ? (
+                <>
+                  <strong>{confirmDialog.title}</strong> 고객님 촬영지로 출발하시겠습니까?
+                  <br />
+                  <span className="text-xs text-muted-foreground mt-2 block">
+                    출발 시간이 기록되며 실시간 현황판에 표시됩니다.
+                  </span>
+                </>
+              ) : confirmDialog.action === 'start' ? (
                 <>
                   <strong>{confirmDialog.title}</strong> 고객님의 촬영을 시작하시겠습니까?
                   <br />
@@ -345,12 +393,20 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
                     시작 시간이 기록되며 실시간 현황판에 표시됩니다.
                   </span>
                 </>
-              ) : (
+              ) : confirmDialog.action === 'complete' ? (
                 <>
                   <strong>{confirmDialog.title}</strong> 고객님의 촬영을 완료하시겠습니까?
                   <br />
                   <span className="text-xs text-muted-foreground mt-2 block">
-                    완료 시간이 기록되며 일정이 종료됩니다.
+                    완료 시간이 기록되며 촬영이 종료됩니다. 다음 단계로 원본을 업로드하세요.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <strong>{confirmDialog.title}</strong> 고객님의 촬영 원본을 업로드하시겠습니까?
+                  <br />
+                  <span className="text-xs text-muted-foreground mt-2 block">
+                    이 작업은 모든 촬영 일정을 마무리하는 단계입니다.
                   </span>
                 </>
               )}
@@ -365,9 +421,17 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
             </Button>
             <Button
               onClick={handleConfirm}
-              className={confirmDialog.action === 'start' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}
+              className={
+                confirmDialog.action === 'depart' ? 'bg-yellow-600 hover:bg-yellow-700' :
+                confirmDialog.action === 'start' ? 'bg-green-600 hover:bg-green-700' :
+                confirmDialog.action === 'complete' ? 'bg-blue-600 hover:bg-blue-700' :
+                'bg-purple-600 hover:bg-purple-700'
+              }
             >
-              {confirmDialog.action === 'start' ? '시작하기' : '완료하기'}
+              {confirmDialog.action === 'depart' ? '출발하기' : 
+               confirmDialog.action === 'start' ? '시작하기' :
+               confirmDialog.action === 'complete' ? '완료하기' :
+               '업로드 완료'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -375,4 +439,5 @@ export function MyDay({ schedule, onStatusChange }: MyDayProps) {
     </div>
   )
 }
+
 

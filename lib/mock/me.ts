@@ -34,7 +34,9 @@ export interface MySchedule {
   
   // Schedule management
   travelTimeMinutes: number
-  status: 'upcoming' | 'in_progress' | 'completed'
+  status: 'upcoming' | 'on_the_way' | 'in_progress' | 'completed' | 'uploaded'
+  acceptanceStatus?: 'pending' | 'accepted' | 'rejected'
+  rejectionReason?: string
   checklistCompleted: number
   checklistTotal: number
 }
@@ -117,8 +119,47 @@ export const getTodaySchedule = (): MySchedule[] => {
       
       // Schedule management
       travelTimeMinutes: 30,
-      status: 'in_progress',
+      status: 'upcoming',
+      acceptanceStatus: 'accepted',
       checklistCompleted: 3,
+      checklistTotal: 5
+    },
+    {
+      id: 'my-schedule-test',
+      eventId: 'schedule-test',
+      date: format(today, 'yyyy-MM-dd'),
+      startTime: '17:00',
+      endTime: '21:00',
+      
+      // Customer info
+      groomName: '김태영',
+      brideName: '이수진',
+      groomPhone: '010-9876-5432',
+      bridePhone: '010-8765-4321',
+      email: 'kim.lee@example.com',
+      mainContact: 'groom',
+      
+      // Product & Venue info
+      productType: 'wedding',
+      packageId: 'data',
+      packageName: 'DATA',
+      optionIds: ['same-day-edit'],
+      optionNames: ['당일 속편집'],
+      weddingDate: format(today, 'yyyy-MM-dd'),
+      weddingTime: '오후 6시',
+      venueName: '인천 파라다이스 호텔',
+      venueAddress: '인천시 중구',
+      
+      // Process info
+      referralSource: '웨딩홀 제휴',
+      specialRequests: '당일 편집 영상을 예식 중간에 상영해주세요',
+      photographerNames: ['최작가'],
+      
+      // Schedule management
+      travelTimeMinutes: 60,
+      status: 'upcoming',
+      acceptanceStatus: 'accepted',
+      checklistCompleted: 0,
       checklistTotal: 5
     }
   ]

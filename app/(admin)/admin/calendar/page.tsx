@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,8 @@ import {
 } from '@/components/ui/dialog'
 import { ScheduleDrawer } from '@/components/calendar/schedule-drawer'
 import { CreateScheduleDialog } from '@/components/calendar/create-schedule-dialog'
+import { CalendarEventContent } from '@/components/calendar/calendar-event-content'
+import { useCalendarEvents } from '@/components/calendar/use-calendar-events'
 import { useAuthStore } from '@/lib/store/auth-store'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -21,15 +24,10 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction'
 import type { EventClickArg, EventDropArg } from '@fullcalendar/core'
 import { 
-  mockScheduleEvents, 
   getStatusLabel,
   getProductTypeLabel,
-  checkConflicts,
   type ScheduleEvent,
-  type ScheduleStatus,
-  type ProductType
 } from '@/lib/mock/schedules'
-import { mockCustomers, mockProjects, mockContracts } from '@/lib/mock-data'
 import { 
   Plus, 
   Calendar as CalendarIcon,
@@ -40,38 +38,34 @@ import {
   Phone,
   Building2,
   Search,
-  Camera
+  Camera,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
+import './calendar.css' // Import external CSS
 
 export default function CalendarPage() {
   const { user } = useAuthStore()
+  const searchParams = useSearchParams()
   const calendarRef = useRef<FullCalendar>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [view, setView] = useState<'month' | 'week' | 'day'>('month')
   
-  // 일정이 확정된 촬영 스케줄만 필터링 (leadStatus가 'contracted' 또는 'completed'인 고객)
-  const getConfirmedSchedules = () => {
-    return mockScheduleEvents.filter(event => {
-      // contractId로 고객 찾기
-      const contract = mockContracts.find(c => c.id === event.contractId)
-      if (!contract) return false
-      
-      const customer = mockCustomers.find(c => c.id === contract.customerId)
-      if (!customer) return false
-      
-      // leadStatus가 'contracted' 또는 'completed'인 고객의 스케줄 표시 (일정이 확정되었거나 완료된 고객)
-      return customer.leadStatus === 'contracted' || customer.leadStatus === 'completed'
-    })
-  }
-  
-  const [events, setEvents] = useState<ScheduleEvent[]>(getConfirmedSchedules())
-  
+  // Custom Hook for Logic
+  const { 
+    events: filteredEvents, 
+    filters, 
+    updateFilter, 
+    addEvent, 
+    updateEventDates, 
+    conflictWarning, 
+    dismissConflictWarning 
+  } = useCalendarEvents()
+
   // Create schedule dialog
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [defaultDate, setDefaultDate] = useState<Date | undefined>()
@@ -80,43 +74,30 @@ export default function CalendarPage() {
   const [dateDialogOpen, setDateDialogOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedDateEvents, setSelectedDateEvents] = useState<ScheduleEvent[]>([])
-  
-  // Filters
-  const [photographerSearch, setPhotographerSearch] = useState('')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [statusFilter, setStatusFilter] = useState<ScheduleStatus | 'all'>('all')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [productTypeFilter, setProductTypeFilter] = useState<ProductType | 'all'>('all')
-  
-  // Conflict warning
-  const [conflictWarning, setConflictWarning] = useState<{
-    event: ScheduleEvent
-    conflicts: ScheduleEvent[]
-  } | null>(null)
 
-  // Apply filters
-  const filteredEvents = events.filter(event => {
-    // Photographer search filter
-    if (photographerSearch.trim() !== '') {
-      const searchLower = photographerSearch.toLowerCase()
-      const photographerNames = event.photographerNames?.map(n => n.toLowerCase()).join(' ') || ''
-      if (!photographerNames.includes(searchLower)) {
-        return false
+  // URL query parameter로부터 날짜를 읽어서 캘린더 이동
+  useEffect(() => {
+    const dateParam = searchParams.get('date')
+    if (dateParam && calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi()
+      
+      try {
+        // 날짜로 이동
+        calendarApi.gotoDate(dateParam)
+        
+        // 주간 뷰로 변경하여 더 자세히 보기
+        calendarApi.changeView('timeGridWeek')
+        
+        console.log('[Calendar] Navigated to date from query:', dateParam)
+      } catch (error) {
+        console.error('[Calendar] Error navigating to date:', error)
       }
     }
-    
-    if (statusFilter !== 'all' && event.status !== statusFilter) {
-      return false
-    }
-    if (productTypeFilter !== 'all' && event.productType !== productTypeFilter) {
-      return false
-    }
-    return true
-  })
+  }, [searchParams])
 
   // Handle event click
   const handleEventClick = (clickInfo: EventClickArg) => {
-    const event = events.find(e => e.id === clickInfo.event.id)
+    const event = filteredEvents.find(e => e.id === clickInfo.event.id)
     if (event) {
       setSelectedEvent(event)
       setDrawerOpen(true)
@@ -139,11 +120,9 @@ export default function CalendarPage() {
     setDateDialogOpen(true)
   }
 
-
   // Handle create schedule
   const handleCreateSchedule = (schedule: Partial<ScheduleEvent>) => {
-    const newEvent = schedule as ScheduleEvent
-    setEvents(prev => [...prev, newEvent])
+    addEvent(schedule as ScheduleEvent)
   }
 
   // Open create dialog
@@ -167,33 +146,7 @@ export default function CalendarPage() {
 
     if (!newStart || !newEnd) return
 
-    // Update event in state (optimistic update)
-    setEvents(prevEvents => 
-      prevEvents.map(e => {
-        if (e.id === eventId) {
-          const updatedEvent = {
-            ...e,
-            start: newStart.toISOString(),
-            end: newEnd.toISOString()
-          }
-          
-          // Check for conflicts
-          const conflicts = checkConflicts(updatedEvent)
-          if (conflicts.length > 0) {
-            setConflictWarning({
-              event: updatedEvent,
-              conflicts
-            })
-          }
-          
-          return updatedEvent
-        }
-        return e
-      })
-    )
-
-    // Event successfully moved
-    // TODO: Send update to backend API when integrated
+    updateEventDates(eventId, newStart.toISOString(), newEnd.toISOString())
   }
 
   // Change view
@@ -208,7 +161,7 @@ export default function CalendarPage() {
       }
       calendarApi.changeView(viewMap[newView])
       
-      // Update button active states
+      // Update button active states (handled by FullCalendar classes mostly, but custom buttons need help)
       const toolbar = document.querySelector('.fc-toolbar-chunk:last-child')
       if (toolbar) {
         const buttons = toolbar.querySelectorAll('.fc-viewSelector-button')
@@ -271,16 +224,16 @@ export default function CalendarPage() {
             <Camera className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="작가명으로 검색..."
-              value={photographerSearch}
-              onChange={(e) => setPhotographerSearch(e.target.value)}
+              value={filters.photographerSearch}
+              onChange={(e) => updateFilter('photographerSearch', e.target.value)}
               className="pl-9 pr-9 focus-ring"
             />
-            {photographerSearch && (
+            {filters.photographerSearch && (
               <Button
                 variant="ghost"
                 size="sm"
                 className="absolute right-8 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
-                onClick={() => setPhotographerSearch('')}
+                onClick={() => updateFilter('photographerSearch', '')}
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -288,11 +241,11 @@ export default function CalendarPage() {
           </div>
           
           {/* Active Search Info - Mobile */}
-          {photographerSearch && (
+          {filters.photographerSearch && (
             <div className="flex items-center gap-2 text-sm mt-2">
               <Badge variant="secondary" className="gap-1">
                 <Camera className="h-3 w-3" />
-                {photographerSearch}
+                {filters.photographerSearch}
               </Badge>
               <span className="text-muted-foreground text-xs">
                 {filteredEvents.length}개의 일정
@@ -331,7 +284,7 @@ export default function CalendarPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setConflictWarning(null)}
+                  onClick={dismissConflictWarning}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -349,16 +302,16 @@ export default function CalendarPage() {
               <Camera className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="작가명으로 검색..."
-                value={photographerSearch}
-                onChange={(e) => setPhotographerSearch(e.target.value)}
+                value={filters.photographerSearch}
+                onChange={(e) => updateFilter('photographerSearch', e.target.value)}
                 className="pl-9 pr-9 focus-ring bg-white shadow-sm"
               />
-              {photographerSearch && (
+              {filters.photographerSearch && (
                 <Button
                   variant="ghost"
                   size="sm"
                   className="absolute right-8 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
-                  onClick={() => setPhotographerSearch('')}
+                  onClick={() => updateFilter('photographerSearch', '')}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -366,11 +319,11 @@ export default function CalendarPage() {
             </div>
             
             {/* Active Search Info */}
-            {photographerSearch && (
+            {filters.photographerSearch && (
               <div className="flex items-center gap-2 text-sm bg-white px-3 py-1.5 rounded-md shadow-sm border border-zinc-200">
                 <Badge variant="secondary" className="gap-1">
                   <Camera className="h-3 w-3" />
-                  {photographerSearch}
+                  {filters.photographerSearch}
                 </Badge>
                 <span className="text-muted-foreground text-xs">
                   {filteredEvents.length}개
@@ -379,189 +332,6 @@ export default function CalendarPage() {
             )}
           </div>
 
-          <style jsx global>{`
-            .fc {
-              font-family: inherit;
-            }
-            .fc .fc-button {
-              background-color: #18181b;
-              border-color: #18181b;
-              color: white;
-              text-transform: capitalize;
-              font-size: 14px;
-              padding: 8px 16px;
-            }
-            .fc .fc-button:hover {
-              background-color: #27272a;
-              border-color: #27272a;
-            }
-            .fc .fc-button-primary:not(:disabled).fc-button-active {
-              background-color: #27272a;
-              border-color: #27272a;
-            }
-            .fc .fc-toolbar-title {
-              font-size: 1.5rem;
-              font-weight: 700;
-            }
-            .fc .fc-toolbar.fc-header-toolbar {
-              margin-bottom: 1.5em;
-              padding-right: 280px;
-              gap: 12px;
-            }
-            @media (max-width: 768px) {
-              .fc .fc-toolbar.fc-header-toolbar {
-                padding-right: 0;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-              }
-              .fc .fc-toolbar-chunk {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-              }
-              .fc .fc-toolbar-chunk:first-child {
-                order: 2;
-              }
-              .fc .fc-toolbar-chunk:nth-child(2) {
-                order: 1;
-                margin-bottom: 8px;
-              }
-              .fc .fc-toolbar-chunk:last-child {
-                order: 3;
-                flex-wrap: wrap;
-                gap: 8px;
-                justify-content: center;
-              }
-              .fc .fc-toolbar-title {
-                font-size: 1.25rem;
-              }
-              .fc .fc-button {
-                font-size: 13px;
-                padding: 6px 12px;
-              }
-            }
-            .fc .fc-toolbar-chunk:last-child {
-              display: flex;
-              align-items: center;
-              gap: 12px;
-            }
-            .fc .fc-viewSelector-button {
-              background-color: white !important;
-              border: 1px solid #e4e4e7 !important;
-              color: #18181b !important;
-              font-size: 14px !important;
-              padding: 8px 16px !important;
-              margin-left: 4px !important;
-            }
-            .fc .fc-viewSelector-button:hover {
-              background-color: #fafafa !important;
-              border-color: #d4d4d8 !important;
-            }
-            .fc .fc-viewSelector-button.fc-button-active {
-              background-color: #18181b !important;
-              border-color: #18181b !important;
-              color: white !important;
-            }
-            @media (max-width: 768px) {
-              .fc .fc-viewSelector-button {
-                font-size: 12px !important;
-                padding: 6px 10px !important;
-                margin-left: 2px !important;
-              }
-            }
-            .fc-theme-standard td,
-            .fc-theme-standard th {
-              border-color: #e4e4e7;
-            }
-            .fc .fc-daygrid-day-number {
-              padding: 10px;
-              font-size: 14px;
-              font-weight: 500;
-            }
-            .fc .fc-col-header-cell {
-              background-color: #fafafa;
-              font-weight: 600;
-              font-size: 14px;
-              padding: 12px 4px;
-              border-color: #e4e4e7;
-            }
-            .fc .fc-daygrid-day.fc-day-today {
-              background-color: #eff6ff;
-            }
-            .fc .fc-daygrid-day:hover {
-              background-color: #fafaf9;
-              cursor: pointer;
-              transition: background-color 0.15s ease;
-            }
-            .fc .fc-scrollgrid {
-              border-color: #e4e4e7;
-            }
-            .fc-event {
-              cursor: pointer;
-              border: none;
-              font-size: 13px;
-              padding: 3px 6px;
-              margin-bottom: 2px;
-              font-weight: 500;
-            }
-            .fc-event:hover {
-              opacity: 0.85;
-              transform: translateY(-1px);
-              transition: all 0.2s;
-            }
-            .fc-timegrid-slot {
-              font-size: 13px;
-              height: 3em;
-            }
-            .fc-timegrid-slot-label {
-              color: #71717a;
-            }
-            .fc .fc-daygrid-day-frame {
-              min-height: 100px;
-            }
-            @media (max-width: 768px) {
-              .fc .fc-daygrid-day-frame {
-                min-height: 80px;
-              }
-              .fc .fc-daygrid-day-number {
-                padding: 6px;
-                font-size: 13px;
-              }
-              .fc .fc-col-header-cell {
-                font-size: 12px;
-                padding: 8px 2px;
-              }
-              .fc-event {
-                font-size: 11px;
-                padding: 2px 4px;
-              }
-            }
-            @media (min-width: 768px) {
-              .fc .fc-daygrid-day-frame {
-                min-height: 120px;
-              }
-            }
-            /* Mobile optimizations */
-            @media (max-width: 640px) {
-              .fc .fc-toolbar-title {
-                font-size: 1.1rem;
-              }
-              .fc .fc-button {
-                padding: 6px 10px;
-                font-size: 12px;
-              }
-              .fc .fc-daygrid-day-number {
-                padding: 6px;
-                font-size: 12px;
-              }
-              .fc-event {
-                font-size: 11px;
-                padding: 2px 4px;
-              }
-            }
-          `}</style>
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -595,14 +365,15 @@ export default function CalendarPage() {
             events={filteredEvents}
             editable={true}
             selectable={false}
-            dayMaxEvents={3}
+            dayMaxEvents={false}
             weekends={true}
             eventClick={handleEventClick}
             dateClick={handleDateClick}
             eventDrop={handleEventDrop}
             eventDisplay="block"
+            eventContent={(eventInfo) => <CalendarEventContent eventInfo={eventInfo} />}
             height="auto"
-            contentHeight={750}
+            contentHeight="auto"
             slotMinTime="08:00:00"
             slotMaxTime="22:00:00"
             allDaySlot={false}
@@ -752,18 +523,18 @@ export default function CalendarPage() {
                 )
               })
             )}
-          </div>
 
-          <div className="mt-6 flex justify-end gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={() => setDateDialogOpen(false)}>
-              닫기
-            </Button>
-            {user?.role === 'admin' && (
-              <Button onClick={openCreateDialog}>
-                <Plus className="mr-2 h-4 w-4" />
-                새 일정 추가
+            <div className="mt-6 flex justify-end gap-2 pt-4 border-t">
+              <Button variant="outline" onClick={() => setDateDialogOpen(false)}>
+                닫기
               </Button>
-            )}
+              {user?.role === 'admin' && (
+                <Button onClick={openCreateDialog}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  새 일정 추가
+                </Button>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
