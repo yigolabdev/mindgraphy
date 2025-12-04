@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card } from '@/components/ui/card'
@@ -46,7 +46,8 @@ import { ko } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import './calendar.css' // Import external CSS
 
-export default function CalendarPage() {
+// Internal component that uses useSearchParams
+function CalendarWithSearchParams() {
   const { user } = useAuthStore()
   const searchParams = useSearchParams()
   const calendarRef = useRef<FullCalendar>(null)
@@ -554,5 +555,26 @@ export default function CalendarPage() {
         onOpenChange={setDrawerOpen}
       />
     </AdminLayout>
+  )
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={
+      <AdminLayout align="left">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">촬영 스케줄</h1>
+              <p className="text-sm md:text-base text-muted-foreground">
+                로딩 중...
+              </p>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    }>
+      <CalendarWithSearchParams />
+    </Suspense>
   )
 }

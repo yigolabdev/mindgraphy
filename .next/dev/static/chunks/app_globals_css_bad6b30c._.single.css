@@ -1782,6 +1782,11 @@ body {
   border-color: rgb(24 24 27 / var(--tw-border-opacity, 1));
 }
 
+.border-pink-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(249 168 212 / var(--tw-border-opacity, 1));
+}
+
 .border-l-red-500 {
   --tw-border-opacity: 1;
   border-left-color: rgb(239 68 68 / var(--tw-border-opacity, 1));
@@ -2115,6 +2120,11 @@ body {
 .bg-zinc-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+}
+
+.bg-amber-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1));
 }
 
 .bg-gradient-to-b {

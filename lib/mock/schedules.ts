@@ -21,6 +21,7 @@ export interface ScheduleEvent {
   contractId: string
   clientPortalToken: string
   projectDetailId?: string // 프로젝트 상세 페이지 연결용
+  projectId?: string // ✅ 추가: 프로젝트 ID (백엔드 통합용)
   
   // Venue info
   venueName: string
@@ -41,9 +42,22 @@ export interface ScheduleEvent {
   
   // Product & Package & Options
   productType: ProductType  // 상품 유형 (웨딩, 한복 등)
-  packageId: string  // 패키지 ID (new-basic, hanbok-a2 등)
-  packageName: string  // 패키지 이름 (new BASIC, HANBOK A2 등)
-  options: string[]  // 선택한 옵션들
+  packageId: string  // ✅ 패키지 ID (백엔드 통합용: 'new-basic', 'data', 'hanbok-a2' 등)
+  packageName: string  // 패키지 이름 (표시용: 'new BASIC', 'DATA' 등)
+  options: string[]  // ❌ 레거시: 선택한 옵션들 (자유 텍스트)
+  
+  // ✅ 추가: 백엔드 통합용 정형화된 필드
+  optionIds?: string[]  // 옵션 ID 목록 (예: ['option-lead-photographer', 'option-60p'])
+  isAlbumType?: boolean  // 앨범형 여부 (true: 앨범형, false: 데이터형)
+  
+  // ✅ 추가: 명시적 특수 옵션 (백엔드가 직접 제공 가능)
+  packageOptions?: {
+    hasLeadPhotographer?: boolean     // 대표작가 지정
+    hasSeniorPhotographer?: boolean   // 수석작가 지정
+    hasExtraGift?: boolean            // 작가 추가 선물
+    hasNewStructure?: boolean         // 60페이지 구성
+    hasDirectorOption?: boolean       // 이사 지정
+  }
   
   // Status & Meta
   status: ScheduleStatus
@@ -262,6 +276,7 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     mainContact: 'bride', // 대표 연락처: 신부
     contractId: 'contract-001',
     clientPortalToken: 'token-001',
+    projectId: 'project-001', // ✅ 추가
     venueName: '서울 그랜드 호텔',
     venueType: 'hotel',
     ballroom: '그랜드 볼룸 1관',
@@ -274,9 +289,18 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     photographerNames: ['박작가', '최작가'],
     assistantIds: [],
     productType: 'wedding',
-    packageId: 'mind-ff',
+    packageId: 'data', // ✅ 실제 Product ID
     packageName: '2인 데이터형',
-    options: ['대표작가 지정', '야외촬영', '드론촬영', '당일편집'],
+    options: ['대표작가 지정', '야외촬영', '드론촬영', '당일편집'], // 레거시
+    optionIds: ['option-lead-photographer'], // ✅ 추가
+    isAlbumType: false, // ✅ 추가
+    packageOptions: { // ✅ 추가
+      hasLeadPhotographer: true,
+      hasSeniorPhotographer: false,
+      hasExtraGift: false,
+      hasNewStructure: false,
+      hasDirectorOption: false
+    },
     status: 'in_progress',
     specialRequests: '야외 정원에서 가족 단체 사진 촬영 희망',
     internalNotes: '날씨 확인 필요, 드론 배터리 2개 준비',
@@ -298,6 +322,7 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     mainContact: 'groom', // 대표 연락처: 신랑
     contractId: 'contract-002',
     clientPortalToken: 'token-002',
+    projectId: 'project-002', // ✅ 추가
     venueName: '코엑스 컨벤션',
     venueType: 'convention',
     ballroom: '3층 크리스탈 홀',
@@ -307,9 +332,18 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     photographerIds: ['photo-5', 'photo-6'],
     photographerNames: ['정작가', '강작가'],
     productType: 'wedding',
-    packageId: 'mind-ee',
+    packageId: 'new-data', // ✅ 실제 Product ID
     packageName: '1인 데이터형',
-    options: ['작가 추가 선물', '메이크업 촬영'],
+    options: ['작가 추가 선물', '메이크업 촬영'], // 레거시
+    optionIds: ['option-extra-gift'], // ✅ 추가
+    isAlbumType: false, // ✅ 추가
+    packageOptions: { // ✅ 추가
+      hasLeadPhotographer: false,
+      hasSeniorPhotographer: false,
+      hasExtraGift: true,
+      hasNewStructure: false,
+      hasDirectorOption: false
+    },
     status: 'in_progress',
     specialRequests: '하객 단체 사진 많이 촬영 요청',
     travelTimeMinutes: 45,
@@ -329,6 +363,7 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     mainContact: 'bride', // 대표 연락처: 신부
     contractId: 'contract-012',
     clientPortalToken: 'token-012',
+    projectId: 'project-012', // ✅ 추가
     venueName: '경주 힐튼 호텔',
     venueType: 'hotel',
     ballroom: '로열 볼룸',
@@ -338,9 +373,18 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     photographerIds: ['photo-8', 'photo-10', 'photo-12'],
     photographerNames: ['윤작가', '한작가', '오작가'],
     productType: 'wedding',
-    packageId: 'mind-aa',
+    packageId: 'new-basic', // ✅ 실제 Product ID
     packageName: '2인 앨범형',
-    options: ['대표작가 지정', '야외촬영', '당일편집', '60페이지 구성'],
+    options: ['대표작가 지정', '야외촬영', '당일편집', '60페이지 구성'], // 레거시
+    optionIds: ['option-lead-photographer', 'option-60p'], // ✅ 추가
+    isAlbumType: true, // ✅ 추가
+    packageOptions: { // ✅ 추가
+      hasLeadPhotographer: true,
+      hasSeniorPhotographer: false,
+      hasExtraGift: false,
+      hasNewStructure: true,
+      hasDirectorOption: false
+    },
     status: 'in_progress',
     specialRequests: '경주 전통 건축물 배경으로 촬영',
     internalNotes: '이동 시간 고려 필요',

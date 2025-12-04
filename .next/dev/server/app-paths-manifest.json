@@ -3,6 +3,7 @@
   "/(admin)/admin/live-status/page": "app/(admin)/admin/live-status/page.js",
   "/(admin)/admin/login/page": "app/(admin)/admin/login/page.js",
   "/(admin)/admin/projects/page": "app/(admin)/admin/projects/page.js",
+  "/(admin)/admin/schedule/page": "app/(admin)/admin/schedule/page.js",
   "/(client)/c/product-type/page": "app/(client)/c/product-type/page.js",
   "/(public)/page": "app/(public)/page.js"
 }

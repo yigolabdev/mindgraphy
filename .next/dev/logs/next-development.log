@@ -108,3 +108,46 @@
 [03:10:47.061] Server  LOG      ✓ Compiled in 65ms
 [03:10:47.170] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
 [03:10:47.170] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:11:40.420] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:11:40.421] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:11:43.473] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:11:43.473] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:13:44.418] Browser LOG     [PageAccessGuard] useEffect triggered for pathname: /admin/schedule/
+[03:13:44.418] Browser LOG     [PageAccessGuard] Not a login page, proceeding with session check
+[03:13:44.418] Browser LOG     [PageAccessGuard] Session string: exists
+[03:13:44.418] Browser LOG     [PageAccessGuard] Session valid, user role: admin
+[03:13:44.418] Browser LOG     [PageAccessGuard] useEffect triggered for pathname: /admin/schedule/
+[03:13:44.418] Browser LOG     [PageAccessGuard] Not a login page, proceeding with session check
+[03:13:44.418] Browser LOG     [PageAccessGuard] Session string: exists
+[03:13:44.418] Browser LOG     [PageAccessGuard] Session valid, user role: admin
+[03:13:44.418] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/schedule/","role":"admin"}
+[03:13:44.418] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/schedule/","role":"admin"}
+[03:13:53.227] Browser LOG     [PageAccessGuard] useEffect triggered for pathname: /admin/calendar/
+[03:13:53.227] Browser LOG     [PageAccessGuard] Not a login page, proceeding with session check
+[03:13:53.227] Browser LOG     [PageAccessGuard] Session string: exists
+[03:13:53.227] Browser LOG     [PageAccessGuard] Session valid, user role: admin
+[03:13:53.227] Browser LOG     [PageAccessGuard] useEffect triggered for pathname: /admin/calendar/
+[03:13:53.227] Browser LOG     [PageAccessGuard] Not a login page, proceeding with session check
+[03:13:53.227] Browser LOG     [PageAccessGuard] Session string: exists
+[03:13:53.227] Browser LOG     [PageAccessGuard] Session valid, user role: admin
+[03:13:53.227] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:13:53.227] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:15:52.676] Server  LOG      ✓ Compiled in 268ms
+[03:16:18.740] Server  LOG      ✓ Compiled in 86ms
+[03:16:18.836] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:16:18.836] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:16:32.342] Server  LOG      ✓ Compiled in 78ms
+[03:16:32.440] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:16:32.441] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:16:47.828] Server  LOG      ✓ Compiled in 63ms
+[03:16:47.925] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:16:47.925] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:24:52.049] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./app/(admin)/admin/calendar/page.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[03:24:52.427] Server  ERROR    ⨯ Error: The default export is not a React Component in "/admin/calendar/page"
+[03:24:52.532] Server  ERROR    ⨯ Error: The default export is not a React Component in "/admin/calendar/page"
+[03:24:52.712] Server  ERROR    ⨯ Error: The default export is not a React Component in "/admin/calendar/page"
+[03:24:52.835] Server  ERROR    ⨯ Error: The default export is not a React Component in "/admin/calendar/page"
+[03:24:53.348] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/admin/calendar/page"
+[03:25:00.321] Server  LOG      ✓ Compiled in 203ms
+[03:26:00.233] Server  LOG      ✓ Compiled in 181ms
+[03:26:07.484] Server  LOG      ✓ Compiled in 112ms

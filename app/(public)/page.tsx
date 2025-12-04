@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,7 +12,7 @@ const STORAGE_KEY = 'mindgraphy-last-portal'
 
 type Portal = 'client' | 'admin' | null
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -183,5 +183,27 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-50">
+        <div className="container mx-auto flex min-h-screen flex-col items-center justify-center px-4 py-16">
+          <div className="mb-12 text-center">
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 text-white shadow-lg">
+                <span className="text-2xl font-bold">M</span>
+              </div>
+              <h1 className="text-5xl font-bold tracking-tight">MindGraphy</h1>
+            </div>
+            <p className="mt-4 text-muted-foreground">로딩 중...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   )
 }
