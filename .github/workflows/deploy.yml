@@ -1,36 +1,24 @@
-name: Deploy Next.js Static Site to S3
+name: Deploy to Vercel (Recommended for SSR)
+
+# ⚠️ 중요: 이 프로젝트는 동적 라우트를 사용하므로 정적 빌드(S3) 대신
+# 서버사이드 렌더링을 지원하는 플랫폼(Vercel, Netlify)을 권장합니다.
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  # 이 워크플로우는 비활성화되어 있습니다.
+  # Vercel을 사용하는 경우 Vercel Git Integration을 활성화하세요:
+  # https://vercel.com/docs/deployments/git
+  
+  placeholder:
     runs-on: ubuntu-latest
-
+    if: false # 비활성화
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.11.0'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Next.js static site
-        run: npm run build
-
-      - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: wedding-yigo
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-south-1
-          SOURCE_DIR: ./out
+      - name: Info
+        run: |
+          echo "이 워크플로우는 비활성화되어 있습니다."
+          echo "Vercel 또는 Netlify Git Integration을 사용하여 자동 배포하세요."

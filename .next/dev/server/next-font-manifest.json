@@ -3,30 +3,6 @@
     "[project]/app/(admin)/admin/calendar/page": [
       "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
       "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(admin)/admin/live-status/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(admin)/admin/login/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(admin)/admin/projects/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(admin)/admin/schedule/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(client)/c/product-type/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
-    ],
-    "[project]/app/(public)/page": [
-      "static/media/caa3a2e1cccd8315-s.p.853070df.woff2",
-      "static/media/797e433ab948586e-s.p.dbea232f.woff2"
     ]
   },
   "appUsingSizeAdjust": true,
