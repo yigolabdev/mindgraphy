@@ -158,7 +158,7 @@ function AccessDeniedScreen({ user, pathname, router }: AccessDeniedScreenProps)
               이 페이지에 접근할 권한이 없습니다.
             </p>
             <p className="text-xs text-zinc-500">
-              {user.role === 'photographer' 
+              {user.role === 'staff' 
                 ? '관리자에게 페이지 접근 권한을 요청하세요.'
                 : '관리자에게 문의하세요.'}
             </p>
@@ -189,9 +189,9 @@ function AccessDeniedScreen({ user, pathname, router }: AccessDeniedScreenProps)
           {/* 디버그 정보 */}
           <div className="pt-4 border-t space-y-2">
             <p className="text-xs text-zinc-500 leading-relaxed">
-              <strong>현재 역할:</strong> {user.role}
+              <strong>현재 역할:</strong> {user.role} {user.jobTitle && `(${user.jobTitle})`}
             </p>
-            {user.role === 'photographer' && (
+            {user.role === 'staff' && (
               <p className="text-xs text-zinc-500 leading-relaxed">
                 <strong>현재 권한:</strong>{' '}
                 {user.permissions && user.permissions.length > 0

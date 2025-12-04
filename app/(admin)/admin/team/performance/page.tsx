@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Progress } from '@/components/ui/progress'
-import { mockTeamUsers, formatCurrency, getRoleLabel, getStatusColor } from '@/lib/mock/users'
+import { mockTeamUsers, formatCurrency, getJobTitleLabel, getStatusColor } from '@/lib/mock/users'
 import {
   Camera,
   DollarSign,
@@ -33,7 +33,8 @@ function PerformanceContent() {
   
   const photographer = mockTeamUsers.find(u => u.id === id)
 
-  if (!photographer || photographer.role !== 'photographer' || !photographer.photographerStats) {
+  // Ensure we check jobTitle, not role, as role is 'admin' | 'staff'
+  if (!photographer || photographer.jobTitle !== 'photographer' || !photographer.stats) {
     return (
       <AdminLayout align="left">
         <div className="flex flex-col items-center justify-center py-20">
@@ -51,7 +52,7 @@ function PerformanceContent() {
     )
   }
 
-  const stats = photographer.photographerStats
+  const stats = photographer.stats
 
   return (
     <AdminLayout align="left">
@@ -79,7 +80,7 @@ function PerformanceContent() {
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="outline" className="flex items-center gap-1">
                     <Camera className="h-3 w-3" />
-                    {getRoleLabel(photographer.role)}
+                    {getJobTitleLabel(photographer.jobTitle)}
                   </Badge>
                   <Badge className={cn("border", getStatusColor(photographer.status))}>
                     {photographer.status === 'active' ? '활성' : photographer.status === 'inactive' ? '비활성' : '휴가'}
@@ -388,4 +389,3 @@ export default function PhotographerPerformancePage() {
     </Suspense>
   )
 }
-

@@ -9,9 +9,7 @@ import {
   Upload, 
   ClipboardList,
 } from 'lucide-react'
-import { Project } from '@/lib/mock-data' // Assuming mock-data has exported type or need to infer
-// Note: If Project type isn't exported from mock-data, we might need to define it or import it from a types file.
-// For now, I'll assume a similar structure based on usage.
+import { Project } from '@/lib/types'
 
 interface ProjectCardProps {
   project: any // Replace with actual Project type
