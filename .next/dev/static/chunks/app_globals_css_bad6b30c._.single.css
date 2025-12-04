@@ -645,6 +645,10 @@ body {
   margin-top: 1.5rem;
 }
 
+.mb-1\.5 {
+  margin-bottom: .375rem;
+}
+
 .line-clamp-1 {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -2672,6 +2676,10 @@ body {
 .text-xs {
   font-size: .75rem;
   line-height: 1rem;
+}
+
+.text-\[9px\] {
+  font-size: 9px;
 }
 
 .font-bold {

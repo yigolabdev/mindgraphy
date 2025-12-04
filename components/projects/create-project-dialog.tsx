@@ -254,7 +254,7 @@ export function CreateProjectDialog({
       // 포털 계정 생성 여부 결정 (수동 등록이고 결제 완료/부분 결제 시 자동 생성)
       const shouldCreatePortalAccount = formData.sourceType === 'manual-registration' && 
                                        (formData.paymentStatus === 'paid' || formData.paymentStatus === 'partial')
-
+      
       console.log('등록 데이터:', {
         ...formData,
         leadStatus,

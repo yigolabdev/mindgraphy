@@ -170,7 +170,7 @@ export default function LiveStatusPage() {
           <div className="flex items-center gap-4 bg-white rounded-2xl shadow-sm border border-zinc-100 p-2 pr-4">
             <div className="bg-zinc-900 text-white rounded-xl px-4 py-2 text-center min-w-[100px]">
               <div className="text-xl font-bold font-mono tracking-widest">
-                {format(currentTime, 'HH:mm:ss')}
+                  {format(currentTime, 'HH:mm:ss')}
               </div>
             </div>
             <div className="text-sm font-medium text-zinc-600">
@@ -255,17 +255,17 @@ export default function LiveStatusPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  진행중인 촬영
-                </h2>
+              진행중인 촬영
+            </h2>
                 <Badge variant="secondary" className="font-mono">{inProgressSchedules.length}</Badge>
               </div>
 
               {inProgressSchedules.length > 0 ? (
                 <div className="grid gap-4">
-                  {inProgressSchedules.map((schedule) => (
+              {inProgressSchedules.map((schedule) => (
                     <div 
-                      key={schedule.id}
-                      onClick={() => handleScheduleClick(schedule)}
+                  key={schedule.id} 
+                  onClick={() => handleScheduleClick(schedule)}
                       className="group relative bg-white rounded-2xl p-5 shadow-sm border border-zinc-100 hover:shadow-md transition-all cursor-pointer overflow-hidden"
                     >
                       <div className="absolute top-0 left-0 w-1 h-full bg-zinc-900" />
@@ -282,8 +282,8 @@ export default function LiveStatusPage() {
                                 schedule.status === 'in_progress' ? "bg-green-500 animate-pulse" : "bg-yellow-500"
                               )} />
                             </div>
-                          </div>
-                          <div>
+                        </div>
+                        <div>
                             <p className="font-bold text-zinc-900">{getPhotographerNames(schedule.photographerIds)}</p>
                             <div className={cn(
                               "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium mt-1",
@@ -294,9 +294,9 @@ export default function LiveStatusPage() {
                                 return <StatusIcon className="h-3 w-3" />
                               })()}
                               {getDetailedStatus(schedule.status).label}
-                            </div>
                           </div>
                         </div>
+                      </div>
 
                         {/* Schedule Info */}
                         <div className="flex-1 grid sm:grid-cols-2 gap-4">
@@ -306,9 +306,9 @@ export default function LiveStatusPage() {
                                 {schedule.groomName} <span className="text-zinc-400">&</span> {schedule.brideName}
                               </span>
                               <Badge variant="outline" className="text-[10px] h-5">
-                                {getProductTypeLabel(schedule.productType)}
-                              </Badge>
-                            </div>
+                            {getProductTypeLabel(schedule.productType)}
+                          </Badge>
+                        </div>
                             <div className="flex items-center gap-2 text-sm text-zinc-500">
                               <MapPin className="h-3.5 w-3.5" />
                               {schedule.venueName}
@@ -330,13 +330,13 @@ export default function LiveStatusPage() {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+              ))}
+            </div>
               ) : (
                 <div className="text-center py-12 bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200">
                   <p className="text-zinc-500">현재 진행중인 촬영이 없습니다.</p>
-                </div>
-              )}
+          </div>
+        )}
             </section>
 
             {/* Upcoming Section */}
@@ -345,25 +345,25 @@ export default function LiveStatusPage() {
                 <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
                   <Clock className="h-5 w-5 text-zinc-400" />
                   대기중인 일정
-                </h2>
+            </h2>
                 <Badge variant="secondary" className="font-mono">{upcomingSchedules.length}</Badge>
               </div>
 
               <div className="grid gap-3">
-                {upcomingSchedules.map((schedule) => (
+              {upcomingSchedules.map((schedule) => (
                   <div 
-                    key={schedule.id}
-                    onClick={() => handleScheduleClick(schedule)}
+                  key={schedule.id} 
+                  onClick={() => handleScheduleClick(schedule)}
                     className="bg-white rounded-xl p-4 shadow-sm border border-zinc-100 hover:border-zinc-300 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center gap-4"
                   >
                     <div className="flex items-center gap-4 min-w-[140px]">
                       <div className="text-center bg-zinc-50 rounded-lg px-3 py-2 min-w-[80px]">
                         <div className="text-lg font-bold text-zinc-900 font-mono">
-                          {format(new Date(schedule.start), 'HH:mm')}
+                            {format(new Date(schedule.start), 'HH:mm')}
                         </div>
                         <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Start</div>
                       </div>
-                    </div>
+                        </div>
 
                     <div className="flex-1 border-l border-zinc-100 pl-4 sm:pl-0 sm:border-l-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -383,13 +383,13 @@ export default function LiveStatusPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+              ))}
                 {upcomingSchedules.length === 0 && (
                   <div className="text-center py-8 bg-zinc-50/50 rounded-xl border border-dashed border-zinc-200">
                     <p className="text-zinc-400 text-sm">대기중인 일정이 없습니다.</p>
                   </div>
                 )}
-              </div>
+            </div>
             </section>
           </div>
 
@@ -400,8 +400,8 @@ export default function LiveStatusPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold tracking-tight flex items-center gap-2 text-zinc-700">
                   <CheckCircle2 className="h-5 w-5 text-zinc-400" />
-                  완료된 촬영
-                </h2>
+              완료된 촬영
+            </h2>
                 <span className="text-xs font-medium text-zinc-500">{completedSchedules.length}건</span>
               </div>
 
@@ -450,17 +450,17 @@ export default function LiveStatusPage() {
                         {photographer.name.charAt(0)}
                       </div>
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
-                    </div>
+                          </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm">{photographer.name}</div>
                       <div className="text-xs text-zinc-500">대기중</div>
-                    </div>
-                    {photographer.phone && (
+                        </div>
+                        {photographer.phone && (
                       <a href={`tel:${photographer.phone}`} className="p-2 text-zinc-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors">
                         <Phone className="h-4 w-4" />
-                      </a>
-                    )}
-                  </div>
+                          </a>
+                        )}
+                      </div>
                 ))}
                 {availablePhotographers.length === 0 && (
                   <p className="text-sm text-zinc-400">현재 대기중인 작가가 없습니다.</p>
@@ -469,17 +469,17 @@ export default function LiveStatusPage() {
             </section>
 
             {/* On Leave Photographers */}
-            {photographersOnLeave.length > 0 && (
+        {photographersOnLeave.length > 0 && (
               <section className="pt-4 border-t border-zinc-100">
                 <h2 className="text-sm font-bold tracking-tight mb-3 text-zinc-500">휴무/휴가</h2>
                 <div className="flex flex-wrap gap-2">
-                  {photographersOnLeave.map((photographer) => (
+                {photographersOnLeave.map((photographer) => (
                     <div key={photographer.id} className="bg-zinc-50 rounded-full px-3 py-1 border border-zinc-200 flex items-center gap-2 opacity-60">
                       <div className="w-2 h-2 bg-zinc-400 rounded-full" />
                       <span className="text-xs font-medium text-zinc-600">{photographer.name}</span>
-                    </div>
-                  ))}
-                </div>
+                      </div>
+                ))}
+              </div>
               </section>
             )}
           </div>

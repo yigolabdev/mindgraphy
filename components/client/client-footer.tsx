@@ -54,7 +54,7 @@ export function ClientFooter() {
           {/* Portal Button - Removed */}
           
           {/* Portfolio Button - Removed */}
-          
+
           {/* Instagram Link */}
           <a
             href={CONTACT_INFO.instagram}

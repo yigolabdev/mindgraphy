@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
-import { Clock, Users, Package, Tag, Building2 } from 'lucide-react'
+import { Clock, Users, Package, Building2 } from 'lucide-react'
 import { ScheduleEvent } from '@/lib/mock/schedules'
+import { parsePackageInfo, getPackageBadges, getPackageTypeColor } from '@/lib/utils/package-parser'
 
 interface CalendarEventContentProps {
   eventInfo: any
@@ -22,58 +23,93 @@ export function CalendarEventContent({ eventInfo }: CalendarEventContentProps) {
     ? `${format(start, 'HH:mm')} - ${format(end, 'HH:mm')}`
     : ''
 
+  // 패키지 정보 파싱
+  const packageInfo = parsePackageInfo(
+    props.packageName || '',
+    props.options || [],
+    photographerCount
+  )
+  const packageBadges = getPackageBadges(packageInfo)
+  const packageTypeColor = getPackageTypeColor(packageInfo.packageType)
+
   return (
-    <div className="p-2 w-full overflow-hidden flex flex-col h-full justify-between gap-1">
+    <div className="p-2 w-full overflow-hidden flex flex-col h-full justify-between gap-1.5">
       <div>
-        <div className="font-bold text-sm mb-1 leading-tight text-zinc-900">
+        {/* 신랑신부 이름 */}
+        <div className="font-bold text-sm mb-1.5 leading-tight text-zinc-900">
           {props.groomName} & {props.brideName}
         </div>
         
-        <div className="flex flex-col gap-1 text-xs">
-          {/* Time */}
+        <div className="flex flex-col gap-1.5 text-xs">
+          {/* 시간 */}
           <div className="flex items-center gap-1.5 text-zinc-700">
             <Clock className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500" />
             <span className="font-medium">{timeString}</span>
           </div>
 
-          {/* Venue */}
+          {/* 장소 */}
           <div className="flex items-start gap-1.5 text-zinc-700">
             <Building2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-zinc-500" />
-            <span>{props.venueName}</span>
+            <span className="line-clamp-1">{props.venueName}</span>
           </div>
           
-          {/* Photographers */}
+          {/* 작가 정보 - 개선된 표시 */}
           {photographerCount > 0 && (
-            <div className="flex items-start gap-1.5 text-blue-700 font-medium">
+            <div className="flex items-start gap-1.5">
               <Users className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-blue-600" />
-              <div className="flex flex-wrap gap-1">
-                <span className="bg-blue-50 px-1.5 py-0.5 rounded text-[11px] border border-blue-100">
-                  {photographerCount}명 배정됨
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                <span className="text-blue-800 font-semibold text-[11px] leading-tight">
+                  {photographerText}
                 </span>
-                <span className="text-blue-800">({photographerText})</span>
               </div>
             </div>
           )}
           
-          {/* Product & Package */}
-          {props.packageName && (
-            <div className="flex items-start gap-1.5 text-zinc-700">
-              <Package className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-zinc-500" />
-              <span className="font-medium text-purple-700">{props.packageName}</span>
+          {/* 패키지 타입 */}
+          <div className="flex items-start gap-1.5">
+            <Package className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${packageTypeColor}`} />
+            <span className={`font-bold ${packageTypeColor}`}>
+              {packageInfo.displayLabel}
+            </span>
+          </div>
+          
+          {/* 특별 옵션 배지 */}
+          {packageBadges.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-0.5">
+              {packageBadges.map((badge, idx) => (
+                <span 
+                  key={idx} 
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${badge.color} whitespace-nowrap`}
+                >
+                  {badge.label}
+                </span>
+              ))}
             </div>
           )}
-          
-          {/* Options */}
+
+          {/* 기타 주요 옵션 (배지에 없는 것들만) */}
           {props.options && props.options.length > 0 && (
-            <div className="flex items-start gap-1.5 text-zinc-600">
-              <Tag className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-zinc-500" />
-              <div className="flex flex-wrap gap-1">
-                {props.options.map((option, idx) => (
-                  <span key={idx} className="bg-zinc-100 px-1.5 py-0.5 rounded text-[10px] border border-zinc-200 text-zinc-700 whitespace-normal">
+            <div className="flex flex-wrap gap-1 mt-0.5">
+              {props.options
+                .filter(opt => {
+                  const optLower = opt.toLowerCase()
+                  // 이미 배지로 표시된 옵션은 제외
+                  return !optLower.includes('대표') && 
+                         !optLower.includes('수석') && 
+                         !optLower.includes('추가') && 
+                         !optLower.includes('선물') &&
+                         !optLower.includes('60') &&
+                         !optLower.includes('이사')
+                })
+                .slice(0, 2) // 최대 2개만 표시
+                .map((option, idx) => (
+                  <span 
+                    key={idx} 
+                    className="bg-zinc-100 px-1.5 py-0.5 rounded text-[9px] border border-zinc-200 text-zinc-600 whitespace-nowrap"
+                  >
                     {option}
                   </span>
                 ))}
-              </div>
             </div>
           )}
         </div>
@@ -81,4 +117,3 @@ export function CalendarEventContent({ eventInfo }: CalendarEventContentProps) {
     </div>
   )
 }
-

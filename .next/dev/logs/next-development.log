@@ -79,3 +79,32 @@
 [02:04:24.083] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
 [02:04:24.083] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
 [02:06:00.800] Server  LOG      ✓ Compiled in 136ms
+[02:54:17.921] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:54:17.927] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:54:34.478] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:54:34.479] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:56:06.855] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:56:06.855] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:56:07.609] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[02:56:07.609] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:08:26.400] Server  LOG      ✓ Compiled in 534ms
+[03:09:33.259] Server  LOG      ✓ Compiled in 328ms
+[03:09:55.883] Server  LOG      ✓ Compiled in 46ms
+[03:09:55.997] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:09:55.997] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:09.259] Server  LOG      ✓ Compiled in 91ms
+[03:10:09.371] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:09.371] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:21.574] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:21.575] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:21.608] Server  LOG      ✓ Compiled in 65ms
+[03:10:21.710] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:21.710] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:28.422] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:28.423] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:35.132] Server  LOG      ✓ Compiled in 43ms
+[03:10:35.237] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:35.237] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:47.061] Server  LOG      ✓ Compiled in 65ms
+[03:10:47.170] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
+[03:10:47.170] Browser LOG     [PageAccessGuard] Access check result: {"hasAccess":true,"pathname":"/admin/calendar/","role":"admin"}
