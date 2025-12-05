@@ -166,55 +166,71 @@ export default function ProjectsPage() {
             )}
           </div>
 
-          {/* 신규 문의 알림 카드 - 조건부 렌더링 ✅ */}
+          {/* 신규 문의 알림 카드 */}
           {activeTab === 'manager' && inquiryCustomers.length > 0 && (
-            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-900">
-                  <Bell className="h-5 w-5" />
-                  🔔 신규 문의 {inquiryCustomers.length}건
-                  <Badge variant="destructive" className="ml-2">
+            <Card className="border-l-4 border-l-blue-600 bg-white shadow-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
+                      <Bell className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-semibold text-gray-900">
+                        신규 문의 {inquiryCustomers.length}건
+                      </CardTitle>
+                      <p className="text-sm text-gray-500 mt-0.5">
+                        담당자 배정 및 상담이 필요합니다
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="destructive" className="font-medium">
                     확인 필요
                   </Badge>
-                </CardTitle>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-blue-700">
-                  고객용 페이지를 통해 접수된 문의입니다. 담당자를 배정하고 상담을 진행해 주세요.
-                </p>
-                
+              <CardContent className="space-y-2">
                 <div className="space-y-2">
                   {inquiryCustomers.slice(0, 3).map(customer => {
                     const project = getProjectsByCustomerId(customer.id)[0]
                     return (
                       <div 
                         key={customer.id}
-                        className="p-3 bg-white border border-blue-100 rounded-lg hover:border-blue-300 transition-colors"
+                        className="p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hover:border-gray-300 transition-all"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-blue-900">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-gray-900">
                                 {customer.groomName} & {customer.brideName}
                               </span>
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs font-normal">
                                 {project?.projectType === 'wedding' ? '웨딩' :
                                  project?.projectType === 'hanbok' ? '한복' :
                                  project?.projectType === 'dress_shop' ? '가봉' : '돌스냅'}
                               </Badge>
                             </div>
-                            <div className="text-xs text-muted-foreground space-y-0.5">
-                              <div>📞 {customer.groomPhone || customer.bridePhone}</div>
-                              <div>✉️ {customer.email}</div>
+                            <div className="text-sm text-gray-600 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-400">연락처</span>
+                                <span className="font-medium">{customer.groomPhone || customer.bridePhone}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-400">이메일</span>
+                                <span className="font-medium">{customer.email}</span>
+                              </div>
                               {project && (
-                                <div>📅 {formatDateAs(project.weddingDate, 'DISPLAY_SHORT')}</div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-400">촬영일</span>
+                                  <span className="font-medium">{formatDateAs(project.weddingDate, 'DISPLAY_SHORT')}</span>
+                                </div>
                               )}
                             </div>
                           </div>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"
+                            className="border-gray-300 text-gray-700 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors"
                             onClick={() => handleOpenInquiryDialog(customer)}
                           >
                             상세보기
