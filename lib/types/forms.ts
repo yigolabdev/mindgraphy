@@ -4,7 +4,10 @@
  * 전체 애플리케이션에서 사용되는 폼 데이터의 타입을 정의합니다.
  */
 
-import type { ProjectType } from './types'
+import type { ProjectType } from '@/lib/types'
+
+// CustomerLeadStatus 타입 정의
+export type CustomerLeadStatus = 'inquiry' | 'quoted' | 'contracted' | 'scheduled' | 'completed' | 'cancelled'
 
 /**
  * 프로젝트 생성 폼 데이터

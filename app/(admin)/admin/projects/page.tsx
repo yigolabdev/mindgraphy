@@ -117,7 +117,6 @@ export default function ProjectsPage() {
       weddingDate: formatDateAs(project.weddingDate, 'DISPLAY'),
       weddingTime: project.weddingTime,
       weddingVenue: project.weddingVenue,
-      venueAddress: project.venueAddress,
       packageName: packageInfo?.name,
       optionNames,
       currentPhotographerIds: project.assignedPhotographers?.map(p => p.id) || []

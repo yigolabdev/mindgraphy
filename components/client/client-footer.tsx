@@ -2,7 +2,15 @@
 
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { CONTACT_INFO } from '@/lib/config/portal.config'
+
+// Contact info
+const CONTACT_INFO = {
+  phone: '02-2202-9966',
+  email: 'info@mindgraphy.com',
+  address: '서울 성동구 마조로15길 6 1층',
+  kakaoChannel: 'https://pf.kakao.com/_AxnxiYG',
+  instagram: 'https://instagram.com/mindgraphy',
+}
 
 export function ClientFooter() {
   const router = useRouter()
