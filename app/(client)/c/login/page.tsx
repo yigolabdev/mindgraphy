@@ -73,7 +73,7 @@ export default function ClientLoginPage() {
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
-      router.push('/c')
+      router.push('/c/product-type/')
     }, 400)
   }
 

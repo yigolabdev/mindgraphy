@@ -1,166 +1,163 @@
-import { useState, useEffect, useMemo } from 'react'
-
 /**
- * Portal step types representing customer journey stages
+ * 고객 포털 데이터 커스텀 훅
  */
-export type PortalStep = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-export interface ContractInfo {
-  contractNumber: string
-  contractDate: string
-  isSigned: boolean
-  contractUrl: string
+import { useState, useEffect, useCallback } from 'react'
+import { getCustomerByPhone, getProjectByCustomerId } from '@/lib/utils/customer-registration'
+import { useDataSync } from '@/lib/utils/sync'
+import type { Customer, Project } from '@/lib/types'
+
+export interface PortalData {
+  customer: Customer | null
+  project: Project | null
+  currentStep: number
+  progress: number
 }
 
-export interface PaymentInfo {
-  bankName: string
-  accountNumber: string
-  accountHolder: string
-  amount: number
-  depositAmount: number
-  balanceAmount: number
-  isPaid: boolean
-}
-
-export interface PhotographerRating {
-  rating: number
-  review: string
-  submittedAt: string | null
-}
-
-export interface RequestHistoryItem {
-  id: string
-  content: string
-  createdAt: string
-}
-
-export interface PortalCustomerData {
-  coupleName: string
-  weddingDate: string
-  currentStep: PortalStep
-  contractInfo: ContractInfo
-  paymentInfo: PaymentInfo
-  venue: string
-  packageName: string
-  requestHistory: RequestHistoryItem[]
-  photoSelectionAvailable: boolean
-  totalPhotos: number
-  selectedPhotos: number
-  maxSelections: number
-  photographerRating: PhotographerRating
-}
-
-export interface DateInfo {
-  daysUntil: number
-  isPast: boolean
-  formattedDate: string
+export interface UsePortalDataReturn {
+  data: PortalData | null
+  loading: boolean
+  error: Error | null
+  refresh: () => Promise<void>
+  updateRequest: (content: string) => Promise<void>
+  ratePhotographer: (rating: number, review: string) => Promise<void>
 }
 
 /**
- * Custom hook for managing portal customer data and state
- * Centralizes business logic for the customer portal
+ * 고객 포털 데이터 관리 훅
  */
-export function usePortalData(initialData: PortalCustomerData) {
-  const [customerData, setCustomerData] = useState<PortalCustomerData>(initialData)
-  const [dateInfo, setDateInfo] = useState<DateInfo>({
-    daysUntil: 0,
-    isPast: false,
-    formattedDate: ''
-  })
+export function usePortalData(phone: string): UsePortalDataReturn {
+  const [data, setData] = useState<PortalData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  
+  const { subscribe } = useDataSync()
 
-  // Calculate date information
-  useEffect(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    const weddingDate = new Date(customerData.weddingDate)
-    weddingDate.setHours(0, 0, 0, 0)
-    
-    const diffTime = weddingDate.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
-    setDateInfo({
-      daysUntil: Math.abs(diffDays),
-      isPast: diffDays < 0,
-      formattedDate: formatDate(customerData.weddingDate)
-    })
-  }, [customerData.weddingDate])
-
-  // Calculate progress percentage based on current step
-  const progressPercentage = useMemo(() => {
-    const totalSteps = 7 // 0-6
-    return Math.round(((customerData.currentStep + 1) / totalSteps) * 100)
-  }, [customerData.currentStep])
-
-  // Helper functions
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}년 ${month}월 ${day}일`
-  }
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('ko-KR').format(amount) + '원'
-  }
-
-  // Actions
-  const updateStep = (step: PortalStep) => {
-    const newWeddingDate = step <= 3 ? '2024-12-01' : '2025-04-12'
-    
-    setCustomerData(prev => ({
-      ...prev,
-      currentStep: step,
-      photoSelectionAvailable: step === 4,
-      weddingDate: newWeddingDate
-    }))
-  }
-
-  const addRequest = (content: string) => {
-    const newRequest: RequestHistoryItem = {
-      id: Date.now().toString(),
-      content,
-      createdAt: new Date().toISOString()
+  // 데이터 로드
+  const loadData = useCallback(async () => {
+    if (!phone) {
+      setData(null)
+      setLoading(false)
+      return
     }
 
-    setCustomerData(prev => ({
-      ...prev,
-      requestHistory: [newRequest, ...prev.requestHistory]
-    }))
-  }
-
-  const updateRating = (rating: number, review: string) => {
-    setCustomerData(prev => ({
-      ...prev,
-      photographerRating: {
-        rating,
-        review,
-        submittedAt: new Date().toISOString()
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // 고객 정보 조회
+      const customer = getCustomerByPhone(phone)
+      if (!customer) {
+        throw new Error('고객 정보를 찾을 수 없습니다')
       }
-    }))
-  }
-
-  const signContract = () => {
-    setCustomerData(prev => ({
-      ...prev,
-      contractInfo: {
-        ...prev.contractInfo,
-        isSigned: true
+      
+      // 프로젝트 정보 조회
+      const project = getProjectByCustomerId(customer.id)
+      if (!project) {
+        throw new Error('프로젝트 정보를 찾을 수 없습니다')
       }
-    }))
-  }
+
+      // 현재 단계 계산
+      const currentStep = calculateStep(customer, project)
+      const progress = calculateProgress(currentStep)
+
+      setData({
+        customer,
+        project,
+        currentStep,
+        progress,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('데이터 로드 실패'))
+    } finally {
+      setLoading(false)
+    }
+  }, [phone])
+
+  // 초기 로드
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  // 실시간 동기화
+  useEffect(() => {
+    const unsubscribe = subscribe('ALL', (message) => {
+      if (
+        message.type.includes('CUSTOMER') || 
+        message.type.includes('PROJECT') ||
+        message.type === 'DATA_REFRESHED'
+      ) {
+        loadData()
+      }
+    })
+
+    return unsubscribe
+  }, [subscribe, loadData])
+
+  // 요청사항 추가
+  const updateRequest = useCallback(async (content: string) => {
+    // TODO: API 호출
+    console.log('Request added:', content)
+    await loadData()
+  }, [loadData])
+
+  // 작가 평가
+  const ratePhotographer = useCallback(async (rating: number, review: string) => {
+    // TODO: API 호출
+    console.log('Rating submitted:', rating, review)
+    await loadData()
+  }, [loadData])
 
   return {
-    customerData,
-    dateInfo,
-    progressPercentage,
-    formatDate,
-    formatCurrency,
-    updateStep,
-    addRequest,
-    updateRating,
-    signContract
+    data,
+    loading,
+    error,
+    refresh: loadData,
+    updateRequest,
+    ratePhotographer,
   }
 }
 
+/**
+ * 현재 단계 계산
+ */
+function calculateStep(customer: Customer, project: Project): number {
+  // leadStatus 기반 단계 계산
+  switch (customer.leadStatus) {
+    case 'inquiry':
+      return 0 // 일정 확인 중
+    case 'consultation':
+      return 1 // 일정 확정
+    case 'proposal':
+      return 1 // 일정 확정
+    case 'contracted':
+      // 프로젝트 상태에 따라 세분화
+      switch (project.projectStatus) {
+        case 'scheduled':
+          return 2 // 입금 대기
+        case 'in_progress':
+          return 3 // 촬영 대기
+        case 'proof_ready':
+          return 4 // 사진 선택
+        case 'editing':
+          return 5 // 편집 중
+        case 'completed':
+        case 'delivered':
+          return 6 // 배송 완료
+        default:
+          return 2
+      }
+    case 'completed':
+      return 6 // 배송 완료
+    default:
+      return 0
+  }
+}
+
+/**
+ * 진행률 계산
+ */
+function calculateProgress(step: number): number {
+  const totalSteps = 7
+  return Math.round((step / (totalSteps - 1)) * 100)
+}

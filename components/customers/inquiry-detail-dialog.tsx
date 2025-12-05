@@ -14,17 +14,24 @@ import { format } from 'date-fns'
 interface InquiryDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  customer: Customer
+  customer: Customer | null
   project?: Project
+  onStatusChange?: () => void
 }
 
 export function InquiryDetailDialog({ 
   open, 
   onOpenChange, 
   customer, 
-  project 
+  project,
+  onStatusChange
 }: InquiryDetailDialogProps) {
-  const [currentStatus, setCurrentStatus] = useState(customer.leadStatus)
+  const [currentStatus, setCurrentStatus] = useState(customer?.leadStatus || 'inquiry')
+  
+  // customer가 null이면 다이얼로그를 열지 않음
+  if (!customer) {
+    return null
+  }
   
   const formatDate = (dateString: string) => {
     if (!dateString) return '-'
@@ -79,7 +86,10 @@ export function InquiryDetailDialog({
           <CustomerStatusSelect
             customerId={customer.id}
             currentStatus={currentStatus}
-            onStatusChange={setCurrentStatus}
+            onStatusChange={(newStatus) => {
+              setCurrentStatus(newStatus)
+              onStatusChange?.()
+            }}
           />
           
           <Separator />

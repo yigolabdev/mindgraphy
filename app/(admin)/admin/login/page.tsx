@@ -158,7 +158,7 @@ export default function AdminLoginPage() {
               </TabsTrigger>
               <TabsTrigger value="staff" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                직원
+                작가
               </TabsTrigger>
             </TabsList>
 
@@ -241,7 +241,7 @@ export default function AdminLoginPage() {
               </div>
             </TabsContent>
 
-            {/* 직원 로그인 탭 */}
+            {/* 작가 로그인 탭 */}
             <TabsContent value="staff" className="space-y-6">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-4">
@@ -295,11 +295,11 @@ export default function AdminLoginPage() {
                     isLoading && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  {isLoading ? '로그인 중...' : '직원 로그인'}
+                  {isLoading ? '로그인 중...' : '작가 로그인'}
                 </Button>
               </form>
 
-              {/* 직원 빠른 로그인 */}
+              {/* 작가 빠른 로그인 */}
               <div className="pt-4 border-t border-zinc-200">
                 <p className="text-xs text-center text-zinc-500 mb-3 font-medium">
                   💡 테스트 계정 (클릭하여 로그인)

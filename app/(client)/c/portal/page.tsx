@@ -7,7 +7,6 @@ import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { Camera, Calendar, CreditCard, Image, FileText, CheckCircle2, Star, Share2, ExternalLink, Edit, Clock, MapPin, Home, User, Phone } from 'lucide-react'
-import { mockProducts } from '@/lib/mock/settings'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { getAllClientFormData } from '@/lib/utils/session-storage'
@@ -16,7 +15,7 @@ import {
   getProjectByCustomerId, 
   mapLeadStatusToCurrentStep 
 } from '@/lib/utils/customer-registration'
-import type { Customer, Project } from '@/lib/types'
+import type { Customer, Project, Product } from '@/lib/types'
 
 // Mock data - 실제로는 API에서 가져올 데이터
 const mockCustomerData = {
@@ -166,6 +165,20 @@ export default function PortalPage() {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [realCustomer, setRealCustomer] = useState<Customer | null>(null)
   const [realProject, setRealProject] = useState<Project | null>(null)
+  const [mockProducts, setMockProducts] = useState<Product[]>([])
+
+  // Load mockProducts on mount
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const { mockProducts: products } = await import('@/lib/mock/settings')
+        setMockProducts(products)
+      } catch (error) {
+        console.error('Error loading products:', error)
+      }
+    }
+    loadProducts()
+  }, [])
   
   // 앨범 수령 주소지 정보
   const [deliveryAddress, setDeliveryAddress] = useState({

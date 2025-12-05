@@ -7,7 +7,9 @@
 
 import type { Customer, Project } from '@/lib/types'
 import type { ClientFormData } from './session-storage'
-import { format } from 'date-fns'
+import { toISODate, toStandardTime } from './format'
+import { broadcastCustomerCreated, broadcastProjectCreated, broadcastCustomerStatusChanged } from './sync'
+import { handleError, createValidationError } from './error-handling'
 
 /**
  * 신규 고객 ID 생성
@@ -34,63 +36,6 @@ export function generateProjectNumber(): string {
   const year = new Date().getFullYear()
   const random = Math.floor(Math.random() * 9000) + 1000 // 1000-9999
   return `PRJ-${year}-${random}`
-}
-
-/**
- * 시간 문자열을 HH:MM 형식으로 변환
- */
-export function normalizeTimeFormat(timeString: string): string {
-  if (!timeString) return ''
-  if (timeString === 'undecided') return '미정'
-  
-  // 이미 HH:MM 형식이면 그대로 반환
-  if (/^\d{2}:\d{2}$/.test(timeString)) {
-    return timeString
-  }
-  
-  // "오전 10시", "오후 2시" 등의 형식을 HH:MM으로 변환
-  const patterns = [
-    { regex: /오전\s*(\d{1,2})\s*시/, handler: (h: string) => `${h.padStart(2, '0')}:00` },
-    { regex: /오후\s*(\d{1,2})\s*시/, handler: (h: string) => {
-      const hour = parseInt(h)
-      return `${hour === 12 ? 12 : hour + 12}:00`
-    }},
-    { regex: /낮\s*(\d{1,2})\s*시/, handler: (h: string) => `${h.padStart(2, '0')}:00` },
-    { regex: /(\d{1,2})\s*시/, handler: (h: string) => `${h.padStart(2, '0')}:00` },
-  ]
-  
-  for (const pattern of patterns) {
-    const match = timeString.match(pattern.regex)
-    if (match) {
-      return pattern.handler(match[1])
-    }
-  }
-  
-  return timeString
-}
-
-/**
- * 날짜 문자열을 yyyy-MM-dd 형식으로 변환
- */
-export function normalizeDateFormat(dateString: string): string {
-  if (!dateString) return ''
-  
-  // 이미 yyyy-MM-dd 형식이면 그대로 반환
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    return dateString
-  }
-  
-  // Date 객체로 변환 가능한지 시도
-  try {
-    const date = new Date(dateString)
-    if (!isNaN(date.getTime())) {
-      return format(date, 'yyyy-MM-dd')
-    }
-  } catch (e) {
-    console.error('Date format error:', e)
-  }
-  
-  return dateString
 }
 
 /**
@@ -130,8 +75,8 @@ export function convertToProject(
     projectStatus: 'scheduled', // 일정 미확정
     packageId: formData.packageId || '',
     optionIds: formData.optionIds || [],
-    weddingDate: normalizeDateFormat(formData.weddingDate || ''),
-    weddingTime: normalizeTimeFormat(formData.weddingTime || ''),
+    weddingDate: toISODate(formData.weddingDate) || '',  // ✅ 포맷 통일
+    weddingTime: toStandardTime(formData.weddingTime) || '',  // ✅ 포맷 통일
     weddingVenue: formData.weddingVenue || '',
     specialRequests: formData.specialRequests || '',
     referralSource: formData.referralSource || '고객용 페이지',
@@ -170,6 +115,15 @@ export function registerCustomerAndProject(formData: ClientFormData): {
   success: boolean
 } {
   try {
+    // 필수 필드 검증
+    if (!formData.groomName || !formData.brideName) {
+      throw createValidationError('신랑/신부 이름은 필수입니다')
+    }
+    
+    if (!formData.groomPhone && !formData.bridePhone) {
+      throw createValidationError('최소 한 명의 연락처가 필요합니다')
+    }
+    
     const customerId = generateCustomerId()
     const projectId = generateProjectId()
     
@@ -189,13 +143,17 @@ export function registerCustomerAndProject(formData: ClientFormData): {
     console.log('[Customer Registration] New customer created:', customer)
     console.log('[Customer Registration] New project created:', project)
     
+    // ✅ 실시간 동기화: 다른 탭에 알림
+    broadcastCustomerCreated(customer.id, `${customer.groomName} & ${customer.brideName}`)
+    broadcastProjectCreated(project.id, project.projectNumber)
+    
     return {
       customer,
       project,
       success: true
     }
   } catch (error) {
-    console.error('[Customer Registration] Error:', error)
+    handleError(error, 'Customer Registration', '고객 등록에 실패했습니다')
     return {
       customer: {} as Customer,
       project: {} as Project,
@@ -282,17 +240,21 @@ export function updateCustomerStatus(
     const index = customers.findIndex(c => c.id === customerId)
     
     if (index === -1) {
-      console.error('[Customer Registration] Customer not found:', customerId)
-      return false
+      throw createValidationError(`고객을 찾을 수 없습니다: ${customerId}`)
     }
     
+    const oldStatus = customers[index].leadStatus
     customers[index].leadStatus = newStatus
     localStorage.setItem('mindgraphy_mock_customers', JSON.stringify(customers))
     
     console.log('[Customer Registration] Status updated:', customerId, newStatus)
+    
+    // ✅ 실시간 동기화: 다른 탭에 알림
+    broadcastCustomerStatusChanged(customerId, oldStatus, newStatus)
+    
     return true
   } catch (error) {
-    console.error('[Customer Registration] Error updating status:', error)
+    handleError(error, 'Customer Status Update', '고객 상태 업데이트에 실패했습니다')
     return false
   }
 }

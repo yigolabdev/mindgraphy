@@ -10,6 +10,27 @@ const nextConfig: NextConfig = {
     unoptimized: true, // Required for static export
   },
   trailingSlash: true, // Better for static hosting compatibility
+  
+  // ✅ Mock 데이터 모듈을 서버/클라이언트 모두에서 사용 가능하도록 설정
+  webpack: (config, { isServer }) => {
+    // Mock 데이터를 external로 처리하지 않음
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
+    return config;
+  },
+  
+  // ✅ Turbopack에서 mock 모듈 처리
+  experimental: {
+    // 서버 컴포넌트 외부 패키지 처리
+    serverComponentsExternalPackages: [],
+  },
 };
 
 export default nextConfig;

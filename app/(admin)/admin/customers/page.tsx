@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -24,10 +24,8 @@ import {
 } from '@/components/ui/table'
 import { CustomerDetailDialog } from '@/components/customers/customer-detail-dialog'
 import { CreateProjectDialog } from '@/components/projects/create-project-dialog'
-import { mockCustomers, mockProjects, mockContracts, mockPayments } from '@/lib/mock-data'
-import { mockProducts } from '@/lib/mock/settings'
 import { formatDate } from '@/lib/utils'
-import type { Customer, Project, Contract } from '@/lib/types'
+import type { Customer, Project, Contract, Product, Payment } from '@/lib/types'
 import { 
   Plus, 
   Search, 
@@ -52,11 +50,10 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useMemo } from 'react'
 
 export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCustomer, setSelectedCustomer] = useState<typeof customersWithStats[0] | null>(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active')
@@ -66,6 +63,36 @@ export default function CustomersPage() {
   const [satisfactionFilter, setSatisfactionFilter] = useState<string>('all')
   const [sourceFilter, setSourceFilter] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'latest' | 'name' | 'projects' | 'revenue'>('latest')
+
+  // Data states
+  const [mockCustomers, setMockCustomers] = useState<Customer[]>([])
+  const [mockProjects, setMockProjects] = useState<Project[]>([])
+  const [mockContracts, setMockContracts] = useState<Contract[]>([])
+  const [mockPayments, setMockPayments] = useState<Payment[]>([])
+  const [mockProducts, setMockProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const mockData = await import('@/lib/mock-data')
+        const mockSettings = await import('@/lib/mock/settings')
+        
+        setMockCustomers(mockData.mockCustomers)
+        setMockProjects(mockData.mockProjects)
+        setMockContracts(mockData.mockContracts)
+        setMockPayments(mockData.mockPayments)
+        setMockProducts(mockSettings.mockProducts)
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error loading customer data:', error)
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [])
 
   // 현재 진행 단계 계산
   const getCurrentStage = (customer: Customer, projects: Project[], _contracts: unknown[]) => {

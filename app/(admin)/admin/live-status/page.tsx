@@ -1,12 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { mockScheduleEvents, mockSchedulePhotographers } from '@/lib/mock/schedules'
-import { applyScheduleUpdates } from '@/lib/utils/schedule-storage'
 import type { ScheduleEvent } from '@/lib/mock/schedules'
 import type { Schedule } from '@/lib/mock/admin'
 import { ScheduleDetailDialog } from '@/components/dashboard/schedule-detail-dialog'
@@ -35,6 +33,28 @@ export default function LiveStatusPage() {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([])
+  const [schedulePhotographers, setSchedulePhotographers] = useState<any[]>([])
+
+  // Load mock data on client side
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { mockScheduleEvents, mockSchedulePhotographers } = await import('@/lib/mock/schedules')
+        const { applyScheduleUpdates } = await import('@/lib/utils/schedule-storage')
+        
+        const updatedEvents = applyScheduleUpdates(mockScheduleEvents)
+        setScheduleEvents(updatedEvents)
+        setSchedulePhotographers(mockSchedulePhotographers)
+      } catch (error) {
+        console.error('Error loading schedule data:', error)
+        setScheduleEvents([])
+        setSchedulePhotographers([])
+      }
+    }
+    
+    loadData()
+  }, [])
 
   // Update time every second
   useEffect(() => {
@@ -58,11 +78,12 @@ export default function LiveStatusPage() {
 
   // Get today's schedules with localStorage updates applied
   const today = format(new Date(), 'yyyy-MM-dd')
-  const allSchedulesWithUpdates = applyScheduleUpdates(mockScheduleEvents)
-  const todaySchedules = allSchedulesWithUpdates.filter(event => {
-    const eventDate = format(new Date(event.start), 'yyyy-MM-dd')
-    return eventDate === today
-  })
+  const todaySchedules = useMemo(() => {
+    return scheduleEvents.filter(event => {
+      const eventDate = format(new Date(event.start), 'yyyy-MM-dd')
+      return eventDate === today
+    })
+  }, [scheduleEvents, today])
 
   // Group by status
   const inProgressSchedules = todaySchedules.filter(s => 
@@ -72,21 +93,29 @@ export default function LiveStatusPage() {
   const completedSchedules = todaySchedules.filter(s => s.status === 'uploaded')
 
   // Find available photographers (no schedule today and status is 'available')
-  const photographersWithSchedules = todaySchedules.flatMap(s => s.photographerIds || []).filter(Boolean)
-  const availablePhotographers = mockSchedulePhotographers.filter(
-    p => !photographersWithSchedules.includes(p.id) && p.availabilityStatus === 'available'
+  const photographersWithSchedules = useMemo(() => 
+    todaySchedules.flatMap(s => s.photographerIds || []).filter(Boolean),
+    [todaySchedules]
+  )
+  
+  const availablePhotographers = useMemo(() => 
+    schedulePhotographers.filter(
+      p => !photographersWithSchedules.includes(p.id) && p.availabilityStatus === 'available'
+    ),
+    [schedulePhotographers, photographersWithSchedules]
   )
   
   // Photographers on leave
-  const photographersOnLeave = mockSchedulePhotographers.filter(
-    p => p.availabilityStatus === 'on_leave'
+  const photographersOnLeave = useMemo(() => 
+    schedulePhotographers.filter(p => p.availabilityStatus === 'on_leave'),
+    [schedulePhotographers]
   )
 
   const getPhotographerNames = (photographerIds?: string[]) => {
     if (!photographerIds || photographerIds.length === 0) return '미배정'
     return photographerIds
       .map(id => {
-        const photographer = mockSchedulePhotographers.find(p => p.id === id)
+        const photographer = schedulePhotographers.find(p => p.id === id)
         return photographer?.name || ''
       })
       .filter(Boolean)

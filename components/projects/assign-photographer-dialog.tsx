@@ -32,7 +32,11 @@ import {
   X,
   Camera,
   UserCheck,
-  Smartphone
+  Smartphone,
+  Clock,
+  MapPin,
+  Package,
+  Tag
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -52,6 +56,11 @@ interface AssignPhotographerDialogProps {
   currentPhotographerIds?: string[]
   projectName?: string
   weddingDate?: string
+  weddingTime?: string
+  weddingVenue?: string
+  venueAddress?: string
+  packageName?: string
+  optionNames?: string[]
 }
 
 const ROLE_CONFIG = {
@@ -66,7 +75,12 @@ export function AssignPhotographerDialog({
   onAssignPhotographer,
   currentPhotographerIds = [],
   projectName,
-  weddingDate
+  weddingDate,
+  weddingTime,
+  weddingVenue,
+  venueAddress,
+  packageName,
+  optionNames = []
 }: AssignPhotographerDialogProps) {
   const [photographerSearch, setPhotographerSearch] = useState('')
   const [selectedPhotographers, setSelectedPhotographers] = useState<SelectedPhotographer[]>([])
@@ -153,13 +167,77 @@ export function AssignPhotographerDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Project Information */}
         {projectName && (
-          <div className="mt-4 p-3 bg-muted rounded-lg space-y-1">
-            <div className="font-semibold text-foreground">{projectName}</div>
-            {weddingDate && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                {weddingDate}
+          <div className="mt-4 space-y-4">
+            {/* Basic Info */}
+            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg space-y-3">
+              <div className="font-semibold text-lg text-blue-900">{projectName}</div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Date and Time */}
+                {weddingDate && (
+                  <div className="flex items-start gap-2">
+                    <Calendar className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="text-xs text-blue-600 font-medium">촬영 날짜</div>
+                      <div className="text-sm font-medium text-blue-900">{weddingDate}</div>
+                    </div>
+                  </div>
+                )}
+                
+                {weddingTime && (
+                  <div className="flex items-start gap-2">
+                    <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="text-xs text-blue-600 font-medium">촬영 시간</div>
+                      <div className="text-sm font-medium text-blue-900">{weddingTime}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Venue */}
+              {weddingVenue && (
+                <div className="flex items-start gap-2 pt-2 border-t border-blue-200">
+                  <MapPin className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="text-xs text-blue-600 font-medium mb-1">촬영 장소</div>
+                    <div className="text-sm font-medium text-blue-900">{weddingVenue}</div>
+                    {venueAddress && (
+                      <div className="text-xs text-blue-700 mt-1">{venueAddress}</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Package & Options */}
+            {(packageName || optionNames.length > 0) && (
+              <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-lg space-y-3">
+                {packageName && (
+                  <div className="flex items-start gap-2">
+                    <Package className="h-4 w-4 text-zinc-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground font-medium mb-1">선택 패키지</div>
+                      <div className="text-sm font-semibold">{packageName}</div>
+                    </div>
+                  </div>
+                )}
+
+                {optionNames.length > 0 && (
+                  <div className="flex items-start gap-2 pt-2 border-t border-zinc-200">
+                    <Tag className="h-4 w-4 text-zinc-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground font-medium mb-1">추가 옵션</div>
+                      <div className="space-y-1">
+                        {optionNames.map((option, idx) => (
+                          <div key={idx} className="text-sm font-medium">• {option}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

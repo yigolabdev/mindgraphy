@@ -85,3 +85,6 @@ export function getUsersByRole(role: MockUser['role']): MockUser[] {
   return MOCK_USERS.filter((user) => user.role === role)
 }
 
+
+// Alias export for backward compatibility
+export const mockUsers = MOCK_USERS

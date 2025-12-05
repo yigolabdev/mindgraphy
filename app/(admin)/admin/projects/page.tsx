@@ -1,39 +1,61 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AssignPhotographerDialog } from '@/components/projects/assign-photographer-dialog'
 import { ProjectDetailDialog } from '@/components/projects/project-detail-dialog'
-import { CreateProjectDialog } from '@/components/projects/create-project-dialog'
+import { InquiryDetailDialog } from '@/components/customers/inquiry-detail-dialog'
 import { ProjectCard } from '@/components/projects/project-card'
 import { ProjectFilters } from '@/components/projects/project-filters'
 import { useProjectList } from '@/components/projects/use-project-list'
-import { mockProjects } from '@/lib/mock-data'
-import { formatDate } from '@/lib/utils'
+import { getAllProjects, getInquiryCustomers, getProjectsByCustomerId } from '@/lib/utils/data-integration'
+import { useDataSync } from '@/lib/utils/sync'
+import { mockProducts } from '@/lib/mock/settings'
+import { formatDateAs } from '@/lib/utils/format'
 import { 
   Plus, 
   Users,
   Camera,
+  Bell,
+  AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import type { Customer } from '@/lib/types'
 
 export default function ProjectsPage() {
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const router = useRouter()
   const [assignDialogOpen, setAssignDialogOpen] = useState(false)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<string>('manager')
   
   const [selectedProject, setSelectedProject] = useState<{
     id: string
     name: string
     weddingDate: string
+    weddingTime?: string
+    weddingVenue?: string
+    venueAddress?: string
+    packageName?: string
+    optionNames?: string[]
     currentPhotographerIds?: string[]
   } | null>(null)
-  const [viewingProject, setViewingProject] = useState<typeof mockProjects[0] | null>(null)
+  const [viewingProject, setViewingProject] = useState<typeof allProjects[0] | null>(null)
+  const [selectedInquiryCustomer, setSelectedInquiryCustomer] = useState<Customer | null>(null)
   const [currentUser, setCurrentUser] = useState<{ id: string; role: string; email: string; name: string } | null>(null)
   
+  // 통합 데이터 사용
+  const [allProjects, setAllProjects] = useState(getAllProjects())
+  const [inquiryCustomers, setInquiryCustomers] = useState(getInquiryCustomers())
+  
+  // BroadcastChannel 실시간 동기화
+  const { subscribe } = useDataSync()
+
   // Use custom hook for project logic
   const { 
     projects: filteredProjects, 
@@ -42,7 +64,7 @@ export default function ProjectsPage() {
     updateFilter, 
     resetFilters, 
     hasActiveFilters 
-  } = useProjectList(mockProjects, currentUser, activeTab)
+  } = useProjectList(allProjects, currentUser, activeTab)
 
   // Get current user info from session storage
   useEffect(() => {
@@ -62,20 +84,55 @@ export default function ProjectsPage() {
       }
     }
   }, [])
+
+  // 데이터 동기화 리스너
+  useEffect(() => {
+    const unsubscribe = subscribe('ALL', (message) => {
+      console.log('[Projects] Data sync message received:', message.type)
+      
+      // 데이터 새로고침
+      setAllProjects(getAllProjects())
+      setInquiryCustomers(getInquiryCustomers())
+    })
+
+    return unsubscribe
+  }, [subscribe])
   
-  const handleOpenAssignDialog = (project: typeof mockProjects[0]) => {
+  const handleOpenAssignDialog = (project: typeof allProjects[0]) => {
+    // Get package and options info
+    const packageInfo = project.packageId 
+      ? mockProducts.find(p => p.id === project.packageId)
+      : null
+    
+    const optionNames = project.optionIds 
+      ? project.optionIds.map((optionId: string) => {
+          const option = mockProducts.find(p => p.id === optionId)
+          return option?.title || optionId
+        }).filter(Boolean)
+      : []
+
     setSelectedProject({
       id: project.id,
       name: `${project.customer?.groomName} & ${project.customer?.brideName}`,
-      weddingDate: formatDate(project.weddingDate),
+      weddingDate: formatDateAs(project.weddingDate, 'DISPLAY'),
+      weddingTime: project.weddingTime,
+      weddingVenue: project.weddingVenue,
+      venueAddress: project.venueAddress,
+      packageName: packageInfo?.name,
+      optionNames,
       currentPhotographerIds: project.assignedPhotographers?.map(p => p.id) || []
     })
     setAssignDialogOpen(true)
   }
 
-  const handleOpenDetailDialog = (project: typeof mockProjects[0]) => {
+  const handleOpenDetailDialog = (project: typeof allProjects[0]) => {
     setViewingProject(project)
     setDetailDialogOpen(true)
+  }
+
+  const handleOpenInquiryDialog = (customer: Customer) => {
+    setSelectedInquiryCustomer(customer)
+    setInquiryDialogOpen(true)
   }
 
   const handleAssignPhotographer = (photographers: Array<{id: string, name: string, role: string}>) => {
@@ -102,13 +159,86 @@ export default function ProjectsPage() {
             {activeTab === 'manager' && (
               <Button 
                 className="w-full sm:w-auto"
-                onClick={() => setCreateDialogOpen(true)}
+                onClick={() => router.push('/admin/projects/new')}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 새 촬영 등록
               </Button>
             )}
           </div>
+
+          {/* 신규 문의 알림 카드 - 조건부 렌더링 ✅ */}
+          {activeTab === 'manager' && inquiryCustomers.length > 0 && (
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-900">
+                  <Bell className="h-5 w-5" />
+                  🔔 신규 문의 {inquiryCustomers.length}건
+                  <Badge variant="destructive" className="ml-2">
+                    확인 필요
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-blue-700">
+                  고객용 페이지를 통해 접수된 문의입니다. 담당자를 배정하고 상담을 진행해 주세요.
+                </p>
+                
+                <div className="space-y-2">
+                  {inquiryCustomers.slice(0, 3).map(customer => {
+                    const project = getProjectsByCustomerId(customer.id)[0]
+                    return (
+                      <div 
+                        key={customer.id}
+                        className="p-3 bg-white border border-blue-100 rounded-lg hover:border-blue-300 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-blue-900">
+                                {customer.groomName} & {customer.brideName}
+                              </span>
+                              <Badge variant="outline" className="text-xs">
+                                {project?.projectType === 'wedding' ? '웨딩' :
+                                 project?.projectType === 'hanbok' ? '한복' :
+                                 project?.projectType === 'dress_shop' ? '가봉' : '돌스냅'}
+                              </Badge>
+                            </div>
+                            <div className="text-xs text-muted-foreground space-y-0.5">
+                              <div>📞 {customer.groomPhone || customer.bridePhone}</div>
+                              <div>✉️ {customer.email}</div>
+                              {project && (
+                                <div>📅 {formatDateAs(project.weddingDate, 'DISPLAY_SHORT')}</div>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white"
+                            onClick={() => handleOpenInquiryDialog(customer)}
+                          >
+                            상세보기
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {inquiryCustomers.length > 3 && (
+                  <Button
+                    variant="link"
+                    className="w-full text-blue-600"
+                    onClick={() => router.push('/admin/customers?tab=active&stage=inquiry')}
+                  >
+                    <AlertCircle className="mr-2 h-4 w-4" />
+                    {inquiryCustomers.length - 3}건 더 보기
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Main Content */}
           {currentUser?.role !== 'photographer' ? (
@@ -232,12 +362,6 @@ export default function ProjectsPage() {
       </div>
 
       {/* Dialogs */}
-      <CreateProjectDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-        onSuccess={() => toast.success('프로젝트가 생성되었습니다')}
-      />
-
       <AssignPhotographerDialog
         open={assignDialogOpen}
         onOpenChange={setAssignDialogOpen}
@@ -245,12 +369,27 @@ export default function ProjectsPage() {
         currentPhotographerIds={selectedProject?.currentPhotographerIds}
         projectName={selectedProject?.name}
         weddingDate={selectedProject?.weddingDate}
+        weddingTime={selectedProject?.weddingTime}
+        weddingVenue={selectedProject?.weddingVenue}
+        venueAddress={selectedProject?.venueAddress}
+        packageName={selectedProject?.packageName}
+        optionNames={selectedProject?.optionNames}
       />
 
       <ProjectDetailDialog
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
         project={viewingProject}
+      />
+
+      <InquiryDetailDialog
+        open={inquiryDialogOpen}
+        onOpenChange={setInquiryDialogOpen}
+        customer={selectedInquiryCustomer}
+        onStatusChange={() => {
+          // 데이터 새로고침
+          setInquiryCustomers(getInquiryCustomers())
+        }}
       />
     </AdminLayout>
   )

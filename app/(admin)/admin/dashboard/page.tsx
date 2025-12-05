@@ -15,11 +15,8 @@ import {
 } from '@/components/common'
 import { ScheduleDetailDialog } from '@/components/dashboard/schedule-detail-dialog'
 import { 
-  calculateDashboardKPI, 
-  getThisWeekSchedules,
   type Schedule
 } from '@/lib/mock/admin'
-import { mockCustomers } from '@/lib/mock-data'
 import { ROUTES } from '@/lib/constants'
 import { 
   Calendar, 
@@ -42,20 +39,36 @@ export default function AdminDashboard() {
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
-
-  // 고객만족도 계산
-  const completedCustomersWithSatisfaction = mockCustomers.filter(c => c.leadStatus === 'completed' && c.satisfaction)
-  const avgSatisfaction = completedCustomersWithSatisfaction.length > 0
-    ? completedCustomersWithSatisfaction.reduce((sum, c) => sum + (c.satisfaction || 0), 0) / completedCustomersWithSatisfaction.length
-    : 0
+  const [avgSatisfaction, setAvgSatisfaction] = useState(0)
+  const [satisfactionCount, setSatisfactionCount] = useState(0)
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { calculateDashboardKPI, getThisWeekSchedules } = await import('@/lib/mock/admin')
+        const { mockCustomers } = await import('@/lib/mock-data')
+        
+        // 고객만족도 계산
+        const completedCustomersWithSatisfaction = mockCustomers.filter(
+          c => c.leadStatus === 'completed' && c.satisfaction
+        )
+        const satisfaction = completedCustomersWithSatisfaction.length > 0
+          ? completedCustomersWithSatisfaction.reduce((sum, c) => sum + (c.satisfaction || 0), 0) / completedCustomersWithSatisfaction.length
+          : 0
+        
+        setAvgSatisfaction(satisfaction)
+        setSatisfactionCount(completedCustomersWithSatisfaction.length)
+        setKpi(calculateDashboardKPI())
+        setSchedules(getThisWeekSchedules())
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error loading dashboard data:', error)
+        setIsLoading(false)
+      }
+    }
+    
     // Simulate loading (reduced delay for better UX)
-    setTimeout(() => {
-      setKpi(calculateDashboardKPI())
-      setSchedules(getThisWeekSchedules())
-      setIsLoading(false)
-    }, 100) // Reduced from 800ms to 100ms
+    setTimeout(loadData, 100)
   }, [])
 
   // Status utilities are now imported from common utils
@@ -112,7 +125,7 @@ export default function AdminDashboard() {
               <KPICard
                 title="고객 평점"
                 value={avgSatisfaction > 0 ? `${avgSatisfaction.toFixed(1)} / 5.0` : '-'}
-                description={completedCustomersWithSatisfaction.length > 0 ? `${completedCustomersWithSatisfaction.length}명 평가` : '평가 없음'}
+                description={satisfactionCount > 0 ? `${satisfactionCount}명 평가` : '평가 없음'}
                 icon={Star}
                 valueClassName="text-yellow-600"
                 className="animate-in fade-in slide-in-from-bottom duration-700"

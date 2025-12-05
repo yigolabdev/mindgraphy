@@ -15,7 +15,7 @@ export default function InquiryPage() {
   }, [])
 
   const handleBack = () => {
-    router.push('/c')
+    router.push('/c/product-type')
   }
 
   return (

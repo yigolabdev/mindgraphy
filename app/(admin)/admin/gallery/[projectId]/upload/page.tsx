@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -374,3 +373,4 @@ export default function GalleryUploadPage() {
     </AdminLayout>
   )
 }
+

@@ -46,13 +46,8 @@ export default function ProductTypePage() {
     
     // Navigate based on product type
     setTimeout(() => {
-      if (selectedType === PRODUCT_TYPES.WEDDING) {
-        // For wedding, go to client type selection page
-        router.push('/c/')
-      } else {
-        // For other types (hanbok, dress_shop, baby), go to wedding date directly
-        router.push('/c/wedding-date')
-      }
+      // All product types go to wedding date
+      router.push('/c/wedding-date')
     }, 400)
   }
 
@@ -241,27 +236,36 @@ export default function ProductTypePage() {
               </div>
             </div>
           </button>
-
-          {/* Existing Customer Button */}
-          <div className="pt-2">
-            <Button
-              onClick={handleExistingCustomer}
-              variant="outline"
-              className={cn(
-                "w-full h-12 text-sm font-normal transition-all duration-300",
-                "border-2 border-zinc-400 bg-white text-zinc-700",
-                "hover:border-zinc-900 hover:bg-zinc-50 hover:text-zinc-900",
-                "active:scale-[0.99]",
-                "shadow-sm hover:shadow-md"
-              )}
-            >
-              기존 고객을 위한 마인드 포털로 이동
-            </Button>
-          </div>
         </div>
 
         {/* Divider */}
         <div className="border-t border-zinc-200"></div>
+
+        {/* Existing Customer Portal Link - Bottom */}
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <div className="text-center space-y-3">
+            <p className="text-sm font-medium text-blue-900">
+              이미 고객이신가요?
+            </p>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              촬영 일정, 사진 선택, 진행 상황 등을<br />
+              마인드 포털에서 확인하실 수 있습니다
+            </p>
+            <Button
+              onClick={handleExistingCustomer}
+              variant="outline"
+              className={cn(
+                "w-full h-11 text-sm font-normal transition-all duration-300",
+                "border-2 border-blue-600 bg-white text-blue-700",
+                "hover:bg-blue-600 hover:text-white",
+                "active:scale-[0.99]",
+                "shadow-sm hover:shadow-md"
+              )}
+            >
+              마인드 포털로 이동
+            </Button>
+          </div>
+        </div>
 
         {/* Info - Dynamic based on selection */}
         {selectedType && (
