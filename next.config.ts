@@ -2,23 +2,23 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // output: 'export', // ⚠️ 동적 라우트 때문에 비활성화
-  // S3 배포: .next 폴더를 직접 업로드 (권장하지 않음)
-  // 권장: Vercel/Netlify 사용
+  output: 'export', // ✅ S3 정적 배포를 위해 활성화
   
   images: {
     unoptimized: true, // Required for static export
   },
   trailingSlash: true, // Better for static hosting compatibility
   
+  // ✅ 동적 라우트 페이지는 fallback으로 처리
+  // 정적 export 시 동적 라우트는 404로 처리됨
+  
   // ✅ Turbopack 설정 (Next.js 16 기본)
   turbopack: {
     // Turbopack 활성화 (명시적 설정)
   },
   
-  // ✅ TypeScript 빌드에서 refactored 파일 제외
+  // ✅ TypeScript 빌드 설정
   typescript: {
-    // ⚠️ 빌드 시 타입 체크 무시 (개발 중)
     ignoreBuildErrors: false,
   },
   

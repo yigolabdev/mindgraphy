@@ -49,21 +49,15 @@ jobs:
       - name: Prepare deployment files
         run: |
           echo "📦 Preparing files for S3..."
-          mkdir -p deploy_temp
           
-          # public 폴더 복사
-          if [ -d "public" ]; then
-            cp -r public/* deploy_temp/ 2>/dev/null || true
+          # out 폴더가 생성되었는지 확인
+          if [ -d "out" ]; then
+            echo "✅ Static export found in 'out' folder"
+            ls -la out/ | head -20
+          else
+            echo "❌ 'out' folder not found - static export failed"
+            exit 1
           fi
-          
-          # .next/static 복사
-          if [ -d ".next/static" ]; then
-            mkdir -p deploy_temp/_next
-            cp -r .next/static deploy_temp/_next/
-          fi
-          
-          echo "Files prepared:"
-          ls -la deploy_temp/ || echo "deploy_temp is empty"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -81,23 +75,14 @@ jobs:
         run: |
           echo "🚀 Uploading to S3..."
           
-          if [ -d "deploy_temp" ] && [ "$(ls -A deploy_temp)" ]; then
-            # 정적 파일 업로드 (캐시 적용)
-            aws s3 sync deploy_temp s3://wedding-yigo \
-              --delete \
-              --cache-control "public, max-age=31536000, immutable" \
-              --exclude "*.html"
-            
-            # HTML 파일 업로드 (캐시 없음)
-            aws s3 sync deploy_temp s3://wedding-yigo \
-              --cache-control "public, max-age=0, must-revalidate" \
-              --exclude "*" \
-              --include "*.html"
-            
-            echo "✅ Upload complete"
-          else
-            echo "⚠️ No files to deploy"
-          fi
+          # out 폴더의 모든 파일을 S3로 업로드
+          aws s3 sync out/ s3://wedding-yigo \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate"
+          
+          echo "✅ Upload complete"
+          echo "📊 Uploaded files:"
+          aws s3 ls s3://wedding-yigo/ --recursive | tail -20
 
       - name: Deployment Summary
         run: |

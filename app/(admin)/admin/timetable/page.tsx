@@ -1,10 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-
-}
-
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -79,10 +76,10 @@ const mockTimeTableEntries: TimeTableEntry[] = [
   }
 ]
 
-export default function TimeTableManagementPage() {
-  const params = useParams()
+function TimeTableContent() {
+  const searchParams = useSearchParams()
   const router = useRouter()
-  const projectId = params.projectId as string
+  const projectId = searchParams.get('projectId') || 'project-1'
 
   const [entries, setEntries] = useState<TimeTableEntry[]>(mockTimeTableEntries)
   const [isSaving, setIsSaving] = useState(false)
@@ -449,3 +446,14 @@ export default function TimeTableManagementPage() {
   )
 }
 
+
+
+
+
+export default function TimeTableManagementPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">로딩 중...</div>}>
+      <TimeTableContent />
+    </Suspense>
+  )
+}

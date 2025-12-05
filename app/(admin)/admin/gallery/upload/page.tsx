@@ -1,10 +1,7 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-
-}
-
+import { useState, useCallback, useRef, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,10 +20,10 @@ interface UploadedFile {
   progress: number
 }
 
-export default function GalleryUploadPage() {
-  const params = useParams()
+function GalleryUploadContent() {
+  const searchParams = useSearchParams()
   const router = useRouter()
-  const projectId = params.projectId as string
+  const projectId = searchParams.get('projectId') || 'project-1'
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Mock project data
@@ -374,6 +371,14 @@ export default function GalleryUploadPage() {
         </Card>
       </div>
     </AdminLayout>
+  )
+}
+
+export default function GalleryUploadPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">로딩 중...</div>}>
+      <GalleryUploadContent />
+    </Suspense>
   )
 }
 

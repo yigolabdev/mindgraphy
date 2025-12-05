@@ -1,7 +1,8 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -17,7 +18,7 @@ const mockGallery = {
   customerId: 'customer-1',
   title: '김철수 & 이영희 웨딩 갤러리',
   password: '5678', // 대표 번호 뒤 4자리
-  sharedUrl: '/gallery/abc123',
+  sharedUrl: '/gallery?id=abc123',
   photoCount: 12,
   isActive: true,
   createdAt: '2025-01-15T10:00:00Z',
@@ -99,10 +100,10 @@ const mockPhotos = [
   }
 ]
 
-export default function GalleryPage() {
-  const params = useParams()
+function GalleryContent() {
+  const searchParams = useSearchParams()
   const router = useRouter()
-  const galleryId = params.galleryId as string
+  const galleryId = searchParams.get('id') || 'abc123'
   
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
@@ -441,5 +442,14 @@ export default function GalleryPage() {
         </div>
       )}
     </div>
+  )
+}
+
+
+export default function GalleryPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">로딩 중...</div>}>
+      <GalleryContent />
+    </Suspense>
   )
 }
