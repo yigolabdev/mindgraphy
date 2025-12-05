@@ -287,6 +287,50 @@ export default function VenueCompletePage() {
         {/* Divider */}
         <div className="border-t border-zinc-200"></div>
 
+        {/* Motto Section */}
+        <div className="space-y-8 text-center bg-zinc-50 p-8 border border-zinc-200">
+          <div className="space-y-6">
+            <h3 className="text-lg font-light text-zinc-900 tracking-[0.2em]">
+              motto
+            </h3>
+            
+            <div className="border-t border-zinc-300 w-16 mx-auto"></div>
+            
+            <div className="space-y-6 text-sm text-zinc-600 leading-relaxed">
+              <p>우리는</p>
+              
+              <p>
+                앞에 계신 분들을 위해서<br />
+                한번 더 무릎을 써서 좋은 각도를 잡고<br />
+                한번 더 몸이 부서져라 뛰겠습니다
+              </p>
+              
+              <p>행복하기 위해 사진을 찍습니다</p>
+              
+              <p>
+                이 사진들이 비추고 있는 풍경들은<br />
+                어쩌면 마음이 바라는 이상향 일지도 모르겠습니다
+              </p>
+              
+              <p>
+                카메라를 내려놓기 전에<br />
+                여러분을 향해<br />
+                다시 한번 카메라를 들겠습니다
+              </p>
+              
+              <div className="pt-4">
+                <p className="text-zinc-700 font-medium">
+                  마인드그라피는 여러분이<br />
+                  늘 마음속에 그리던 이상향을 향합니다
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-zinc-200"></div>
+
         {/* 촬영 약관 안내 */}
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 p-6 space-y-4">

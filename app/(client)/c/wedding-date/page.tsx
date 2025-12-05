@@ -250,7 +250,7 @@ export default function WeddingDatePage() {
     }
 
     // Navigate based on product type
-    const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/motto'
+    const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/process'
     setTimeout(() => {
       router.push(nextPage)
     }, 400)
@@ -269,8 +269,8 @@ export default function WeddingDatePage() {
       sessionStorage.setItem('mindgraphy_wedding_date_info', '')
     }
 
-    // Navigate based on product type (hanbok skips motto/process pages)
-    const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/motto'
+    // Navigate based on product type (hanbok skips process page)
+    const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/process'
     setTimeout(() => {
       router.push(nextPage)
     }, 400)
