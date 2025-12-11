@@ -45,6 +45,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          NEXT_PUBLIC_ENVIRONMENT: production
+          NEXT_PUBLIC_SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
 
       - name: Prepare deployment files
         run: |
