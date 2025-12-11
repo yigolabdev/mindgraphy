@@ -110,25 +110,28 @@ export function PasswordProtection({ children }: PasswordProtectionProps) {
           </div>
           <CardTitle className="text-2xl text-center">보호된 페이지</CardTitle>
           <CardDescription className="text-center">
-            이 사이트에 접근하려면 비밀번호를 입력해주세요.
+            비밀번호를 입력해주세요.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Input
-                type="password"
-                placeholder="비밀번호 입력"
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="숫자 4자리"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={error ? 'border-destructive' : ''}
+                className={error ? 'border-destructive text-center text-2xl tracking-widest' : 'text-center text-2xl tracking-widest'}
                 autoFocus
+                maxLength={4}
               />
               {error && (
-                <p className="text-sm text-destructive">{error}</p>
+                <p className="text-sm text-destructive text-center">{error}</p>
               )}
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" size="lg">
               확인
             </Button>
           </form>
