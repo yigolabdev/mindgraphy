@@ -7,9 +7,25 @@ set -e
 
 echo "🚀 MindGraphy 배포 시작..."
 
+# 환경 변수 설정 확인
+echo "🔒 프로덕션 환경 변수 확인 중..."
+if [ -z "$NEXT_PUBLIC_SITE_PASSWORD" ]; then
+    echo "⚠️  경고: NEXT_PUBLIC_SITE_PASSWORD가 설정되지 않았습니다."
+    echo "   비밀번호 보호 기능이 비활성화됩니다."
+    echo ""
+    read -p "계속하시겠습니까? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ 배포가 취소되었습니다."
+        exit 1
+    fi
+else
+    echo "✅ 비밀번호 보호 기능이 활성화됩니다."
+fi
+
 # 빌드
 echo "📦 Next.js 빌드 중..."
-npm run build
+NEXT_PUBLIC_ENVIRONMENT=production npm run build
 
 # S3 버킷 이름 (환경 변수로 설정)
 WWW_BUCKET=${WWW_BUCKET:-"mindgraphy-www"}

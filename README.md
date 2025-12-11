@@ -46,8 +46,11 @@ cd mindgraphy
 # 의존성 설치
 npm install
 
-# 환경 변수 설정 (선택사항)
+# 환경 변수 설정
 cp .env.example .env.local
+
+# 로컬 개발 환경에서는 .env.local에 다음과 같이 설정:
+# NEXT_PUBLIC_ENVIRONMENT=development
 ```
 
 ### 개발 서버 실행
@@ -251,6 +254,15 @@ mindgraphy/
 - Mock 데이터는 개발 목적으로만 사용
 - API 통신 시 JWT 토큰 기반 인증 (구현 예정)
 - XSS 및 CSRF 방어 (Next.js 기본 제공)
+
+### 🔒 배포 환경 비밀번호 보호
+
+S3 배포 환경에서 비밀번호 보호 기능이 제공됩니다:
+- 로컬 개발 환경에서는 비활성화
+- 프로덕션 배포 시에만 활성화
+- 24시간 세션 유지
+
+자세한 설정 방법은 [`DEPLOYMENT_PASSWORD_SETUP.md`](./DEPLOYMENT_PASSWORD_SETUP.md) 참조
 
 ## 📝 개발 가이드
 
