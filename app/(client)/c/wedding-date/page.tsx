@@ -332,7 +332,7 @@ export default function WeddingDatePage() {
           <p className="text-sm text-zinc-500 leading-relaxed pt-2">
             {productType === 'hanbok' 
               ? '평일 (화·수·목) 중 원하시는 날짜를 선택해 주세요'
-              : '대략적인 날짜를 선택해 주세요'
+              : '날짜를 선택해 주세요'
             }
           </p>
         </div>
