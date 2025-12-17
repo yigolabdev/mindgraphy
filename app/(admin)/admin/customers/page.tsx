@@ -182,7 +182,7 @@ export default function CustomersPage() {
       completedProjects,
       activeProjects,
       totalRevenue: totalRevenue / 10000, // 만원 단위로 변환
-      latestProject: customerProjects[0],
+      latestProject: customerProjects[0] as Project | undefined,
       currentStage: getCurrentStage(customer, customerProjects, customerContracts),
       paymentStatus: getPaymentStatus(customer, mockContracts),
       scheduleUnconfirmed // 일정 미확정 여부

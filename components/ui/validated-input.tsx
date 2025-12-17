@@ -1,10 +1,11 @@
 'use client'
 
-import { Input, InputProps } from '@/components/ui/input'
+import * as React from 'react'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 
-interface ValidatedInputProps extends Omit<InputProps, 'onChange'> {
+interface ValidatedInputProps extends Omit<React.ComponentProps<'input'>, 'onChange'> {
   value: string
   onChange: (value: string) => void
   validation?: {
@@ -116,9 +117,9 @@ export function ValidatedInput({
 /**
  * Textarea 버전
  */
-import { Textarea, TextareaProps } from '@/components/ui/textarea'
+import { Textarea } from '@/components/ui/textarea'
 
-interface ValidatedTextareaProps extends Omit<TextareaProps, 'onChange'> {
+interface ValidatedTextareaProps extends Omit<React.ComponentProps<'textarea'>, 'onChange'> {
   value: string
   onChange: (value: string) => void
   validation?: {
