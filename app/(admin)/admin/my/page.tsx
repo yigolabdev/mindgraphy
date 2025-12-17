@@ -18,7 +18,7 @@ import {
   applyScheduleAcceptances,
   clearAllScheduleUpdates
 } from '@/lib/utils/schedule-storage'
-import { Calendar, User, CheckSquare, RefreshCw } from 'lucide-react'
+import { Calendar, CheckSquare, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
@@ -139,8 +139,7 @@ export default function MyPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <User className="h-8 w-8" />
+            <h1 className="text-3xl font-bold tracking-tight">
               {currentUser.name}님의 일정
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -158,7 +157,7 @@ export default function MyPage() {
             className="text-xs"
           >
             <RefreshCw className="h-3 w-3 mr-1" />
-            🧪 테스트 초기화
+            테스트 초기화
           </Button>
         </div>
 

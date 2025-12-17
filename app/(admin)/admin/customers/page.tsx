@@ -23,11 +23,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { CustomerDetailDialog } from '@/components/customers/customer-detail-dialog'
-import { CreateProjectDialog } from '@/components/projects/create-project-dialog'
+import { PaymentManagementDialog } from '@/components/customers/payment-management-dialog'
+import { CustomerCardView } from '@/components/customers/customer-card-view'
 import { formatDate } from '@/lib/utils'
 import type { Customer, Project, Contract, Product, Payment } from '@/lib/types'
 import { 
-  Plus, 
   Search, 
   Users,
   CheckCircle,
@@ -55,7 +55,8 @@ export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active')
   
   // Filter and sort states
@@ -121,20 +122,28 @@ export default function CustomersPage() {
   // 입금 상태 확인 (Payment 데이터 기반)
   const getPaymentStatus = (customer: Customer, contracts: Contract[]) => {
     const customerContracts = contracts.filter(c => c.customerId === customer.id)
-    if (customerContracts.length === 0) return { paid: 0, total: 0, percent: 0 }
+    if (customerContracts.length === 0) return { paid: 0, total: 0, percent: 0, methods: [] }
     
     // 고객의 총 계약 금액
     const totalAmount = customerContracts.reduce((sum, c) => sum + (c.totalAmount || 0), 0)
     
     // 고객의 계약들에 대한 실제 입금된 금액 (Payment 집계)
     const contractIds = customerContracts.map(c => c.id)
-    const paidAmount = mockPayments
+    const completedPayments = mockPayments
       .filter(p => contractIds.includes(p.contractId) && p.paymentStatus === 'completed')
-      .reduce((sum, p) => sum + (p.amount || 0), 0)
     
+    const paidAmount = completedPayments.reduce((sum, p) => sum + (p.amount || 0), 0)
     const percent = totalAmount > 0 ? Math.round((paidAmount / totalAmount) * 100) : 0
     
-    return { paid: paidAmount / 10000, total: totalAmount / 10000, percent }
+    // 결제 방식 수집 (중복 제거)
+    const paymentMethods = [...new Set(completedPayments.map(p => p.paymentMethod))]
+    
+    return { 
+      paid: paidAmount / 10000, 
+      total: totalAmount / 10000, 
+      percent,
+      methods: paymentMethods
+    }
   }
 
   // 일정 미확정 여부 확인 (고객용 페이지를 통한 신청 후 일정 미확정)
@@ -290,21 +299,28 @@ export default function CustomersPage() {
     setDetailDialogOpen(true)
   }
 
-  const handleCheckPayment = (customer: typeof customersWithStats[0]) => {
-    const { paid, total, percent } = customer.paymentStatus
-    if (percent === 100) {
-      toast.success(`${customer.groomName} & ${customer.brideName}님 - 입금 완료 (${total.toLocaleString('ko-KR')}만원)`)
-    } else if (percent > 0) {
-      toast.info(`${customer.groomName} & ${customer.brideName}님 - ${percent}% 입금 완료 (${paid.toLocaleString('ko-KR')}/${total.toLocaleString('ko-KR')}만원)`)
-    } else {
-      toast.warning(`${customer.groomName} & ${customer.brideName}님 - 미입금 (${total.toLocaleString('ko-KR')}만원)`)
+  const handleCheckPayment = (customer: typeof customersWithStats[0], e?: React.MouseEvent) => {
+    e?.stopPropagation() // 행 클릭 이벤트 전파 방지
+    
+    // 고객의 가장 최근 계약 찾기
+    const customerContracts = mockContracts.filter(c => c.customerId === customer.id)
+    if (customerContracts.length === 0) {
+      toast.error('계약 정보가 없습니다')
+      return
     }
+    
+    // 가장 최근 계약
+    const latestContract = customerContracts.sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )[0]
+    
+    setSelectedContract(latestContract)
+    setPaymentDialogOpen(true)
   }
 
-  const handleCreateCustomer = () => {
-    setCreateDialogOpen(false)
-    toast.success('고객이 성공적으로 등록되었습니다!')
-    // 실제 구현에서는 여기서 데이터 갱신 로직 추가
+  const handlePaymentUpdate = (updatedPayments: Payment[]) => {
+    setMockPayments(updatedPayments)
+    toast.success('입금 정보가 업데이트되었습니다')
   }
 
   return (
@@ -320,13 +336,6 @@ export default function CustomersPage() {
               고객 정보와 진행 상황을 관리하세요
             </p>
           </div>
-          <Button 
-            className="w-full sm:w-auto"
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            고객 등록
-          </Button>
         </div>
 
         {/* KPI Cards */}
@@ -615,7 +624,18 @@ export default function CustomersPage() {
                 </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="md:hidden">
+              <CustomerCardView
+                customers={filteredCustomers}
+                products={mockProducts}
+                onCustomerClick={handleViewCustomer}
+                onPaymentClick={handleCheckPayment}
+              />
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -625,6 +645,7 @@ export default function CustomersPage() {
                     <TableHead className="text-center">촬영일</TableHead>
                     <TableHead className="text-center">상품타입</TableHead>
                     <TableHead className="text-center">패키지</TableHead>
+                    <TableHead className="text-center">입금 상태</TableHead>
                     <TableHead className="text-center">일정 확정</TableHead>
                     <TableHead className="text-center">현재 단계</TableHead>
                   </TableRow>
@@ -632,7 +653,7 @@ export default function CustomersPage() {
                 <TableBody>
                   {filteredCustomers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                         {searchQuery ? '검색 결과가 없습니다.' : '등록된 고객이 없습니다.'}
                       </TableCell>
                     </TableRow>
@@ -725,6 +746,55 @@ export default function CustomersPage() {
                           ) : (
                             <span className="text-muted-foreground text-xs">-</span>
                           )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => handleCheckPayment(customer, e)}
+                            className={cn(
+                              "h-auto px-3 py-2 flex-col items-start",
+                              customer.paymentStatus.percent === 100 ? "hover:bg-green-50" :
+                              customer.paymentStatus.percent > 0 ? "hover:bg-orange-50" : "hover:bg-red-50"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 w-full">
+                              <CreditCard className={cn(
+                                "h-4 w-4",
+                                customer.paymentStatus.percent === 100 ? "text-green-600" :
+                                customer.paymentStatus.percent > 0 ? "text-orange-600" : "text-red-600"
+                              )} />
+                              {customer.paymentStatus.total > 0 ? (
+                                <div className="flex flex-col items-start">
+                                  <span className={cn(
+                                    "text-xs font-semibold",
+                                    customer.paymentStatus.percent === 100 ? "text-green-700" :
+                                    customer.paymentStatus.percent > 0 ? "text-orange-700" : "text-red-700"
+                                  )}>
+                                    {customer.paymentStatus.percent}%
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {customer.paymentStatus.paid.toLocaleString()}/{customer.paymentStatus.total.toLocaleString()}만
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">-</span>
+                              )}
+                            </div>
+                            {customer.paymentStatus.methods && customer.paymentStatus.methods.length > 0 && (
+                              <div className="flex gap-1 mt-1 flex-wrap">
+                                {customer.paymentStatus.methods.map((method, idx) => (
+                                  <Badge 
+                                    key={idx} 
+                                    variant="outline" 
+                                    className="text-xs px-1.5 py-0 h-5 bg-zinc-50 text-zinc-700 border-zinc-300"
+                                  >
+                                    {method}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </Button>
                         </TableCell>
                         <TableCell className="text-center">
                           {customer.scheduleUnconfirmed ? (
@@ -905,7 +975,7 @@ export default function CustomersPage() {
                         </TableCell>
                         <TableCell className="text-center">
                           <button
-                            onClick={() => handleCheckPayment(customer)}
+                            onClick={(e) => handleCheckPayment(customer, e)}
                             className="flex flex-col items-center gap-1 w-full hover:bg-muted rounded-lg p-2 transition-all focus-ring"
                           >
                             <div className="flex items-center gap-1">
@@ -928,6 +998,19 @@ export default function CustomersPage() {
                                 style={{ width: `${customer.paymentStatus.percent}%` }}
                               />
                             </div>
+                            {customer.paymentStatus.methods && customer.paymentStatus.methods.length > 0 && (
+                              <div className="flex gap-1 mt-1 flex-wrap justify-center">
+                                {customer.paymentStatus.methods.map((method, idx) => (
+                                  <Badge 
+                                    key={idx} 
+                                    variant="outline" 
+                                    className="text-xs px-1.5 py-0 h-4 bg-zinc-50 text-zinc-700 border-zinc-300"
+                                  >
+                                    {method}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
                           </button>
                         </TableCell>
                         <TableCell className="text-right font-semibold">
@@ -950,14 +1033,18 @@ export default function CustomersPage() {
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
         customer={selectedCustomer}
+        onPaymentClick={(customer) => {
+          setDetailDialogOpen(false)
+          handleCheckPayment(customer)
+        }}
       />
 
-      {/* Create Customer Dialog */}
-      <CreateProjectDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-        onSuccess={handleCreateCustomer}
-        title="고객 등록"
+      <PaymentManagementDialog
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        contract={selectedContract}
+        payments={mockPayments}
+        onPaymentUpdate={handlePaymentUpdate}
       />
     </AdminLayout>
   )

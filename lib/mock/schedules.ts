@@ -334,8 +334,8 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     productType: 'wedding',
     packageId: 'new-data', // ✅ 실제 Product ID
     packageName: '1인 데이터형',
-    options: ['작가 추가 선물', '메이크업 촬영'], // 레거시
-    optionIds: ['option-extra-gift'], // ✅ 추가
+    options: ['작가 추가 선물', '메이크업 촬영', '아이폰 스냅'], // 레거시
+    optionIds: ['option-extra-gift', 'option-iphone'], // ✅ 추가 - 아이폰 스냅 옵션 포함
     isAlbumType: false, // ✅ 추가
     packageOptions: { // ✅ 추가
       hasLeadPhotographer: false,
@@ -508,7 +508,8 @@ export const mockScheduleEvents: ScheduleEvent[] = [
     productType: 'wedding',
     packageId: 'data',
     packageName: 'DATA',
-    options: ['본식+스냅', '야외촬영', '부모님 메이크업'],
+    options: ['본식+스냅', '야외촬영', '부모님 메이크업', '아이폰 스냅'],
+    optionIds: ['option-iphone'], // ✅ 추가 - 아이폰 스냅 옵션 포함
     status: 'reserved',
     travelTimeMinutes: 60,
     ...statusColors.reserved

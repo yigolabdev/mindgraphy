@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { ProgressIndicator, PROGRESS_STEPS } from '@/components/client/progress-indicator'
 
 export default function VenueDetailsPage() {
   const router = useRouter()
@@ -45,14 +46,14 @@ export default function VenueDetailsPage() {
     // Navigate to next step
     setTimeout(() => {
       router.push('/c/venue-date')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/venue-contact')
-    }, 400)
+    }, 200)
   }
 
   // Validation - 예식장 이름만 필수
@@ -70,12 +71,7 @@ export default function VenueDetailsPage() {
         )}
       >
         {/* Progress Indicator */}
-        <div className="flex justify-center gap-2">
-          <div className="h-1 w-12 bg-zinc-900 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-900 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-900 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-200 rounded-full"></div>
-        </div>
+        <ProgressIndicator currentStep={PROGRESS_STEPS.VENUE_DETAILS} totalSteps={8} />
 
         {/* Header */}
         <div className="space-y-4 text-center">

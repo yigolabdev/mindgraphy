@@ -4,15 +4,26 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Calendar, CheckCircle2, XCircle, Save } from 'lucide-react'
+import { Calendar, CheckCircle2, XCircle, Save, MessageSquare } from 'lucide-react'
 import { format, addDays, isSameDay, startOfWeek, getDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface DayAvailability {
   date: Date
   isAvailable: boolean
+  reason?: string // 불가 사유
 }
 
 export function AvailabilityTab() {
@@ -35,21 +46,60 @@ export function AvailabilityTab() {
   }
 
   const [availability, setAvailability] = useState<DayAvailability[]>(generateDates())
+  const [reasonDialogOpen, setReasonDialogOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [reasonText, setReasonText] = useState('')
 
   const toggleDay = (date: Date) => {
+    const currentDay = availability.find(day => isSameDay(day.date, date))
+    
+    // 현재 가능한 날짜를 불가능으로 변경하는 경우 -> 사유 입력 다이얼로그 표시
+    if (currentDay?.isAvailable) {
+      setSelectedDate(date)
+      setReasonText(currentDay.reason || '')
+      setReasonDialogOpen(true)
+    } 
+    // 불가능한 날짜를 가능으로 변경하는 경우 -> 바로 변경
+    else {
+      setAvailability(prev =>
+        prev.map(day =>
+          isSameDay(day.date, date)
+            ? { ...day, isAvailable: true, reason: undefined }
+            : day
+        )
+      )
+    }
+  }
+
+  const handleReasonSubmit = () => {
+    if (!selectedDate) return
+    
     setAvailability(prev =>
       prev.map(day =>
-        isSameDay(day.date, date)
-          ? { ...day, isAvailable: !day.isAvailable }
+        isSameDay(day.date, selectedDate)
+          ? { ...day, isAvailable: false, reason: reasonText.trim() || undefined }
           : day
       )
     )
+    
+    setReasonDialogOpen(false)
+    setSelectedDate(null)
+    setReasonText('')
+  }
+
+  const handleReasonCancel = () => {
+    setReasonDialogOpen(false)
+    setSelectedDate(null)
+    setReasonText('')
   }
 
   const handleSave = () => {
     const unavailableDates = availability
       .filter(day => !day.isAvailable)
-      .map(day => format(day.date, 'yyyy-MM-dd'))
+      .map(day => ({
+        date: format(day.date, 'yyyy-MM-dd'),
+        reason: day.reason
+      }))
     
     console.log('Saved availability:', {
       unavailableDates,
@@ -156,6 +206,7 @@ export function AvailabilityTab() {
               {week.map((day) => {
                 const isToday = isSameDay(day.date, new Date())
                 const dayOfWeek = getDay(day.date) // 0 = Sunday, 6 = Saturday
+                const hasReason = !day.isAvailable && day.reason
                 
                 return (
                   <button
@@ -168,6 +219,7 @@ export function AvailabilityTab() {
                         : "bg-red-50 border-red-300 hover:bg-red-100",
                       isToday && "ring-2 ring-blue-500 ring-offset-2"
                     )}
+                    title={hasReason ? `불가 사유: ${day.reason}` : undefined}
                   >
                     {/* Date */}
                     <div className={cn(
@@ -188,6 +240,13 @@ export function AvailabilityTab() {
                       )}
                     </div>
 
+                    {/* Reason Indicator */}
+                    {hasReason && (
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
+                        <MessageSquare className="h-3 w-3 text-orange-600 fill-orange-100" />
+                      </div>
+                    )}
+
                     {/* Today Badge */}
                     {isToday && (
                       <div className="absolute -top-2 -right-2">
@@ -202,6 +261,51 @@ export function AvailabilityTab() {
         ))}
       </div>
 
+      {/* Unavailable Dates Summary */}
+      {unavailableCount > 0 && (
+        <Card className="p-4 bg-red-50 border-red-200">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-red-600" />
+              <h3 className="font-semibold text-red-900">촬영 불가능한 날짜</h3>
+            </div>
+            <div className="space-y-2">
+              {availability
+                .filter(day => !day.isAvailable)
+                .map((day) => (
+                  <div
+                    key={day.date.toISOString()}
+                    className="flex items-start justify-between gap-3 p-3 bg-white rounded-lg border border-red-200"
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium text-zinc-900">
+                        {format(day.date, 'yyyy년 M월 d일 (E)', { locale: ko })}
+                      </div>
+                      {day.reason && (
+                        <div className="flex items-start gap-2 mt-1">
+                          <MessageSquare className="h-4 w-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-muted-foreground">{day.reason}</p>
+                        </div>
+                      )}
+                      {!day.reason && (
+                        <p className="text-xs text-muted-foreground mt-1">사유 없음</p>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleDay(day.date)}
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                    >
+                      가능으로 변경
+                    </Button>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Save Button */}
       <div className="flex justify-end sticky bottom-0 bg-background pt-4 border-t">
         <Button onClick={handleSave} size="lg" className="w-full sm:w-auto">
@@ -209,6 +313,47 @@ export function AvailabilityTab() {
           저장하기
         </Button>
       </div>
+
+      {/* Reason Dialog */}
+      <Dialog open={reasonDialogOpen} onOpenChange={setReasonDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>촬영 불가 사유 입력</DialogTitle>
+            <DialogDescription>
+              {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (E)', { locale: ko })}에 촬영이 불가능한 사유를 입력해주세요. (선택사항)
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reason">불가 사유</Label>
+              <Input
+                id="reason"
+                placeholder="예: 개인 일정, 휴가, 건강 문제 등"
+                value={reasonText}
+                onChange={(e) => setReasonText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleReasonSubmit()
+                  }
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                사유를 입력하지 않아도 불가능으로 설정할 수 있습니다.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline" onClick={handleReasonCancel}>
+              취소
+            </Button>
+            <Button onClick={handleReasonSubmit}>
+              확인
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

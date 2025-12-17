@@ -25,14 +25,14 @@ export default function ProcessPage() {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/packages')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.back()
-    }, 400)
+    }, 200)
   }
 
   const processSteps = [

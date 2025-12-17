@@ -48,7 +48,7 @@ export default function ProductTypePage() {
     setTimeout(() => {
       // All product types go to wedding date
       router.push('/c/wedding-date')
-    }, 400)
+    }, 200)
   }
 
   const handleExistingCustomer = () => {
@@ -57,7 +57,7 @@ export default function ProductTypePage() {
     // Navigate to login page (mind portal)
     setTimeout(() => {
       router.push('/c/login')
-    }, 400)
+    }, 200)
   }
 
   return (

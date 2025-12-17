@@ -16,7 +16,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp, Camera, Package } from 'lucide-react'
+import { TrendingUp, Camera, Package, Users } from 'lucide-react'
 
 // 월별 매출 데이터 (최근 6개월)
 const revenueData = [
@@ -202,6 +202,75 @@ export function PackageChart() {
               <span className="font-medium">{pkg.value}%</span>
             </div>
           ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// 고객 유입경로 차트
+interface SourceChannelChartProps {
+  data: Array<{ name: string; value: number; color: string }>
+}
+
+export function SourceChannelChart({ data }: SourceChannelChartProps) {
+  const totalCustomers = data.reduce((sum, item) => sum + item.value, 0)
+
+  return (
+    <Card className="border-0 ring-1 ring-zinc-200/50 shadow-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Users className="h-5 w-5 text-emerald-600" />
+          고객 유입경로
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '12px'
+              }}
+              formatter={(value: any) => [`${value}명`, '고객 수']}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="mt-4 space-y-2">
+          {data.map((channel) => (
+            <div key={channel.name} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: channel.color }}
+                />
+                <span className="text-muted-foreground">{channel.name}</span>
+              </div>
+              <span className="font-medium">{channel.value}명</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">전체 고객</span>
+          <span className="font-semibold text-emerald-600">
+            {totalCustomers}명
+          </span>
         </div>
       </CardContent>
     </Card>

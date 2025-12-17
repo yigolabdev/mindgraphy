@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { optionProducts } from '@/lib/mock/settings'
 import { Users, UserCheck, ChevronDown } from 'lucide-react'
+import { ProgressIndicator, PROGRESS_STEPS } from '@/components/client/progress-indicator'
 
 export default function OptionsPage() {
   const router = useRouter()
@@ -71,7 +72,7 @@ export default function OptionsPage() {
     // Navigate to venue info input
     setTimeout(() => {
       router.push('/c/venue-info')
-    }, 400)
+    }, 200)
   }
 
   const handleSkip = () => {
@@ -85,14 +86,14 @@ export default function OptionsPage() {
     // Navigate to venue info input
     setTimeout(() => {
       router.push('/c/venue-info')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/packages')
-    }, 400)
+    }, 200)
   }
 
   const formatPrice = (price: number) => {

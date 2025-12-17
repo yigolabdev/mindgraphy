@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { formatPhoneNumber, isValidPhoneNumber, getPhoneErrorMessage } from '@/lib/utils/phone.utils'
+import { ProgressIndicator, PROGRESS_STEPS } from '@/components/client/progress-indicator'
 
 type MainContact = 'bride' | 'groom' | null
 
@@ -41,20 +43,6 @@ export default function VenueContactPage() {
     }
   }, [])
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, '')
-    
-    // Format as 010-0000-0000
-    if (digits.length <= 3) {
-      return digits
-    } else if (digits.length <= 7) {
-      return `${digits.slice(0, 3)}-${digits.slice(3)}`
-    } else {
-      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`
-    }
-  }
-
   const handleBridePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value)
     setBridePhone(formatted)
@@ -83,25 +71,29 @@ export default function VenueContactPage() {
     // Navigate to next step
     setTimeout(() => {
       router.push('/c/venue-details')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/venue-info')
-    }, 400)
+    }, 200)
   }
 
   // Validation
   const isBrideNameValid = brideName.trim().length >= 2
   const isGroomNameValid = groomName.trim().length >= 2
-  const isBridePhoneValid = !bridePhone || /^010-\d{4}-\d{4}$/.test(bridePhone)
-  const isGroomPhoneValid = !groomPhone || /^010-\d{4}-\d{4}$/.test(groomPhone)
+  const isBridePhoneValid = !bridePhone || isValidPhoneNumber(bridePhone)
+  const isGroomPhoneValid = !groomPhone || isValidPhoneNumber(groomPhone)
   const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const hasAtLeastOneContact = bridePhone || groomPhone
   const hasMainContactSelected = mainContact !== null
   const isValid = isBrideNameValid && isGroomNameValid && isBridePhoneValid && isGroomPhoneValid && isEmailValid && hasAtLeastOneContact && hasMainContactSelected
+  
+  // Error messages
+  const bridePhoneError = bridePhone && !isBridePhoneValid ? getPhoneErrorMessage(bridePhone) : null
+  const groomPhoneError = groomPhone && !isGroomPhoneValid ? getPhoneErrorMessage(groomPhone) : null
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 overflow-hidden">
@@ -115,12 +107,7 @@ export default function VenueContactPage() {
         )}
       >
         {/* Progress Indicator */}
-        <div className="flex justify-center gap-2">
-          <div className="h-1 w-12 bg-zinc-900 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-900 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-200 rounded-full"></div>
-          <div className="h-1 w-12 bg-zinc-200 rounded-full"></div>
-        </div>
+        <ProgressIndicator currentStep={PROGRESS_STEPS.CONTACT} totalSteps={8} />
 
         {/* Header */}
         <div className="space-y-4 text-center">
@@ -186,8 +173,7 @@ export default function VenueContactPage() {
                 type="tel"
                 value={bridePhone}
                 onChange={handleBridePhoneChange}
-                placeholder="010-0000-0000"
-                maxLength={13}
+                placeholder="010-0000-0000, 02-1234-5678 등"
                 className={cn(
                   "h-12 text-base transition-all duration-200",
                   "border-2",
@@ -197,9 +183,14 @@ export default function VenueContactPage() {
                 )}
                 autoComplete="tel"
               />
-              {bridePhone && !isBridePhoneValid && (
+              {bridePhoneError && (
                 <p className="text-xs text-red-500">
-                  올바른 휴대폰 번호 형식이 아닙니다
+                  {bridePhoneError}
+                </p>
+              )}
+              {!bridePhoneError && bridePhone && (
+                <p className="text-xs text-green-600">
+                  ✓ 올바른 형식입니다
                 </p>
               )}
             </div>
@@ -260,8 +251,7 @@ export default function VenueContactPage() {
                 type="tel"
                 value={groomPhone}
                 onChange={handleGroomPhoneChange}
-                placeholder="010-0000-0000"
-                maxLength={13}
+                placeholder="010-0000-0000, 02-1234-5678 등"
                 className={cn(
                   "h-12 text-base transition-all duration-200",
                   "border-2",
@@ -271,9 +261,14 @@ export default function VenueContactPage() {
                 )}
                 autoComplete="tel"
               />
-              {groomPhone && !isGroomPhoneValid && (
+              {groomPhoneError && (
                 <p className="text-xs text-red-500">
-                  올바른 휴대폰 번호 형식이 아닙니다
+                  {groomPhoneError}
+                </p>
+              )}
+              {!groomPhoneError && groomPhone && (
+                <p className="text-xs text-green-600">
+                  ✓ 올바른 형식입니다
                 </p>
               )}
             </div>

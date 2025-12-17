@@ -43,6 +43,7 @@ import type { ProjectType } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
 import { validateCreateProjectForm } from '@/lib/utils/validation'
 import { withErrorHandling } from '@/lib/utils/error-handling'
+import { formatPhoneNumber, isValidPhoneNumber } from '@/lib/utils/phone.utils'
 
 export default function CreateProjectPage() {
   const router = useRouter()
@@ -355,10 +356,16 @@ export default function CreateProjectPage() {
                   <Input
                     id="groomPhone"
                     type="tel"
-                    placeholder="010-0000-0000"
+                    placeholder="010-0000-0000, 02-1234-5678 등"
                     value={formData.groomPhone}
-                    onChange={(e) => handleChange('groomPhone', e.target.value)}
+                    onChange={(e) => handleChange('groomPhone', formatPhoneNumber(e.target.value))}
+                    className={cn(
+                      formData.groomPhone && !isValidPhoneNumber(formData.groomPhone) && "border-red-500"
+                    )}
                   />
+                  {formData.groomPhone && !isValidPhoneNumber(formData.groomPhone) && (
+                    <p className="text-xs text-red-500">올바른 전화번호 형식이 아닙니다</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -366,10 +373,16 @@ export default function CreateProjectPage() {
                   <Input
                     id="bridePhone"
                     type="tel"
-                    placeholder="010-0000-0000"
+                    placeholder="010-0000-0000, 02-1234-5678 등"
                     value={formData.bridePhone}
-                    onChange={(e) => handleChange('bridePhone', e.target.value)}
+                    onChange={(e) => handleChange('bridePhone', formatPhoneNumber(e.target.value))}
+                    className={cn(
+                      formData.bridePhone && !isValidPhoneNumber(formData.bridePhone) && "border-red-500"
+                    )}
                   />
+                  {formData.bridePhone && !isValidPhoneNumber(formData.bridePhone) && (
+                    <p className="text-xs text-red-500">올바른 전화번호 형식이 아닙니다</p>
+                  )}
                 </div>
               </div>
 

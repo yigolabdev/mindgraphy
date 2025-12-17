@@ -20,7 +20,7 @@ export default function PortfolioPage() {
     setIsAnimating(true)
     setTimeout(() => {
       router.back()
-    }, 400)
+    }, 200)
   }
 
   const handleContinue = () => {
@@ -32,7 +32,7 @@ export default function PortfolioPage() {
       } else {
         router.push('/c/product-type')
       }
-    }, 400)
+    }, 200)
   }
 
   // Mock portfolio images - 실제로는 서버에서 가져온 이미지 URL 사용

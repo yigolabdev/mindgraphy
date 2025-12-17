@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { baseProducts, hanbokProducts } from '@/lib/mock/settings'
+import { ProgressIndicator, PROGRESS_STEPS } from '@/components/client/progress-indicator'
 
 type PackageType = string | null
 
@@ -62,7 +63,7 @@ export default function PackagesPage() {
     const nextPage = productType === 'hanbok' ? '/c/venue-contact' : '/c/options'
     setTimeout(() => {
       router.push(nextPage)
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
@@ -71,7 +72,7 @@ export default function PackagesPage() {
     const prevPage = productType === 'hanbok' ? '/c/wedding-date' : '/c/process'
     setTimeout(() => {
       router.push(prevPage)
-    }, 400)
+    }, 200)
   }
 
   const formatPrice = (price: number) => {

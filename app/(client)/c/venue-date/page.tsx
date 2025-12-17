@@ -34,14 +34,14 @@ export default function VenueRequestPage() {
     // Navigate to completion page
     setTimeout(() => {
       router.push('/c/venue-complete')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/venue-details')
-    }, 400)
+    }, 200)
   }
 
   return (

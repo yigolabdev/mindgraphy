@@ -48,12 +48,14 @@ interface CustomerDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   customer: any | null
+  onPaymentClick?: (customer: any) => void
 }
 
 export function CustomerDetailDialog({ 
   open, 
   onOpenChange, 
-  customer 
+  customer,
+  onPaymentClick
 }: CustomerDetailDialogProps) {
   if (!customer) return null
 
@@ -341,6 +343,66 @@ export function CustomerDetailDialog({
             </div>
           </div>
         </DialogHeader>
+
+        {/* 입금 관리 빠른 접근 */}
+        {onPaymentClick && (
+          <Card className={cn(
+            "border-2 transition-all cursor-pointer hover:shadow-lg",
+            paidAmount >= totalRevenue && totalRevenue > 0
+              ? "border-green-500 bg-green-50 hover:bg-green-100"
+              : paidAmount > 0
+              ? "border-orange-500 bg-orange-50 hover:bg-orange-100"
+              : "border-red-500 bg-red-50 hover:bg-red-100"
+          )}
+          onClick={() => onPaymentClick(customer)}
+          >
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "p-3 rounded-lg",
+                    paidAmount >= totalRevenue && totalRevenue > 0
+                      ? "bg-green-100"
+                      : paidAmount > 0
+                      ? "bg-orange-100"
+                      : "bg-red-100"
+                  )}>
+                    <CreditCard className={cn(
+                      "h-6 w-6",
+                      paidAmount >= totalRevenue && totalRevenue > 0
+                        ? "text-green-600"
+                        : paidAmount > 0
+                        ? "text-orange-600"
+                        : "text-red-600"
+                    )} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-zinc-900">입금 관리</h3>
+                    <p className="text-sm text-zinc-600">
+                      {totalRevenue > 0 
+                        ? `${(paidAmount / 10000).toLocaleString()}만원 / ${(totalRevenue / 10000).toLocaleString()}만원 (${Math.round((paidAmount / totalRevenue) * 100)}%)`
+                        : '계약 정보 없음'}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "font-semibold",
+                    paidAmount >= totalRevenue && totalRevenue > 0
+                      ? "border-green-600 text-green-700 hover:bg-green-100"
+                      : paidAmount > 0
+                      ? "border-orange-600 text-orange-700 hover:bg-orange-100"
+                      : "border-red-600 text-red-700 hover:bg-red-100"
+                  )}
+                >
+                  입금 확인 →
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* 진행상태 변경 */}
         <Card className="border border-zinc-200 bg-white">

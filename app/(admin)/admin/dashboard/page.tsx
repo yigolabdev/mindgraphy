@@ -26,7 +26,7 @@ import {
   MapPin
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { RevenueChart, PhotographerChart, PackageChart } from '@/components/dashboard/dashboard-charts'
+import { RevenueChart, PhotographerChart, PackageChart, SourceChannelChart } from '@/components/dashboard/dashboard-charts'
 
 export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true)
@@ -41,6 +41,8 @@ export default function AdminDashboard() {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [avgSatisfaction, setAvgSatisfaction] = useState(0)
   const [satisfactionCount, setSatisfactionCount] = useState(0)
+  const [sourceChannelData, setSourceChannelData] = useState<Array<{ name: string; value: number; color: string }>>([])
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,6 +58,34 @@ export default function AdminDashboard() {
           ? completedCustomersWithSatisfaction.reduce((sum, c) => sum + (c.satisfaction || 0), 0) / completedCustomersWithSatisfaction.length
           : 0
         
+        // 고객 유입경로 집계
+        const sourceChannelMap = new Map<string, number>()
+        mockCustomers.forEach(customer => {
+          const channel = customer.sourceChannel || '기타'
+          sourceChannelMap.set(channel, (sourceChannelMap.get(channel) || 0) + 1)
+        })
+
+        // 색상 팔레트
+        const colors = [
+          '#10b981', // emerald
+          '#3b82f6', // blue
+          '#8b5cf6', // purple
+          '#f59e0b', // amber
+          '#ef4444', // red
+          '#06b6d4', // cyan
+          '#ec4899', // pink
+          '#84cc16', // lime
+        ]
+
+        const sourceData = Array.from(sourceChannelMap.entries())
+          .map(([name, value], index) => ({
+            name,
+            value,
+            color: colors[index % colors.length]
+          }))
+          .sort((a, b) => b.value - a.value) // 내림차순 정렬
+        
+        setSourceChannelData(sourceData)
         setAvgSatisfaction(satisfaction)
         setSatisfactionCount(completedCustomersWithSatisfaction.length)
         setKpi(calculateDashboardKPI())
@@ -136,10 +166,11 @@ export default function AdminDashboard() {
         )}
 
         {/* Charts Section */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom duration-500" style={{ animationDelay: '200ms' }}>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-bottom duration-500" style={{ animationDelay: '200ms' }}>
           <RevenueChart />
           <PhotographerChart />
           <PackageChart />
+          {sourceChannelData.length > 0 && <SourceChannelChart data={sourceChannelData} />}
         </div>
 
         {/* This Week's Schedules */}

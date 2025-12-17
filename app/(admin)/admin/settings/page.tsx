@@ -99,7 +99,49 @@ export default function SettingsPage() {
   }
 
   const handleSave = () => {
-    if (activeTab === 'venues') {
+    if (activeTab === 'options') {
+      // Option save logic
+      // 폼에서 입력받은 값 가져오기
+      const nameInput = document.getElementById('name') as HTMLInputElement
+      const titleInput = document.getElementById('title') as HTMLInputElement
+      const descriptionInput = document.getElementById('description') as HTMLTextAreaElement
+      const photoCountInput = document.getElementById('photoCount') as HTMLInputElement
+      const basePriceInput = document.getElementById('basePrice') as HTMLInputElement
+      
+      // 필수 필드 검증
+      if (!formData.relatedProductId && !(selectedItem as any)?.relatedProductId) {
+        toast.error('적용 상품을 선택해주세요')
+        return
+      }
+      
+      if (!nameInput?.value || !titleInput?.value || !basePriceInput?.value) {
+        toast.error('필수 항목을 모두 입력해주세요')
+        return
+      }
+      
+      const optionData: any = {
+        id: drawerMode === 'create' ? `option-${Date.now()}` : (selectedItem as any)?.id,
+        category: 'OPTION',
+        name: nameInput?.value || '',
+        title: titleInput?.value || '',
+        description: descriptionInput?.value.split('\n').filter(line => line.trim()) || [],
+        photoCount: photoCountInput ? Number(photoCountInput.value) : 0,
+        basePrice: basePriceInput ? Number(basePriceInput.value) : 0,
+        relatedProductId: formData.relatedProductId || (selectedItem as any)?.relatedProductId || '',
+        isActive: formData.isActive !== undefined ? formData.isActive : true,
+        delivery: {
+          includesWebGallery: false,
+          includesRawDownload: false
+        },
+        albumIncluded: false
+      }
+      
+      if (drawerMode === 'create') {
+        setProducts([...products, optionData as Product])
+      } else {
+        setProducts(products.map(p => p.id === optionData.id ? optionData as Product : p))
+      }
+    } else if (activeTab === 'venues') {
       // Venue save logic
       const ballroomsArray = formData.ballrooms 
         ? formData.ballrooms.split(',').map((b: string) => b.trim()).filter((b: string) => b)
@@ -415,6 +457,7 @@ export default function SettingsPage() {
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
                         <TableHead className="min-w-[150px]">옵션명</TableHead>
+                        <TableHead className="min-w-[150px]">적용 상품</TableHead>
                         <TableHead className="min-w-[250px]">설명</TableHead>
                         <TableHead className="text-center">사진 추가</TableHead>
                         <TableHead className="text-right min-w-[120px]">가격</TableHead>
@@ -423,54 +466,80 @@ export default function SettingsPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {options.map((option) => (
-                        <TableRow key={option.id} className="hover:bg-muted/50">
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">{option.name}</p>
-                              <p className="text-xs text-muted-foreground">{option.title}</p>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <p className="text-sm text-muted-foreground">
-                              {option.description.join(' • ')}
-                            </p>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {option.photoCount > 0 ? (
-                              <Badge variant="outline" className="gap-1">
-                                <ImageIcon className="h-3 w-3" />
-                                +{option.photoCount}장
+                      {options.map((option) => {
+                        // @ts-ignore - relatedProductId는 Product 타입에 없지만 런타임에 존재할 수 있음
+                        const relatedProductId = option.relatedProductId
+                        const relatedProduct = relatedProductId === 'all' 
+                          ? null 
+                          : snapProducts.find(p => p.id === relatedProductId)
+                        
+                        return (
+                          <TableRow key={option.id} className="hover:bg-muted/50">
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{option.name}</p>
+                                <p className="text-xs text-muted-foreground">{option.title}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {relatedProductId === 'all' ? (
+                                <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-300">
+                                  모든 상품
+                                </Badge>
+                              ) : relatedProduct ? (
+                                <div className="flex flex-col gap-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    {relatedProduct.name}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    {relatedProduct.title}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">미지정</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-sm text-muted-foreground">
+                                {option.description.join(' • ')}
+                              </p>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {option.photoCount > 0 ? (
+                                <Badge variant="outline" className="gap-1">
+                                  <ImageIcon className="h-3 w-3" />
+                                  +{option.photoCount}장
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline">-</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {formatCurrency(option.basePrice)}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant={option.isActive ? 'default' : 'secondary'}>
+                                {option.isActive ? '활성' : '비활성'}
                               </Badge>
-                            ) : (
-                              <Badge variant="outline">-</Badge>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right font-semibold">
-                            {formatCurrency(option.basePrice)}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Badge variant={option.isActive ? 'default' : 'secondary'}>
-                              {option.isActive ? '활성' : '비활성'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit(option)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Switch
-                                checked={option.isActive}
-                                onCheckedChange={() => handleToggleStatus(option.id)}
-                              />
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit(option)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Switch
+                                  checked={option.isActive}
+                                  onCheckedChange={() => handleToggleStatus(option.id)}
+                                />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
                     </TableBody>
                   </Table>
                 </div>
@@ -1035,6 +1104,39 @@ export default function SettingsPage() {
             {/* Product/Option Form */}
             {(activeTab === 'snap' || activeTab === 'options') && (
               <>
+                {/* 추가옵션일 경우 상품 선택 */}
+                {activeTab === 'options' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="relatedProduct">적용 상품 선택 *</Label>
+                    <select 
+                      id="relatedProduct"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={formData.relatedProductId || (selectedItem && 'category' in selectedItem && (selectedItem as any).relatedProductId) || ''}
+                      onChange={(e) => setFormData({...formData, relatedProductId: e.target.value})}
+                    >
+                      <option value="">상품을 선택해주세요</option>
+                      <option value="all">모든 상품</option>
+                      <optgroup label="웨딩 상품">
+                        {snapProducts.filter(p => !p.id.startsWith('hanbok-')).map((product) => (
+                          <option key={product.id} value={product.id}>
+                            {product.name} - {product.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="한복 & 캐주얼">
+                        {snapProducts.filter(p => p.id.startsWith('hanbok-')).map((product) => (
+                          <option key={product.id} value={product.id}>
+                            {product.name} - {product.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                    <p className="text-xs text-muted-foreground">
+                      이 옵션이 적용될 상품을 선택하세요. "모든 상품"을 선택하면 모든 패키지에 적용됩니다.
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="name">상품/옵션 이름 *</Label>
                   <Input

@@ -40,14 +40,14 @@ export default function VenueInfoPage() {
     // Navigate to next step
     setTimeout(() => {
       router.push('/c/venue-contact')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/product-type')
-    }, 400)
+    }, 200)
   }
 
   const isValid = brideName.trim().length > 0 && groomName.trim().length > 0

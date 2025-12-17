@@ -67,14 +67,14 @@ export default function ClientLoginPage() {
     // Navigate to client portal
     setTimeout(() => {
       router.push('/c/portal')
-    }, 400)
+    }, 200)
   }
 
   const handleBack = () => {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/product-type/')
-    }, 400)
+    }, 200)
   }
 
   // 테스트용 빠른 로그인
@@ -87,7 +87,7 @@ export default function ClientLoginPage() {
     setIsAnimating(true)
     setTimeout(() => {
       router.push('/c/portal')
-    }, 400)
+    }, 200)
   }
 
   // Validate phone number and password

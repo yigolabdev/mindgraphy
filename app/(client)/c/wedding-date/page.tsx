@@ -222,7 +222,7 @@ export default function WeddingDatePage() {
       setTimeout(() => {
         const previousPage = productType === 'wedding' ? '/c/process' : '/c/product-type'
         router.push(previousPage)
-      }, 400)
+      }, 200)
     }
   }
 
@@ -253,7 +253,7 @@ export default function WeddingDatePage() {
     const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/process'
     setTimeout(() => {
       router.push(nextPage)
-    }, 400)
+    }, 200)
   }
 
   const handleNext = () => {
@@ -273,7 +273,7 @@ export default function WeddingDatePage() {
     const nextPage = productType === 'hanbok' ? '/c/packages' : '/c/process'
     setTimeout(() => {
       router.push(nextPage)
-    }, 400)
+    }, 200)
   }
 
   // Get day of week
