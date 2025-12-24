@@ -195,17 +195,24 @@ function ProductCard({ product }: { product: TossPayProduct }) {
           )}
         </div>
         <CardContent className="p-6">
-          <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+          <p className="text-sm text-gray-500 mb-2">{product.categoryLabel}</p>
           <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-            {product.name}
+            {product.shortName}
           </h3>
           <p className="text-sm text-gray-600 mb-4 line-clamp-2">
             {product.description}
           </p>
-          <div className="flex items-end gap-2">
-            <span className="text-2xl font-bold text-blue-600">
-              {finalPrice.toLocaleString()}원
-            </span>
+          <div className="flex items-end justify-between">
+            <div>
+              <span className="text-2xl font-bold text-blue-600">
+                {finalPrice.toLocaleString()}원
+              </span>
+            </div>
+            {product.availableOptions && product.availableOptions.length > 0 && (
+              <span className="text-xs text-gray-500">
+                + 옵션 선택 가능
+              </span>
+            )}
           </div>
         </CardContent>
       </Card>

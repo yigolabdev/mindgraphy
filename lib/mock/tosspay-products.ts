@@ -1,14 +1,24 @@
 /**
- * 토스페이먼츠 심사용 데모 상품 데이터
+ * 토스페이먼츠 심사용 실제 상품 데이터
+ * 기존 시스템의 product 데이터를 기반으로 구성
  */
 
-export interface TossPayProduct {
+export interface ProductOption {
   id: string;
   name: string;
   description: string;
   price: number;
-  discountPrice?: number;
+  isRequired?: boolean;
+}
+
+export interface TossPayProduct {
+  id: string;
+  name: string;
+  shortName: string; // 'new BASIC', 'BASIC' 등
+  description: string;
+  price: number;
   category: string;
+  categoryLabel: string; // UI 표시용
   image: string;
   images: string[];
   stock: number;
@@ -20,16 +30,77 @@ export interface TossPayProduct {
   }[];
   tags: string[];
   createdAt: string;
+  // 옵션 관련
+  availableOptions?: ProductOption[];
+  albumIncluded: boolean;
+  photoCount: number;
+  albumPages?: number;
+  miniAlbums?: number;
 }
 
-export const mockTossPayProducts: TossPayProduct[] = [
+// ============================================================
+// 옵션 정의 (Option Products)
+// ============================================================
+
+export const productOptions: ProductOption[] = [
   {
-    id: "product-001",
-    name: "프리미엄 웨딩 촬영 패키지",
-    description: "본식 + 스냅 촬영이 포함된 프리미엄 웨딩 촬영 패키지입니다. 전문 포토그래퍼가 소중한 순간을 아름답게 담아드립니다.",
-    price: 1500000,
-    discountPrice: 1200000,
-    category: "웨딩촬영",
+    id: "option-1",
+    name: "대표작가 지정",
+    description: "대표작가 지정 촬영 상품",
+    price: 440000,
+  },
+  {
+    id: "option-s",
+    name: "수석작가 지정",
+    description: "수석작가 지정 촬영 상품",
+    price: 220000,
+  },
+  {
+    id: "option-y",
+    name: "이사 지정",
+    description: "이사 지정 작가 촬영 상품",
+    price: 330000,
+  },
+  {
+    id: "option-2",
+    name: "2인 작가 진행",
+    description: "기본상품에서 최종본 20장 업그레이드, 앨범 포함 시 각 20페이지씩 업그레이드",
+    price: 330000,
+  },
+  {
+    id: "option-3",
+    name: "메이크업샵부터 촬영",
+    description: "메이크업샵 촬영 포함",
+    price: 250000,
+  },
+  {
+    id: "option-iphone",
+    name: "아이폰 스냅 촬영",
+    description: "여성 작가 1인 진행, 예식 시작 1시간30분 전부터 원판 촬영 직후까지, 연회장 이후 30여 장 현장 베스트컷 제공, 작가셀렉 최종본 10장 (세부보정) 48시간 이내 제공",
+    price: 330000,
+  },
+  {
+    id: "option-early",
+    name: "얼리 진행",
+    description: "예식 시작시간 기준 1시간30분보다 일찍 시작하는 경우 적용 (1인 작가당)",
+    price: 55000,
+  },
+];
+
+// ============================================================
+// BASE PRODUCTS (본식스냅 상품)
+// ============================================================
+
+export const mockTossPayProducts: TossPayProduct[] = [
+  // === 본식스냅 앨범형 ===
+  {
+    id: "new-basic",
+    name: "new BASIC - 본식스냅 앨범형 기본상품",
+    shortName: "new BASIC",
+    description: "1인 작가 진행, 13x10인치 합본 앨범 60페이지 + 11x8.5인치 미니합본 앨범 60페이지 2권 포함",
+    price: 1210000,
+    category: "wedding",
+    categoryLabel: "웨딩촬영",
     image: "https://images.unsplash.com/photo-1519741497674-611481863552",
     images: [
       "https://images.unsplash.com/photo-1519741497674-611481863552",
@@ -38,29 +109,40 @@ export const mockTossPayProducts: TossPayProduct[] = [
     ],
     stock: 50,
     isAvailable: true,
+    albumIncluded: true,
+    photoCount: 60,
+    albumPages: 60,
+    miniAlbums: 2,
     features: [
-      "본식 촬영 4시간",
-      "스냅 촬영 2시간",
-      "보정 사진 100장 제공",
-      "원본 파일 전체 제공",
-      "프리미엄 앨범 1권 포함",
-      "온라인 갤러리 6개월 제공",
+      "1인 작가 진행",
+      "예식 시작시간 기준 1시간30분 전 시작, 연회장 촬영 1인 작가 진행 후 마무리",
+      "13x10인치 합본(스냅·원판) 앨범 60페이지 1권",
+      "11x8.5인치 미니합본(스냅·원판) 앨범 60페이지 2권",
+      "최종본 60장 (고객셀렉, 세부보정 적용)",
+      "웹갤러리 제공 (사진링크, 다운로드링크)",
+      "전체원본 제공 (다운로드링크)",
     ],
     specifications: [
-      { label: "촬영 시간", value: "본식 4시간 + 스냅 2시간" },
-      { label: "제공 사진", value: "보정 100장 + 원본 전체" },
-      { label: "앨범", value: "30x30cm 프리미엄 앨범 1권" },
-      { label: "촬영 인원", value: "메인 작가 1명 + 보조 작가 1명" },
+      { label: "촬영 시간", value: "예식 시작 1시간30분 전부터 연회장 마무리" },
+      { label: "제공 사진", value: "보정 60장 + 원본 전체" },
+      { label: "앨범", value: "13x10인치 60p + 미니 11x8.5인치 60p 2권" },
+      { label: "촬영 인원", value: "메인 작가 1명" },
+      { label: "배송", value: "웹갤러리 제공, 다운로드 링크" },
     ],
     tags: ["인기", "프리미엄", "추천"],
     createdAt: "2024-01-15",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y", "option-2", "option-3", "option-early"].includes(opt.id)
+    ),
   },
   {
-    id: "product-002",
-    name: "스탠다드 웨딩 촬영 패키지",
-    description: "합리적인 가격의 기본 웨딩 촬영 패키지입니다. 필수 순간을 모두 담아드립니다.",
-    price: 800000,
-    category: "웨딩촬영",
+    id: "basic",
+    name: "BASIC - 본식스냅 앨범형 기본상품",
+    shortName: "BASIC",
+    description: "1인 작가 진행, 13x10인치 합본 앨범 50페이지 + 11x8.5인치 미니합본 앨범 50페이지 2권 포함",
+    price: 1020000,
+    category: "wedding",
+    categoryLabel: "웨딩촬영",
     image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc",
     images: [
       "https://images.unsplash.com/photo-1511285560929-80b456fea0bc",
@@ -68,27 +150,41 @@ export const mockTossPayProducts: TossPayProduct[] = [
     ],
     stock: 100,
     isAvailable: true,
+    albumIncluded: true,
+    photoCount: 50,
+    albumPages: 50,
+    miniAlbums: 2,
     features: [
-      "본식 촬영 3시간",
-      "보정 사진 60장 제공",
-      "원본 파일 전체 제공",
-      "온라인 갤러리 3개월 제공",
+      "1인 작가 진행",
+      "예식 시작시간 기준 1시간30분 전 시작, 연회장 촬영 1인 작가 진행 후 마무리",
+      "13x10인치 합본(스냅·원판) 앨범 50페이지 1권",
+      "11x8.5인치 미니합본(스냅·원판) 앨범 50페이지 2권",
+      "최종본 50장 (고객셀렉, 세부보정 적용)",
+      "웹갤러리 제공 (사진링크, 다운로드링크)",
+      "전체원본 제공 (다운로드링크)",
     ],
     specifications: [
-      { label: "촬영 시간", value: "본식 3시간" },
-      { label: "제공 사진", value: "보정 60장 + 원본 전체" },
+      { label: "촬영 시간", value: "예식 시작 1시간30분 전부터 연회장 마무리" },
+      { label: "제공 사진", value: "보정 50장 + 원본 전체" },
+      { label: "앨범", value: "13x10인치 50p + 미니 11x8.5인치 50p 2권" },
       { label: "촬영 인원", value: "메인 작가 1명" },
     ],
     tags: ["추천", "베스트"],
     createdAt: "2024-01-20",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y", "option-2", "option-3", "option-early"].includes(opt.id)
+    ),
   },
+
+  // === 본식스냅 데이터형 ===
   {
-    id: "product-003",
-    name: "스냅 촬영 패키지",
-    description: "스튜디오 또는 야외에서 진행되는 웨딩 스냅 전문 촬영 패키지입니다.",
-    price: 500000,
-    discountPrice: 450000,
-    category: "스냅촬영",
+    id: "new-data",
+    name: "new DATA - 본식스냅 데이터형 기본상품",
+    shortName: "new DATA",
+    description: "1인 작가 진행, 앨범 없이 데이터만 제공하는 합리적인 가격의 패키지",
+    price: 990000,
+    category: "wedding",
+    categoryLabel: "웨딩촬영",
     image: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6",
     images: [
       "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6",
@@ -96,111 +192,404 @@ export const mockTossPayProducts: TossPayProduct[] = [
     ],
     stock: 80,
     isAvailable: true,
+    albumIncluded: false,
+    photoCount: 65,
     features: [
-      "스냅 촬영 2시간",
-      "보정 사진 40장 제공",
-      "원본 파일 전체 제공",
-      "의상 2벌 촬영 가능",
+      "1인 작가 진행",
+      "예식 시작시간 기준 1시간30분 전 시작, 연회장 촬영 1인 작가 진행 후 마무리",
+      "최종본 65장 (고객셀렉, 세부보정 적용)",
+      "웹갤러리 제공 (사진링크, 다운로드링크)",
+      "전체원본 제공",
     ],
     specifications: [
-      { label: "촬영 시간", value: "2시간" },
-      { label: "제공 사진", value: "보정 40장 + 원본 전체" },
-      { label: "촬영 장소", value: "스튜디오 또는 야외 1곳" },
+      { label: "촬영 시간", value: "예식 시작 1시간30분 전부터 연회장 마무리" },
+      { label: "제공 사진", value: "보정 65장 + 원본 전체" },
+      { label: "앨범", value: "미포함 (데이터 전용)" },
+      { label: "촬영 인원", value: "메인 작가 1명" },
     ],
-    tags: ["인기"],
+    tags: ["인기", "합리적"],
     createdAt: "2024-02-01",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y", "option-2", "option-3", "option-early"].includes(opt.id)
+    ),
   },
   {
-    id: "product-004",
-    name: "프리미엄 앨범 제작",
-    description: "고급 인화지와 특수 제본으로 제작되는 프리미엄 웨딩 앨범입니다.",
-    price: 300000,
-    category: "앨범",
+    id: "data",
+    name: "DATA - 본식스냅 데이터형 기본상품",
+    shortName: "DATA",
+    description: "1인 작가 진행, 앨범 없이 데이터만 제공하는 합리적인 가격의 패키지",
+    price: 930000,
+    category: "wedding",
+    categoryLabel: "웨딩촬영",
     image: "https://images.unsplash.com/photo-1606800052052-a08af7148866",
     images: [
       "https://images.unsplash.com/photo-1606800052052-a08af7148866",
     ],
-    stock: 200,
+    stock: 90,
     isAvailable: true,
+    albumIncluded: false,
+    photoCount: 60,
     features: [
-      "30x30cm 대형 사이즈",
-      "고급 인화지 사용",
-      "가죽 표지",
-      "최대 60페이지 구성",
+      "1인 작가 진행",
+      "예식 시작시간 기준 1시간30분 전 시작, 연회장 촬영 1인 작가 진행 후 마무리",
+      "최종본 60장 (고객셀렉, 세부보정 적용)",
+      "웹갤러리 제공 (사진링크, 다운로드링크)",
+      "전체원본 제공",
     ],
     specifications: [
-      { label: "크기", value: "30x30cm" },
-      { label: "페이지", value: "60페이지" },
-      { label: "표지", value: "천연 가죽" },
-      { label: "제작 기간", value: "2-3주" },
+      { label: "촬영 시간", value: "예식 시작 1시간30분 전부터 연회장 마무리" },
+      { label: "제공 사진", value: "보정 60장 + 원본 전체" },
+      { label: "앨범", value: "미포함 (데이터 전용)" },
+      { label: "촬영 인원", value: "메인 작가 1명" },
     ],
-    tags: ["프리미엄"],
-    createdAt: "2024-02-10",
+    tags: ["합리적"],
+    createdAt: "2024-02-05",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y", "option-2", "option-3", "option-early"].includes(opt.id)
+    ),
   },
+
+  // === 한복/스냅 촬영 상품 ===
   {
-    id: "product-005",
-    name: "디지털 파일 추가 구매",
-    description: "추가 보정 사진을 구매하실 수 있습니다. (10장 단위)",
-    price: 50000,
-    category: "디지털",
+    id: "hanbok-a1",
+    name: "A-1 - 야외 촬영 기본",
+    shortName: "A-1",
+    description: "3시간 촬영 진행, 장소 한 곳, 의상 한 가지 컨셉",
+    price: 800000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
     image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937",
     images: [
       "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937",
     ],
-    stock: 999,
+    stock: 60,
     isAvailable: true,
+    albumIncluded: false,
+    photoCount: 20,
     features: [
-      "보정 사진 10장",
-      "고해상도 파일 제공",
-      "온라인 다운로드",
+      "1인 작가 진행",
+      "3시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 한 곳에서 촬영 진행 (장소 비용 별도)",
+      "의상 한 가지 컨셉",
+      "최종본 20장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
     ],
     specifications: [
-      { label: "수량", value: "보정 사진 10장" },
-      { label: "해상도", value: "최대 6000x4000px" },
-      { label: "제공 방식", value: "온라인 다운로드" },
+      { label: "촬영 시간", value: "3시간 (이동, 준비 포함)" },
+      { label: "촬영 장소", value: "야외 1곳 (장소 비용 별도)" },
+      { label: "의상", value: "1벌" },
+      { label: "제공 사진", value: "보정 20장 + 원본 전체" },
     ],
-    tags: [],
-    createdAt: "2024-02-15",
+    tags: ["인기"],
+    createdAt: "2024-02-10",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
   },
   {
-    id: "product-006",
-    name: "본식 영상 촬영 패키지",
-    description: "본식의 감동적인 순간을 영상으로 기록해드립니다.",
-    price: 1200000,
-    discountPrice: 1000000,
-    category: "영상촬영",
+    id: "hanbok-a2",
+    name: "A-2 - 야외 촬영 추가",
+    shortName: "A-2",
+    description: "4시간 촬영 진행, 장소 두 곳, 의상 두 가지 컨셉",
+    price: 1150000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
     image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4",
     images: [
       "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4",
     ],
-    stock: 30,
+    stock: 50,
     isAvailable: true,
+    albumIncluded: false,
+    photoCount: 35,
     features: [
-      "본식 영상 촬영 4시간",
-      "하이라이트 영상 5분",
-      "풀영상 제공",
-      "드론 촬영 포함",
-      "BGM 및 자막 편집",
+      "1인 작가 진행",
+      "4시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 두 곳에서 촬영 진행 (장소 비용 별도)",
+      "의상 두 가지 컨셉",
+      "최종본 35장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 시간", value: "4시간 (이동, 준비 포함)" },
+      { label: "촬영 장소", value: "야외 2곳 (장소 비용 별도)" },
+      { label: "의상", value: "2벌" },
+      { label: "제공 사진", value: "보정 35장 + 원본 전체" },
+    ],
+    tags: ["인기", "추천"],
+    createdAt: "2024-02-12",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+  {
+    id: "hanbok-b1",
+    name: "B-1 - 야외 촬영 + 실내 스튜디오",
+    shortName: "B-1",
+    description: "4시간 촬영, 장소 한 곳 + 실내 스튜디오, 의상 두 가지",
+    price: 1200000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
+    image: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
+    images: [
+      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486",
+    ],
+    stock: 40,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 30,
+    features: [
+      "1인 작가 진행",
+      "4시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 한 곳 + 실내 스튜디오 촬영",
+      "의상 두 가지 컨셉",
+      "최종본 30장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
     ],
     specifications: [
       { label: "촬영 시간", value: "4시간" },
-      { label: "제공 영상", value: "하이라이트 5분 + 풀영상" },
-      { label: "촬영 장비", value: "4K 시네마 카메라 + 드론" },
-      { label: "제작 기간", value: "3-4주" },
+      { label: "촬영 장소", value: "야외 1곳 + 실내 스튜디오" },
+      { label: "의상", value: "2벌" },
+      { label: "제공 사진", value: "보정 30장 + 원본 전체" },
     ],
-    tags: ["인기", "프리미엄"],
+    tags: ["프리미엄"],
+    createdAt: "2024-02-15",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+  {
+    id: "hanbok-b2",
+    name: "B-2 - 야외 촬영 + 실내 스튜디오",
+    shortName: "B-2",
+    description: "5시간 촬영, 장소 두 곳 + 실내 스튜디오, 의상 세 가지",
+    price: 1500000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
+    image: "https://images.unsplash.com/photo-1583939003579-730e3918a45a",
+    images: [
+      "https://images.unsplash.com/photo-1583939003579-730e3918a45a",
+    ],
+    stock: 35,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 50,
+    features: [
+      "1인 작가 진행",
+      "5시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 두 곳 + 실내 스튜디오 촬영",
+      "의상 세 가지 컨셉",
+      "최종본 50장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 시간", value: "5시간" },
+      { label: "촬영 장소", value: "야외 2곳 + 실내 스튜디오" },
+      { label: "의상", value: "3벌" },
+      { label: "제공 사진", value: "보정 50장 + 원본 전체" },
+    ],
+    tags: ["프리미엄", "추천"],
+    createdAt: "2024-02-18",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+  {
+    id: "hanbok-c1",
+    name: "C-1 - 야외 촬영만 + 추가 시간",
+    shortName: "C-1",
+    description: "5시간 촬영, 장소 두 곳, 의상 두 가지",
+    price: 1300000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
+    image: "https://images.unsplash.com/photo-1591604466107-ec97de577aff",
+    images: [
+      "https://images.unsplash.com/photo-1591604466107-ec97de577aff",
+    ],
+    stock: 45,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 40,
+    features: [
+      "1인 작가 진행",
+      "5시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 두 곳에서 촬영 진행 (장소 비용 별도)",
+      "의상 두 가지 컨셉",
+      "최종본 40장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 시간", value: "5시간" },
+      { label: "촬영 장소", value: "야외 2곳 (장소 비용 별도)" },
+      { label: "의상", value: "2벌" },
+      { label: "제공 사진", value: "보정 40장 + 원본 전체" },
+    ],
+    tags: [],
     createdAt: "2024-02-20",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+  {
+    id: "hanbok-c2",
+    name: "C-2 - 야외 촬영 + 실내 + 추가 시간",
+    shortName: "C-2",
+    description: "6시간 촬영, 장소 세 곳 + 실내 스튜디오, 의상 세 가지",
+    price: 1700000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
+    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+    images: [
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+    ],
+    stock: 30,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 60,
+    features: [
+      "1인 작가 진행",
+      "6시간 촬영 진행 (이동, 준비, 모니터링 시간 포함)",
+      "장소 세 곳 + 실내 스튜디오 촬영",
+      "의상 세 가지 컨셉",
+      "최종본 60장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 시간", value: "6시간" },
+      { label: "촬영 장소", value: "야외 3곳 + 실내 스튜디오" },
+      { label: "의상", value: "3벌" },
+      { label: "제공 사진", value: "보정 60장 + 원본 전체" },
+    ],
+    tags: ["프리미엄"],
+    createdAt: "2024-02-22",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+  {
+    id: "hanbok-d1",
+    name: "D-1 - 실내(흰색배경) 스튜디오",
+    shortName: "D-1",
+    description: "2시간 실내 촬영, 스튜디오 장소금액 포함",
+    price: 500000,
+    category: "snap",
+    categoryLabel: "스냅촬영",
+    image: "https://images.unsplash.com/photo-1600296226316-b7111518d8d8",
+    images: [
+      "https://images.unsplash.com/photo-1600296226316-b7111518d8d8",
+    ],
+    stock: 70,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 3,
+    features: [
+      "1인 작가 진행",
+      "2시간 촬영 진행 (실내 촬영만 진행, 준비 및 모니터링 시간 포함)",
+      "장소 한 곳에서 촬영 진행 (스튜디오 장소금액 포함)",
+      "의상 한 가지 컨셉",
+      "최종본 3장 (고객셀렉, 세부보정)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 시간", value: "2시간 (실내만)" },
+      { label: "촬영 장소", value: "실내 스튜디오 (장소비 포함)" },
+      { label: "의상", value: "1벌" },
+      { label: "제공 사진", value: "보정 3장 + 원본 전체" },
+    ],
+    tags: ["합리적"],
+    createdAt: "2024-02-25",
+    availableOptions: productOptions.filter((opt) =>
+      ["option-1", "option-s", "option-y"].includes(opt.id)
+    ),
+  },
+
+  // === 특수 촬영 ===
+  {
+    id: "dress-shop-1",
+    name: "DRESS SHOP - 가봉 스냅",
+    shortName: "DRESS SHOP",
+    description: "1인 대표작가 촬영, 20x16 아크릴 액자 포함",
+    price: 550000,
+    category: "special",
+    categoryLabel: "특수촬영",
+    image: "https://images.unsplash.com/photo-1594552072238-2d81b2a5c13c",
+    images: [
+      "https://images.unsplash.com/photo-1594552072238-2d81b2a5c13c",
+    ],
+    stock: 40,
+    isAvailable: true,
+    albumIncluded: false,
+    photoCount: 10,
+    features: [
+      "1인 대표작가 촬영 진행",
+      "최종본 10장 (고객셀렉, 세부보정)",
+      "20x16 아크릴 액자 1개",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 작가", value: "대표작가 1명" },
+      { label: "제공 사진", value: "보정 10장 + 원본 전체" },
+      { label: "추가 제공", value: "20x16 아크릴 액자" },
+    ],
+    tags: ["프리미엄"],
+    createdAt: "2024-03-01",
+    availableOptions: [],
+  },
+  {
+    id: "baby-1",
+    name: "BABY - 돌스냅 행사 촬영",
+    shortName: "BABY",
+    description: "2인 작가 진행, 13x10인치 화보앨범 50페이지 + 14x14인치 액자 포함",
+    price: 660000,
+    category: "special",
+    categoryLabel: "특수촬영",
+    image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4",
+    images: [
+      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4",
+    ],
+    stock: 50,
+    isAvailable: true,
+    albumIncluded: true,
+    photoCount: 50,
+    albumPages: 50,
+    features: [
+      "2인 (작가 + 작가) 진행",
+      "돌잔치 행사 촬영",
+      "13x10인치 화보앨범 50페이지 1권",
+      "14x14인치 액자 1개",
+      "최종본 50장 (고객셀렉, 세부보정 적용)",
+      "전체원본 제공",
+    ],
+    specifications: [
+      { label: "촬영 인원", value: "작가 2명" },
+      { label: "제공 사진", value: "보정 50장 + 원본 전체" },
+      { label: "앨범", value: "13x10인치 화보앨범 50p" },
+      { label: "추가 제공", value: "14x14인치 액자" },
+    ],
+    tags: ["인기"],
+    createdAt: "2024-03-05",
+    availableOptions: [],
   },
 ];
 
 // 카테고리 목록
 export const productCategories = [
   { id: "all", name: "전체", count: mockTossPayProducts.length },
-  { id: "웨딩촬영", name: "웨딩촬영", count: 2 },
-  { id: "스냅촬영", name: "스냅촬영", count: 1 },
-  { id: "영상촬영", name: "영상촬영", count: 1 },
-  { id: "앨범", name: "앨범", count: 1 },
-  { id: "디지털", name: "디지털", count: 1 },
+  { 
+    id: "wedding", 
+    name: "웨딩촬영", 
+    count: mockTossPayProducts.filter(p => p.category === "wedding").length 
+  },
+  { 
+    id: "snap", 
+    name: "스냅촬영", 
+    count: mockTossPayProducts.filter(p => p.category === "snap").length 
+  },
+  { 
+    id: "special", 
+    name: "특수촬영", 
+    count: mockTossPayProducts.filter(p => p.category === "special").length 
+  },
 ];
 
 // 상품 필터링 함수
@@ -239,17 +628,9 @@ export function sortProducts(
 
   switch (sortBy) {
     case "price-low":
-      return sorted.sort((a, b) => {
-        const priceA = a.discountPrice || a.price;
-        const priceB = b.discountPrice || b.price;
-        return priceA - priceB;
-      });
+      return sorted.sort((a, b) => a.price - b.price);
     case "price-high":
-      return sorted.sort((a, b) => {
-        const priceA = a.discountPrice || a.price;
-        const priceB = b.discountPrice || b.price;
-        return priceB - priceA;
-      });
+      return sorted.sort((a, b) => b.price - a.price);
     case "newest":
       return sorted.sort(
         (a, b) =>

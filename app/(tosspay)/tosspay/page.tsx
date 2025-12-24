@@ -135,9 +135,9 @@ export default function TossPayHomePage() {
                       )}
                     </div>
                     <CardContent className="p-6">
-                      <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+                      <p className="text-sm text-gray-500 mb-2">{product.categoryLabel}</p>
                       <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">
-                        {product.name}
+                        {product.shortName}
                       </h3>
                       <p className="text-sm text-gray-600 mb-4 line-clamp-2">
                         {product.description}

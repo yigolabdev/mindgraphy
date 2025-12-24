@@ -1,24 +1,35 @@
 /**
  * 장바구니 상태 관리 (Zustand)
+ * 옵션 선택 기능 포함
  */
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { TossPayProduct } from "@/lib/mock/tosspay-products";
+import type { TossPayProduct, ProductOption } from "@/lib/mock/tosspay-products";
 
 export interface CartItem {
   product: TossPayProduct;
   quantity: number;
+  selectedOptions?: ProductOption[]; // 선택된 옵션들
 }
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: TossPayProduct, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (product: TossPayProduct, quantity?: number, selectedOptions?: ProductOption[]) => void;
+  removeItem: (productId: string, optionsKey?: string) => void;
+  updateQuantity: (productId: string, quantity: number, optionsKey?: string) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
+}
+
+// 옵션 조합을 고유 키로 변환하는 helper 함수
+function getOptionsKey(options?: ProductOption[]): string {
+  if (!options || options.length === 0) return "";
+  return options
+    .map((opt) => opt.id)
+    .sort()
+    .join(",");
 }
 
 export const useCartStore = create<CartStore>()(
@@ -26,45 +37,59 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
 
-      addItem: (product, quantity = 1) => {
+      addItem: (product, quantity = 1, selectedOptions = []) => {
         set((state) => {
+          const newOptionsKey = getOptionsKey(selectedOptions);
+          
+          // 동일한 상품 + 동일한 옵션 조합인 경우 수량만 증가
           const existingItem = state.items.find(
-            (item) => item.product.id === product.id
+            (item) =>
+              item.product.id === product.id &&
+              getOptionsKey(item.selectedOptions) === newOptionsKey
           );
 
           if (existingItem) {
-            // 이미 장바구니에 있으면 수량 증가
             return {
               items: state.items.map((item) =>
-                item.product.id === product.id
+                item.product.id === product.id &&
+                getOptionsKey(item.selectedOptions) === newOptionsKey
                   ? { ...item, quantity: item.quantity + quantity }
                   : item
               ),
             };
-          } else {
-            // 새로운 상품 추가
-            return {
-              items: [...state.items, { product, quantity }],
-            };
           }
+
+          // 새로운 조합이면 새 항목으로 추가
+          return {
+            items: [...state.items, { product, quantity, selectedOptions }],
+          };
         });
       },
 
-      removeItem: (productId) => {
+      removeItem: (productId, optionsKey = "") => {
         set((state) => ({
-          items: state.items.filter((item) => item.product.id !== productId),
+          items: state.items.filter(
+            (item) =>
+              !(
+                item.product.id === productId &&
+                getOptionsKey(item.selectedOptions) === optionsKey
+              )
+          ),
         }));
       },
 
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (productId, quantity, optionsKey = "") => {
         if (quantity <= 0) {
-          get().removeItem(productId);
+          get().removeItem(productId, optionsKey);
           return;
         }
 
         set((state) => ({
           items: state.items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
+            item.product.id === productId &&
+            getOptionsKey(item.selectedOptions) === optionsKey
+              ? { ...item, quantity }
+              : item
           ),
         }));
       },
@@ -76,8 +101,11 @@ export const useCartStore = create<CartStore>()(
       getTotalPrice: () => {
         const items = get().items;
         return items.reduce((total, item) => {
-          const price = item.product.discountPrice || item.product.price;
-          return total + price * item.quantity;
+          const optionsPrice = item.selectedOptions?.reduce(
+            (sum, opt) => sum + opt.price,
+            0
+          ) || 0;
+          return total + (item.product.price + optionsPrice) * item.quantity;
         }, 0);
       },
 
@@ -91,3 +119,6 @@ export const useCartStore = create<CartStore>()(
     }
   )
 );
+
+// 옵션 키 추출 helper 함수 export
+export { getOptionsKey };

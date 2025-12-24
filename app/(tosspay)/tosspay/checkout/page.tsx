@@ -211,19 +211,25 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3 max-h-60 overflow-y-auto">
-                  {items.map((item) => {
-                    const finalPrice = item.product.discountPrice || item.product.price;
+                  {items.map((item, index) => {
+                    const optionsPrice = item.selectedOptions?.reduce((sum, opt) => sum + opt.price, 0) || 0;
+                    const itemPrice = item.product.price + optionsPrice;
                     return (
-                      <div key={item.product.id} className="flex gap-3 text-sm">
+                      <div key={`${item.product.id}-${index}`} className="flex gap-3 text-sm">
                         <div
                           className="w-12 h-12 bg-gray-100 rounded flex-shrink-0 bg-cover bg-center"
                           style={{ backgroundImage: `url(${item.product.image})` }}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{item.product.name}</p>
+                          <p className="font-medium truncate">{item.product.shortName || item.product.name}</p>
                           <p className="text-gray-600">
-                            {finalPrice.toLocaleString()}원 × {item.quantity}개
+                            {itemPrice.toLocaleString()}원 × {item.quantity}개
                           </p>
+                          {item.selectedOptions && item.selectedOptions.length > 0 && (
+                            <p className="text-xs text-blue-600 truncate">
+                              옵션: {item.selectedOptions.map(opt => opt.name).join(', ')}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );

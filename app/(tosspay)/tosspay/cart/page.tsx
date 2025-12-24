@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, X, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useCartStore } from "@/lib/store/cart-store";
+import { useCartStore, getOptionsKey } from "@/lib/store/cart-store";
 import { toast } from "sonner";
 
 export default function CartPage() {
@@ -55,10 +56,13 @@ export default function CartPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {items.map((item) => {
-                  const finalPrice = item.product.discountPrice || item.product.price;
+                {items.map((item, index) => {
+                  const optionsPrice = item.selectedOptions?.reduce((sum, opt) => sum + opt.price, 0) || 0;
+                  const itemTotal = (item.product.price + optionsPrice) * item.quantity;
+                  const optKey = getOptionsKey(item.selectedOptions);
+                  
                   return (
-                    <div key={item.product.id} className="flex gap-4 p-4 border rounded-lg">
+                    <div key={`${item.product.id}-${index}`} className="flex gap-4 p-4 border rounded-lg">
                       <div
                         className="w-24 h-24 bg-gray-100 rounded-lg bg-cover bg-center flex-shrink-0"
                         style={{ backgroundImage: `url(${item.product.image})` }}
@@ -70,24 +74,40 @@ export default function CartPage() {
                               href={`/tosspay/products/${item.product.id}`}
                               className="font-semibold hover:text-blue-600"
                             >
-                              {item.product.name}
+                              {item.product.shortName || item.product.name}
                             </Link>
-                            <p className="text-sm text-gray-600">{item.product.category}</p>
+                            <p className="text-sm text-gray-600">{item.product.categoryLabel}</p>
+                            
+                            {/* 선택된 옵션 표시 */}
+                            {item.selectedOptions && item.selectedOptions.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {item.selectedOptions.map((option) => (
+                                  <div key={option.id} className="flex items-center gap-2">
+                                    <Badge variant="outline" className="text-xs">
+                                      {option.name}
+                                    </Badge>
+                                    <span className="text-xs text-gray-600">
+                                      +{option.price.toLocaleString()}원
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeItem(item.product.id)}
+                            onClick={() => removeItem(item.product.id, optKey)}
                           >
                             <X className="w-4 h-4" />
                           </Button>
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-4">
                           <div className="flex items-center border rounded-lg">
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity - 1, optKey)}
                             >
                               <Minus className="w-4 h-4" />
                             </Button>
@@ -95,18 +115,18 @@ export default function CartPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.product.id, item.quantity + 1, optKey)}
                             >
                               <Plus className="w-4 h-4" />
                             </Button>
                           </div>
                           <div className="text-right">
                             <div className="text-lg font-bold text-blue-600">
-                              {(finalPrice * item.quantity).toLocaleString()}원
+                              {itemTotal.toLocaleString()}원
                             </div>
-                            {item.product.discountPrice && (
-                              <div className="text-sm text-gray-400 line-through">
-                                {(item.product.price * item.quantity).toLocaleString()}원
+                            {optionsPrice > 0 && (
+                              <div className="text-xs text-gray-500">
+                                (상품 {(item.product.price * item.quantity).toLocaleString()}원 + 옵션 {(optionsPrice * item.quantity).toLocaleString()}원)
                               </div>
                             )}
                           </div>

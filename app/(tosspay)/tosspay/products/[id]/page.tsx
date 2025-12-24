@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Star,
   ShoppingCart,
@@ -19,7 +20,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import { mockTossPayProducts } from "@/lib/mock/tosspay-products";
+import { mockTossPayProducts, type ProductOption } from "@/lib/mock/tosspay-products";
 import { useCartStore } from "@/lib/store/cart-store";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
@@ -30,6 +31,7 @@ export default function ProductDetailPage() {
   const product = mockTossPayProducts.find((p) => p.id === productId);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedOptions, setSelectedOptions] = useState<ProductOption[]>([]);
   const addItem = useCartStore((state) => state.addItem);
 
   if (!product) {
@@ -45,13 +47,35 @@ export default function ProductDetailPage() {
 
   const finalPrice = product.price;
 
+  // 옵션 토글 핸들러
+  const toggleOption = (option: ProductOption) => {
+    setSelectedOptions((prev) => {
+      const isSelected = prev.some((opt) => opt.id === option.id);
+      if (isSelected) {
+        return prev.filter((opt) => opt.id !== option.id);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  // 옵션 포함 총 가격 계산
+  const getTotalPrice = () => {
+    const basePrice = product.price;
+    const optionsPrice = selectedOptions.reduce((sum, opt) => sum + opt.price, 0);
+    return (basePrice + optionsPrice) * quantity;
+  };
+
   const handleAddToCart = () => {
-    addItem(product, quantity);
-    toast.success(`장바구니에 ${product.name}이(가) 추가되었습니다`);
+    addItem(product, quantity, selectedOptions);
+    const optionsText = selectedOptions.length > 0 
+      ? ` (옵션: ${selectedOptions.map(opt => opt.name).join(', ')})`
+      : '';
+    toast.success(`장바구니에 ${product.shortName}${optionsText}이(가) 추가되었습니다`);
   };
 
   const handleBuyNow = () => {
-    addItem(product, quantity);
+    addItem(product, quantity, selectedOptions);
     window.location.href = "/tosspay/cart";
   };
 
@@ -165,6 +189,55 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
+            {/* 옵션 선택 */}
+            {product.availableOptions && product.availableOptions.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-semibold text-lg mb-4">추가 옵션</h3>
+                <div className="border rounded-lg p-4 space-y-3">
+                  {product.availableOptions.map((option) => {
+                    const isSelected = selectedOptions.some((opt) => opt.id === option.id);
+                    return (
+                      <div
+                        key={option.id}
+                        className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                          isSelected
+                            ? "border-blue-600 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                        onClick={() => toggleOption(option)}
+                      >
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => toggleOption(option)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-gray-900">{option.name}</span>
+                            <span className="text-sm font-semibold text-blue-600">
+                              +{option.price.toLocaleString()}원
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">{option.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {selectedOptions.length > 0 && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="text-sm text-blue-800">
+                      <strong>선택된 옵션:</strong>{" "}
+                      {selectedOptions.map((opt) => opt.name).join(", ")}
+                    </div>
+                    <div className="text-sm text-blue-600 font-semibold mt-1">
+                      옵션 금액: +{selectedOptions.reduce((sum, opt) => sum + opt.price, 0).toLocaleString()}원
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 수량 선택 */}
             <div className="mb-8">
               <label className="font-semibold text-lg mb-4 block">수량</label>
@@ -196,8 +269,13 @@ export default function ProductDetailPage() {
                 <div className="flex-1 text-right">
                   <span className="text-sm text-gray-500">총 상품 금액</span>
                   <div className="text-2xl font-bold text-blue-600">
-                    {(finalPrice * quantity).toLocaleString()}원
+                    {getTotalPrice().toLocaleString()}원
                   </div>
+                  {selectedOptions.length > 0 && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      (상품 {(finalPrice * quantity).toLocaleString()}원 + 옵션 {(selectedOptions.reduce((sum, opt) => sum + opt.price, 0) * quantity).toLocaleString()}원)
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
