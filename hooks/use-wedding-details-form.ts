@@ -17,18 +17,15 @@ export function useWeddingDetailsForm(initialData?: Partial<WeddingDetailsFormDa
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
 
-  const updateNestedField = useCallback(<
-    K extends keyof WeddingDetailsFormData,
-    NK extends keyof WeddingDetailsFormData[K]
-  >(
-    field: K,
-    nestedField: NK,
-    value: WeddingDetailsFormData[K][NK]
+  const updateNestedField = useCallback((
+    field: keyof WeddingDetailsFormData,
+    nestedField: string,
+    value: any
   ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: {
-        ...prev[field],
+        ...(prev[field] as any),
         [nestedField]: value,
       },
     }));
