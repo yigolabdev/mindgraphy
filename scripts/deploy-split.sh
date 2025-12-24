@@ -31,11 +31,13 @@ NEXT_PUBLIC_ENVIRONMENT=production npm run build
 WWW_BUCKET=${WWW_BUCKET:-"mindgraphy-www"}
 PORTAL_BUCKET=${PORTAL_BUCKET:-"mindgraphy-portal"}
 ADMIN_BUCKET=${ADMIN_BUCKET:-"mindgraphy-admin"}
+TOSSPAY_BUCKET=${TOSSPAY_BUCKET:-"mindgraphy-tosspay"}
 
 # CloudFront Distribution ID (환경 변수로 설정)
 WWW_DISTRIBUTION=${WWW_DISTRIBUTION:-""}
 PORTAL_DISTRIBUTION=${PORTAL_DISTRIBUTION:-""}
 ADMIN_DISTRIBUTION=${ADMIN_DISTRIBUTION:-""}
+TOSSPAY_DISTRIBUTION=${TOSSPAY_DISTRIBUTION:-""}
 
 # 배포 모드 선택
 MODE=${1:-"all"}
@@ -101,6 +103,24 @@ deploy_admin() {
     echo "✅ 내부 시스템 배포 완료"
 }
 
+deploy_tosspay() {
+    echo "💳 토스페이먼츠 데모 배포 중... (tosspay.mindgraphy.com)"
+    
+    # tosspay/ 디렉토리만
+    aws s3 sync out/tosspay/ s3://$TOSSPAY_BUCKET/tosspay/ \
+        --delete \
+        --cache-control "public, max-age=3600"
+    
+    # CloudFront 캐시 무효화
+    if [ ! -z "$TOSSPAY_DISTRIBUTION" ]; then
+        aws cloudfront create-invalidation \
+            --distribution-id $TOSSPAY_DISTRIBUTION \
+            --paths "/tosspay/*"
+    fi
+    
+    echo "✅ 토스페이먼츠 데모 배포 완료"
+}
+
 # 배포 실행
 case $MODE in
     "www")
@@ -112,14 +132,18 @@ case $MODE in
     "admin")
         deploy_admin
         ;;
+    "tosspay")
+        deploy_tosspay
+        ;;
     "all")
         deploy_www
         deploy_portal
         deploy_admin
+        deploy_tosspay
         ;;
     *)
         echo "❌ 잘못된 배포 모드: $MODE"
-        echo "사용법: ./deploy-split.sh [www|portal|admin|all]"
+        echo "사용법: ./deploy-split.sh [www|portal|admin|tosspay|all]"
         exit 1
         ;;
 esac
@@ -128,7 +152,8 @@ echo ""
 echo "🎉 배포 완료!"
 echo ""
 echo "📍 접속 주소:"
-echo "   소개 페이지: https://www.mindgraphy.com"
-echo "   고객 포털:   https://portal.mindgraphy.com"
-echo "   내부 시스템: https://admin.mindgraphy.com"
+echo "   소개 페이지:       https://www.mindgraphy.com"
+echo "   고객 포털:         https://portal.mindgraphy.com"
+echo "   내부 시스템:       https://admin.mindgraphy.com"
+echo "   토스페이먼츠 데모: https://tosspay.mindgraphy.com"
 
