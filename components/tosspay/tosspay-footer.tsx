@@ -154,7 +154,7 @@ export function TossPayFooter() {
           {/* 하단 카피라이트 */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t">
             <p className="text-sm text-gray-500">
-              © 2024 MindGraphy Inc. All rights reserved.
+              © 2026 MindGraphy Inc. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               <Link

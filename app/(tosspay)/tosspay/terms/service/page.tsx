@@ -7,7 +7,7 @@ export default function TermsOfServicePage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">이용약관</CardTitle>
-            <p className="text-sm text-gray-600">시행일자: 2024년 1월 1일</p>
+            <p className="text-sm text-gray-600">시행일자: 2026년 1월 1일</p>
           </CardHeader>
           <CardContent className="prose prose-sm max-w-none">
             <h2>제1조 (목적)</h2>
@@ -135,7 +135,7 @@ export default function TermsOfServicePage() {
             <div className="mt-8 pt-8 border-t">
               <p className="text-sm text-gray-600">
                 <strong>부칙</strong><br />
-                본 약관은 2024년 1월 1일부터 시행합니다.
+                본 약관은 2026년 1월 1일부터 시행합니다.
               </p>
             </div>
           </CardContent>

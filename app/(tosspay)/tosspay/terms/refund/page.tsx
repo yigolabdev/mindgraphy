@@ -7,7 +7,7 @@ export default function RefundPolicyPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">환불 및 교환 정책</CardTitle>
-            <p className="text-sm text-gray-600">최종 업데이트: 2024년 1월 1일</p>
+            <p className="text-sm text-gray-600">최종 업데이트: 2026년 1월 1일</p>
           </CardHeader>
           <CardContent className="prose prose-sm max-w-none">
             <h2>1. 청약철회 및 환불 가능 기간</h2>
