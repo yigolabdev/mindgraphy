@@ -99,7 +99,7 @@ export default function TossPayHomePage() {
                 </div>
                 <h3 className="font-bold text-lg mb-2">안전한 결제</h3>
                 <p className="text-sm text-gray-600">
-                  토스페이먼츠 에스크로로 안전하게 거래하세요
+                  전자결제 에스크로로 안전하게 거래하세요
                 </p>
               </CardContent>
             </Card>

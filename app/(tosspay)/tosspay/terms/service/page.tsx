@@ -59,7 +59,7 @@ export default function TermsOfServicePage() {
               </li>
             </ol>
 
-            <h2>제7조 (지급방법)</h2>
+            <h3 className="font-semibold text-lg mb-4">결제 방법</h3>
             <p>
               회사에서 구매한 상품 또는 서비스에 대한 대금지급방법은 다음 각 호의 방법 중 가용한 방법으로 할 수 있습니다:
             </p>

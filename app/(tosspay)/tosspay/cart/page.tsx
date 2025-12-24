@@ -147,7 +147,7 @@ export default function CartPage() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
-                  토스페이먼츠 안전 결제 시스템을 이용합니다
+                  안전한 전자결제 시스템을 이용합니다
                 </p>
               </CardContent>
             </Card>

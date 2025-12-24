@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                 </Button>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800">
-                    <strong>안전한 결제:</strong> 토스페이먼츠를 통해 안전하게 결제됩니다
+                    <strong>안전한 결제:</strong> 본 사이트는 안전한 전자결제 시스템을 이용합니다
                   </p>
                 </div>
               </CardContent>

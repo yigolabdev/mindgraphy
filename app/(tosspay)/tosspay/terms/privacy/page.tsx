@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
             
             <h3>1. 결제 대행 업체</h3>
             <ul>
-              <li><strong>제공받는 자:</strong> 토스페이먼츠</li>
+              <li><strong>제공받는 자:</strong> 전자결제 대행 업체</li>
               <li><strong>제공목적:</strong> 전자결제 서비스 제공</li>
               <li><strong>제공항목:</strong> 결제정보, 거래정보</li>
               <li><strong>보유기간:</strong> 거래 종료 후 5년</li>

@@ -148,7 +148,7 @@ export function TossPayFooter() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <p className="text-sm text-blue-800">
               <strong>구매안전 서비스:</strong> 고객님의 안전거래를 위해
-              토스페이먼츠 에스크로 서비스를 이용하고 있습니다.
+              전자결제 에스크로 서비스를 이용하고 있습니다.
             </p>
           </div>
 

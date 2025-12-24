@@ -174,7 +174,7 @@ export default function BusinessInfoPage() {
                     <CreditCard className="w-8 h-8 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg text-gray-900">(주)토스페이먼츠</p>
+                    <p className="font-semibold text-lg text-gray-900">안전결제 서비스</p>
                     <p className="text-sm text-gray-600">전자결제 서비스 제공 (PG사)</p>
                     <p className="text-xs text-gray-500 mt-1">에스크로 안전거래 서비스 제공</p>
                   </div>
@@ -187,7 +187,7 @@ export default function BusinessInfoPage() {
               <h2 className="text-xl font-bold mb-4">소비자 피해 보상</h2>
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                 <p className="text-sm text-green-800 mb-3">
-                  <strong>구매안전서비스:</strong> 고객님의 안전거래를 위해 토스페이먼츠 에스크로 서비스를 이용하고 있습니다.
+                  <strong>구매안전서비스:</strong> 고객님의 안전거래를 위해 전자결제 에스크로 서비스를 이용하고 있습니다.
                 </p>
                 <p className="text-sm text-green-700">
                   에스크로 서비스를 통해 결제하신 경우, 상품 미배송 또는 서비스 미제공 시 구매대금을 환불받으실 수 있습니다.
