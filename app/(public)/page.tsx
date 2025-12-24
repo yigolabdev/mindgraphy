@@ -4,7 +4,7 @@ import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, ArrowRight, Calendar } from 'lucide-react'
+import { Users, ArrowRight, Calendar, CreditCard } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -115,7 +115,7 @@ function HomePageContent() {
         </div>
 
         {/* Portal Selection Cards */}
-        <div className="grid w-full max-w-4xl gap-6 md:grid-cols-2">
+        <div className="grid w-full max-w-6xl gap-6 md:grid-cols-3">
           {/* Client Portal Card */}
           <Link 
             href="/c/product-type"
@@ -180,6 +180,38 @@ function HomePageContent() {
               </CardContent>
             </Card>
           </div>
+
+          {/* TossPay Portal Card */}
+          <Link 
+            href="/tosspay"
+            data-branch="tosspay"
+            data-portal="tosspay-demo"
+            className="block group"
+          >
+            <Card className="h-full border-2 border-green-500 bg-green-50 transition-all hover:border-green-600 hover:shadow-xl relative overflow-hidden cursor-pointer">
+              <div className="absolute right-0 top-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-green-200 opacity-50 transition-transform group-hover:scale-150" />
+              <CardHeader className="relative">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 transition-all group-hover:bg-green-600 group-hover:text-white group-hover:scale-110">
+                  <CreditCard className="h-8 w-8" />
+                </div>
+                <CardTitle className="text-2xl mb-2 text-green-700">토스페이먼츠 데모</CardTitle>
+                <CardDescription className="text-base text-green-600">
+                  Payment Demo
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="pt-2">
+                  <div className={cn(
+                    "inline-flex items-center gap-2 font-semibold transition-all text-green-700",
+                    "group-hover:gap-3 group-hover:text-green-800"
+                  )}>
+                    결제 데모 확인하기
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>
