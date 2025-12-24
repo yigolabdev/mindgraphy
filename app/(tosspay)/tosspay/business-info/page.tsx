@@ -66,6 +66,17 @@ export default function BusinessInfoPage() {
                     <p className="font-semibold text-gray-900">110111-0937598</p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg md:col-span-2">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">통신판매업 신고번호</p>
+                    <p className="font-semibold text-gray-900">제 2023-서울성동-1563 호</p>
+                    <p className="text-xs text-gray-500 mt-1">신고일자: 2023년 08월 07일</p>
+                  </div>
+                </div>
               </div>
             </section>
 

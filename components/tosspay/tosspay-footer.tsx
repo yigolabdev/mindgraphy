@@ -131,6 +131,10 @@ export function TossPayFooter() {
               <strong className="text-gray-900">개인정보보호책임자:</strong>{" "}
               신영민
             </p>
+            <p>
+              <strong className="text-gray-900">통신판매업 신고번호:</strong>{" "}
+              제 2023-서울성동-1563 호
+            </p>
             <p className="flex items-start gap-2">
               <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
               <span>
