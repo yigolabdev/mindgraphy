@@ -14,12 +14,12 @@ import {
 import { Search, Star, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import {
-  mockTossPayProducts,
+  mockShopProducts,
   productCategories,
   filterProducts,
   sortProducts,
-  type TossPayProduct,
-} from "@/lib/mock/tosspay-products";
+  type ShopProduct,
+} from "@/lib/mock/shop-products";
 import { useSearchParams } from "next/navigation";
 
 export default function ProductsPage() {
@@ -33,7 +33,7 @@ export default function ProductsPage() {
 
   // 필터링 및 정렬된 상품 목록
   const filteredAndSortedProducts = useMemo(() => {
-    let products = filterProducts(mockTossPayProducts, selectedCategory, searchQuery);
+    let products = filterProducts(mockShopProducts, selectedCategory, searchQuery);
     return sortProducts(products, sortBy);
   }, [selectedCategory, searchQuery, sortBy]);
 
@@ -168,11 +168,11 @@ export default function ProductsPage() {
 }
 
 // 상품 카드 컴포넌트
-function ProductCard({ product }: { product: TossPayProduct }) {
+function ProductCard({ product }: { product: ShopProduct }) {
   const finalPrice = product.price;
 
   return (
-    <Link href={`/tosspay/products/${product.id}`}>
+    <Link href={`/shop/products/${product.id}`}>
       <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden h-full">
         <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
           <div

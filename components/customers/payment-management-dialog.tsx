@@ -102,7 +102,7 @@ export function PaymentManagementDialog({
     setIsAddingPayment(false)
   }
 
-  const handleTossPayment = () => {
+  const handlePayment = () => {
     // TODO: 토스페이먼츠 결제 연동
     toast.info('토스페이먼츠 연동 준비 중입니다', {
       description: '추후 결제 링크 생성 및 자동 입금 확인 기능이 추가될 예정입니다'
@@ -188,7 +188,7 @@ export function PaymentManagementDialog({
               <h3 className="font-semibold text-lg">입금 내역</h3>
               <Button
                 size="sm"
-                onClick={handleTossPayment}
+                onClick={handlePayment}
                 variant="outline"
                 className="gap-2"
               >

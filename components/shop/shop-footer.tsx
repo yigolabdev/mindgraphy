@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Shield, Mail, Phone, MapPin } from "lucide-react";
 
-export function TossPayFooter() {
+export function ShopFooter() {
   return (
     <footer className="bg-gray-50 border-t mt-16">
       <div className="container mx-auto px-4 py-12">
@@ -29,22 +29,22 @@ export function TossPayFooter() {
             <h4 className="font-semibold text-gray-900 mb-4">고객지원</h4>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/tosspay/about" className="hover:text-blue-600">
+                <Link href="/shop/about" className="hover:text-blue-600">
                   회사소개
                 </Link>
               </li>
               <li>
-                <Link href="/tosspay/guide" className="hover:text-blue-600">
+                <Link href="/shop/guide" className="hover:text-blue-600">
                   이용안내
                 </Link>
               </li>
               <li>
-                <Link href="/tosspay/faq" className="hover:text-blue-600">
+                <Link href="/shop/faq" className="hover:text-blue-600">
                   자주묻는질문
                 </Link>
               </li>
               <li>
-                <Link href="/tosspay/contact" className="hover:text-blue-600">
+                <Link href="/shop/contact" className="hover:text-blue-600">
                   1:1 문의
                 </Link>
               </li>
@@ -57,7 +57,7 @@ export function TossPayFooter() {
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link
-                  href="/tosspay/terms/service"
+                  href="/shop/terms/service"
                   className="hover:text-blue-600"
                 >
                   이용약관
@@ -65,7 +65,7 @@ export function TossPayFooter() {
               </li>
               <li>
                 <Link
-                  href="/tosspay/terms/privacy"
+                  href="/shop/terms/privacy"
                   className="hover:text-blue-600 font-semibold"
                 >
                   개인정보처리방침
@@ -73,7 +73,7 @@ export function TossPayFooter() {
               </li>
               <li>
                 <Link
-                  href="/tosspay/terms/refund"
+                  href="/shop/terms/refund"
                   className="hover:text-blue-600"
                 >
                   환불정책
@@ -81,7 +81,7 @@ export function TossPayFooter() {
               </li>
               <li>
                 <Link
-                  href="/tosspay/terms/delivery"
+                  href="/shop/terms/delivery"
                   className="hover:text-blue-600"
                 >
                   배송정책
@@ -162,7 +162,7 @@ export function TossPayFooter() {
             </p>
             <div className="flex items-center gap-4">
               <Link
-                href="/tosspay/business-info"
+                href="/shop/business-info"
                 className="text-sm text-gray-600 hover:text-blue-600"
               >
                 사업자정보확인

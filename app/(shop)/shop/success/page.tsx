@@ -64,10 +64,10 @@ export default function SuccessPage() {
             </div>
 
             <div className="flex gap-3 justify-center">
-              <Link href="/tosspay">
+              <Link href="/shop">
                 <Button size="lg" variant="outline">홈으로</Button>
               </Link>
-              <Link href="/tosspay/products">
+              <Link href="/shop/products">
                 <Button size="lg">쇼핑 계속하기</Button>
               </Link>
             </div>

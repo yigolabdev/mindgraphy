@@ -1,9 +1,9 @@
-import { mockTossPayProducts } from "@/lib/mock/tosspay-products";
+import { mockShopProducts } from "@/lib/mock/shop-products";
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  return mockTossPayProducts.map((product) => ({
+  return mockShopProducts.map((product) => ({
     id: product.id,
   }));
 }

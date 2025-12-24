@@ -18,7 +18,7 @@ export default function CartPage() {
       toast.error("장바구니가 비어있습니다");
       return;
     }
-    window.location.href = "/tosspay/checkout";
+    window.location.href = "/shop/checkout";
   };
 
   if (items.length === 0) {
@@ -29,7 +29,7 @@ export default function CartPage() {
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2">장바구니가 비어있습니다</h2>
             <p className="text-gray-600 mb-6">상품을 담아보세요!</p>
-            <Link href="/tosspay/products">
+            <Link href="/shop/products">
               <Button>상품 둘러보기</Button>
             </Link>
           </Card>
@@ -71,7 +71,7 @@ export default function CartPage() {
                         <div className="flex items-start justify-between mb-2">
                           <div>
                             <Link
-                              href={`/tosspay/products/${item.product.id}`}
+                              href={`/shop/products/${item.product.id}`}
                               className="font-semibold hover:text-blue-600"
                             >
                               {item.product.shortName || item.product.name}

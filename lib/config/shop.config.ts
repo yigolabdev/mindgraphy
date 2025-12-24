@@ -4,12 +4,12 @@
  * 실제 서비스와 분리된 독립 사이트 설정
  */
 
-export const TOSSPAY_CONFIG = {
+export const SHOP_CONFIG = {
   // 사이트 정보
   site: {
     name: "토스페이먼츠 심사용 데모",
     description: "토스페이먼츠 PG 연동 심사를 위한 데모 사이트",
-    url: process.env.NEXT_PUBLIC_TOSSPAY_URL || "https://tosspay.mindgraphy.com",
+    url: process.env.NEXT_PUBLIC_TOSSPAY_URL || "https://shop.mindgraphy.com",
   },
 
   // 토스페이먼츠 설정
@@ -49,12 +49,12 @@ export const TOSSPAY_CONFIG = {
 
   // 페이지 경로
   routes: {
-    home: "/tosspay",
-    publicStore: "/tosspay/public",
-    adminDashboard: "/tosspay/admin",
-    checkout: "/tosspay/checkout",
-    success: "/tosspay/success",
-    fail: "/tosspay/fail",
+    home: "/shop",
+    publicStore: "/shop/public",
+    adminDashboard: "/shop/admin",
+    checkout: "/shop/checkout",
+    success: "/shop/success",
+    fail: "/shop/fail",
   },
 
   // 데모 상품
@@ -87,6 +87,6 @@ export const TOSSPAY_CONFIG = {
 } as const;
 
 // 타입 추출
-export type TossPayConfig = typeof TOSSPAY_CONFIG;
-export type PaymentMethod = typeof TOSSPAY_CONFIG.payment.methods[number];
-export type DemoProduct = typeof TOSSPAY_CONFIG.demoProducts[number];
+export type ShopConfig = typeof SHOP_CONFIG;
+export type PaymentMethod = typeof SHOP_CONFIG.payment.methods[number];
+export type DemoProduct = typeof SHOP_CONFIG.demoProducts[number];

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import { TossPayHeader } from "@/components/tosspay/tosspay-header";
-import { TossPayFooter } from "@/components/tosspay/tosspay-footer";
+import { ShopHeader } from "@/components/shop/shop-header";
+import { ShopFooter } from "@/components/shop/shop-footer";
 
 export const metadata: Metadata = {
   title: "MindGraphy - 웨딩 촬영 전문",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TossPayLayout({
+export default function ShopLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -23,9 +23,9 @@ export default function TossPayLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col">
-        <TossPayHeader />
+        <ShopHeader />
         <main className="flex-1">{children}</main>
-        <TossPayFooter />
+        <ShopFooter />
       </body>
     </html>
   );

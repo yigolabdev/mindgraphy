@@ -20,7 +20,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import { mockTossPayProducts, type ProductOption } from "@/lib/mock/tosspay-products";
+import { mockShopProducts, type ProductOption } from "@/lib/mock/shop-products";
 import { useCartStore } from "@/lib/store/cart-store";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
@@ -28,7 +28,7 @@ import { useParams } from "next/navigation";
 export default function ProductDetailPage() {
   const params = useParams();
   const productId = params?.id as string;
-  const product = mockTossPayProducts.find((p) => p.id === productId);
+  const product = mockShopProducts.find((p) => p.id === productId);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<ProductOption[]>([]);
@@ -38,7 +38,7 @@ export default function ProductDetailPage() {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold mb-4">상품을 찾을 수 없습니다</h1>
-        <Link href="/tosspay/products">
+        <Link href="/shop/products">
           <Button>상품 목록으로 돌아가기</Button>
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     addItem(product, quantity, selectedOptions);
-    window.location.href = "/tosspay/cart";
+    window.location.href = "/shop/cart";
   };
 
   return (
@@ -85,11 +85,11 @@ export default function ProductDetailPage() {
       <div className="border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Link href="/tosspay" className="hover:text-blue-600">
+            <Link href="/shop" className="hover:text-blue-600">
               홈
             </Link>
             <span>/</span>
-            <Link href="/tosspay/products" className="hover:text-blue-600">
+            <Link href="/shop/products" className="hover:text-blue-600">
               상품
             </Link>
             <span>/</span>

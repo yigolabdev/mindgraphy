@@ -1,8 +1,8 @@
-# 토스페이먼츠 심사용 사이트 초기 셋팅 완료
+# 결제 시스템 심사용 사이트 초기 셋팅 완료
 
 ## 📋 개요
 
-토스페이먼츠 PG 연동 심사를 위한 별도 사이트가 성공적으로 생성되었습니다.  
+결제 시스템 PG 연동 심사를 위한 별도 사이트가 성공적으로 생성되었습니다.  
 기존 Mindgraphy 프로젝트와 완전히 분리되어 독립적으로 배포 가능합니다.
 
 ---
@@ -12,31 +12,31 @@
 ```
 mindgraphy/
 ├── app/
-│   └── (tosspay)/                    # 토스페이먼츠 전용 라우트 그룹
+│   └── (shop)/                    # 결제 시스템 전용 라우트 그룹
 │       ├── layout.tsx                # 독립 레이아웃
-│       └── tosspay/
+│       └── shop/
 │           └── page.tsx              # 메인 홈페이지
 │
 ├── lib/
 │   └── config/
-│       └── tosspay.config.ts         # 토스페이먼츠 설정
+│       └── shop.config.ts         # 결제 시스템 설정
 │
 ├── scripts/
-│   └── deploy-split.sh               # 배포 스크립트 (tosspay 추가)
+│   └── deploy-split.sh               # 배포 스크립트 (shop 추가)
 │
-└── package.json                      # deploy:tosspay 스크립트 추가
+└── package.json                      # deploy:shop 스크립트 추가
 ```
 
 ---
 
 ## 🎯 사이트 구성
 
-### 1. 홈페이지 (`/tosspay`)
-- **위치**: `app/(tosspay)/tosspay/page.tsx`
+### 1. 홈페이지 (`/shop`)
+- **위치**: `app/(shop)/shop/page.tsx`
 - **기능**: 3개 사이트 구분 소개
   - 🛍️ **고객용 페이지**: 일반 고객 결제 페이지
   - 🔐 **내부업무 시스템**: 관리자 대시보드
-  - 💳 **토스페이먼츠 데모**: 현재 페이지 (심사용)
+  - 💳 **결제 시스템 데모**: 현재 페이지 (심사용)
 
 ### 2. 특징
 - ✅ 독립된 레이아웃 (기존 사이트와 분리)
@@ -51,21 +51,21 @@ mindgraphy/
 
 ### 1. 독립 배포
 ```bash
-# 토스페이먼츠 사이트만 배포
-npm run deploy:tosspay
+# 결제 시스템 사이트만 배포
+npm run deploy:shop
 ```
 
 ### 2. 전체 배포
 ```bash
-# 모든 사이트 동시 배포 (www, portal, admin, tosspay)
+# 모든 사이트 동시 배포 (www, portal, admin, shop)
 npm run deploy
 ```
 
 ### 3. S3 배포 설정
 ```bash
 # 환경 변수 설정 필요
-export TOSSPAY_BUCKET=mindgraphy-tosspay
-export TOSSPAY_DISTRIBUTION=your-cloudfront-id  # 선택
+export SHOP_BUCKET=mindgraphy-shop
+export SHOP_DISTRIBUTION=your-cloudfront-id  # 선택
 ```
 
 ---
@@ -75,11 +75,11 @@ export TOSSPAY_DISTRIBUTION=your-cloudfront-id  # 선택
 `.env.local` 파일 생성 후 다음 변수 추가:
 
 ```bash
-# 토스페이먼츠 테스트 키
+# 결제 시스템 테스트 키
 NEXT_PUBLIC_TOSS_CLIENT_KEY_TEST=test_ck_XXX
 TOSS_SECRET_KEY_TEST=test_sk_XXX
 
-# 토스페이먼츠 실제 키 (심사 승인 후)
+# 결제 시스템 실제 키 (심사 승인 후)
 NEXT_PUBLIC_TOSS_CLIENT_KEY_LIVE=live_ck_XXX
 TOSS_SECRET_KEY_LIVE=live_sk_XXX
 
@@ -87,10 +87,10 @@ TOSS_SECRET_KEY_LIVE=live_sk_XXX
 NEXT_PUBLIC_TOSS_ENV=test
 
 # 사이트 URL
-NEXT_PUBLIC_TOSSPAY_URL=https://tosspay.mindgraphy.com
+NEXT_PUBLIC_SHOP_URL=https://shop.mindgraphy.com
 
 # S3 버킷
-TOSSPAY_BUCKET=mindgraphy-tosspay
+SHOP_BUCKET=mindgraphy-shop
 ```
 
 ---
@@ -99,14 +99,14 @@ TOSSPAY_BUCKET=mindgraphy-tosspay
 
 ### 로컬 개발 환경
 ```
-http://localhost:3000/tosspay
+http://localhost:3000/shop
 ```
 
 ### 프로덕션 환경 (배포 후)
 ```
-https://tosspay.mindgraphy.com/tosspay
+https://shop.mindgraphy.com/shop
 또는
-https://your-s3-bucket.s3-website.region.amazonaws.com/tosspay
+https://your-s3-bucket.s3-website.region.amazonaws.com/shop
 ```
 
 ---
@@ -116,7 +116,7 @@ https://your-s3-bucket.s3-website.region.amazonaws.com/tosspay
 ### 색상 구성
 - **블루** (`blue-600`): 고객용 페이지
 - **퍼플** (`purple-600`): 내부업무 시스템
-- **그린** (`green-600`): 토스페이먼츠 데모 (현재)
+- **그린** (`green-600`): 결제 시스템 데모 (현재)
 
 ### UI 컴포넌트
 - `shadcn/ui` 기반 Card, Button
@@ -129,20 +129,20 @@ https://your-s3-bucket.s3-website.region.amazonaws.com/tosspay
 
 ### 1. 추가 페이지 개발 (사용자 정보 제공 후)
 ```
-/tosspay/public       → 고객용 쇼핑몰
-/tosspay/admin        → 관리자 대시보드
-/tosspay/checkout     → 결제 페이지
-/tosspay/success      → 결제 성공
-/tosspay/fail         → 결제 실패
+/shop/public       → 고객용 쇼핑몰
+/shop/admin        → 관리자 대시보드
+/shop/checkout     → 결제 페이지
+/shop/success      → 결제 성공
+/shop/fail         → 결제 실패
 ```
 
-### 2. 토스페이먼츠 SDK 연동
+### 2. 결제 시스템 SDK 연동
 - Checkout SDK 설치
 - 결제 위젯 구현
 - 웹훅 처리
 
 ### 3. AWS 인프라 구축
-- S3 버킷 생성: `mindgraphy-tosspay`
+- S3 버킷 생성: `mindgraphy-shop`
 - CloudFront 배포 (선택)
 - Route 53 도메인 연결
 
@@ -164,9 +164,9 @@ https://your-s3-bucket.s3-website.region.amazonaws.com/tosspay
 
 | 파일 | 설명 |
 |------|------|
-| `app/(tosspay)/layout.tsx` | 토스페이먼츠 전용 레이아웃 |
-| `app/(tosspay)/tosspay/page.tsx` | 메인 홈페이지 |
-| `lib/config/tosspay.config.ts` | 설정 파일 |
+| `app/(shop)/layout.tsx` | 결제 시스템 전용 레이아웃 |
+| `app/(shop)/shop/page.tsx` | 메인 홈페이지 |
+| `lib/config/shop.config.ts` | 설정 파일 |
 | `scripts/deploy-split.sh` | 배포 스크립트 |
 | `package.json` | NPM 스크립트 |
 

@@ -5,17 +5,17 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { TossPayProduct, ProductOption } from "@/lib/mock/tosspay-products";
+import type { ShopProduct, ProductOption } from "@/lib/mock/shop-products";
 
 export interface CartItem {
-  product: TossPayProduct;
+  product: ShopProduct;
   quantity: number;
   selectedOptions?: ProductOption[]; // 선택된 옵션들
 }
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: TossPayProduct, quantity?: number, selectedOptions?: ProductOption[]) => void;
+  addItem: (product: ShopProduct, quantity?: number, selectedOptions?: ProductOption[]) => void;
   removeItem: (productId: string, optionsKey?: string) => void;
   updateQuantity: (productId: string, quantity: number, optionsKey?: string) => void;
   clearCart: () => void;
@@ -115,7 +115,7 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: "tosspay-cart-storage",
+      name: "shop-cart-storage",
     }
   )
 );

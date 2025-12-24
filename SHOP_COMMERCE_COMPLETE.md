@@ -1,22 +1,22 @@
-# 🎉 토스페이먼츠 심사용 커머스 사이트 구축 완료!
+# 🎉 결제 시스템 심사용 커머스 사이트 구축 완료!
 
 ## 📋 프로젝트 개요
 
-토스페이먼츠 PG 연동 심사를 위한 **완전한 커머스 사이트**가 성공적으로 구축되었습니다.  
+결제 시스템 PG 연동 심사를 위한 **완전한 커머스 사이트**가 성공적으로 구축되었습니다.  
 일반 커머스 사이트의 모든 필수 기능과 통신판매업 법적 요구사항을 완벽하게 충족합니다.
 
 ---
 
 ## ✅ 구현 완료된 기능
 
-### 1. 🏠 **메인 페이지** (`/tosspay`)
+### 1. 🏠 **메인 페이지** (`/shop`)
 - ✅ 프리미엄 히어로 섹션
 - ✅ 주요 서비스 소개 (4개 카드)
 - ✅ 인기 상품 3개 노출
 - ✅ CTA 섹션
 - ✅ 서비스 안내 섹션
 
-### 2. 🛍️ **상품 목록 페이지** (`/tosspay/products`)
+### 2. 🛍️ **상품 목록 페이지** (`/shop/products`)
 - ✅ 상품 그리드 레이아웃 (반응형)
 - ✅ 카테고리 필터 (전체, 웨딩촬영, 스냅촬영, 영상촬영, 앨범, 디지털)
 - ✅ 검색 기능
@@ -24,7 +24,7 @@
 - ✅ 할인 배지, 인기 배지
 - ✅ 품절 표시
 
-### 3. 📦 **상품 상세 페이지** (`/tosspay/products/[id]`)
+### 3. 📦 **상품 상세 페이지** (`/shop/products/[id]`)
 - ✅ 이미지 갤러리 (썸네일 포함)
 - ✅ 상품명, 가격, 할인율 표시
 - ✅ 포함 내역 (Features)
@@ -34,7 +34,7 @@
 - ✅ 안내 사항 (안전결제, 배송, 환불)
 - ✅ 상세 설명 섹션
 
-### 4. 🛒 **장바구니** (`/tosspay/cart`)
+### 4. 🛒 **장바구니** (`/shop/cart`)
 - ✅ 장바구니 상품 목록
 - ✅ 수량 증감 기능
 - ✅ 개별 상품 삭제
@@ -42,7 +42,7 @@
 - ✅ 실시간 금액 계산
 - ✅ 주문하기 버튼
 
-### 5. 💳 **주문/결제 페이지** (`/tosspay/checkout`)
+### 5. 💳 **주문/결제 페이지** (`/shop/checkout`)
 - ✅ 주문자 정보 입력 (이름, 이메일, 연락처)
 - ✅ 배송 정보 입력 (주소, 상세주소, 우편번호, 배송메모)
 - ✅ 약관 동의 체크박스 (필수)
@@ -53,32 +53,32 @@
 - ✅ 결제하기 버튼
 
 ### 6. ✅❌ **결제 결과 페이지**
-- ✅ **성공 페이지** (`/tosspay/success`)
+- ✅ **성공 페이지** (`/shop/success`)
   - 주문번호 표시
   - 진행 상황 안내 (주문확인 → 촬영 → 결과물 전달)
   - 고객센터 안내
-- ✅ **실패 페이지** (`/tosspay/fail`)
+- ✅ **실패 페이지** (`/shop/fail`)
   - 실패 사유 안내
   - 주요 원인 설명
   - 재시도 버튼
 
 ### 7. 📜 **법적 약관 페이지** (통신판매업 필수)
-- ✅ **이용약관** (`/tosspay/terms/service`)
+- ✅ **이용약관** (`/shop/terms/service`)
   - 15개 조항 완비
   - 계약 성립, 지급방법, 환급, 개인정보보호 등
-- ✅ **개인정보 처리방침** (`/tosspay/terms/privacy`)
+- ✅ **개인정보 처리방침** (`/shop/terms/privacy`)
   - 13개 조항 완비
   - 수집 항목, 보유 기간, 제3자 제공, 권리 행사 방법 등
   - 개인정보 보호책임자 명시
   - 분쟁 해결 기관 안내
-- ✅ **환불 정책** (`/tosspay/terms/refund`)
+- ✅ **환불 정책** (`/shop/terms/refund`)
   - 청약철회 기간 (7일)
   - 환불 가능/불가능 케이스
   - 환불 절차 및 처리 기간
   - 촬영 서비스 특별 규정
   - 분쟁 해결 기관 정보
 
-### 8. 🏢 **사업자 정보** (`/tosspay/business-info`)
+### 8. 🏢 **사업자 정보** (`/shop/business-info`)
 - ✅ 회사명: (주)마인드그래피
 - ✅ 대표자명: 홍길동
 - ✅ 사업자등록번호: 123-45-67890
@@ -88,7 +88,7 @@
 - ✅ 이메일: support@mindgraphy.com
 - ✅ 개인정보 보호책임자: 김철수
 - ✅ 호스팅 서비스: AWS
-- ✅ 결제 대행: 토스페이먼츠
+- ✅ 결제 대행: 결제 시스템
 - ✅ 분쟁 처리 기관 정보
 
 ### 9. 🎨 **UI/UX 컴포넌트**
@@ -116,7 +116,7 @@
 ## 📂 페이지 구조
 
 ```
-/tosspay
+/shop
 ├── /                          # 메인 홈페이지
 ├── /products                  # 상품 목록
 ├── /products/[id]             # 상품 상세 (6개 정적 생성)
@@ -170,7 +170,7 @@
 - [x] 환불/교환 정책
 
 ### 3. 결제 안전성 ✅
-- [x] 토스페이먼츠 에스크로 안내
+- [x] 결제 시스템 에스크로 안내
 - [x] 결제 대행 업체 명시
 - [x] 구매안전 서비스 표시
 
@@ -190,7 +190,7 @@ cd "/Users/hyojoonchoi/Hyojoon Drive/Cursor-Project/Proce/mindgraphy"
 npm run dev
 
 # 접속
-http://localhost:3000/tosspay
+http://localhost:3000/shop
 ```
 
 ### 2. 빌드
@@ -202,21 +202,21 @@ npm run build
 
 ### 3. S3 배포
 ```bash
-# 토스페이먼츠 사이트만 배포
-npm run deploy:tosspay
+# 결제 시스템 사이트만 배포
+npm run deploy:shop
 
-# 전체 배포 (www + portal + admin + tosspay)
+# 전체 배포 (www + portal + admin + shop)
 npm run deploy
 ```
 
 ### 4. 환경 변수 설정 (.env.local)
 ```bash
-# 토스페이먼츠 테스트 키
+# 결제 시스템 테스트 키
 NEXT_PUBLIC_TOSS_CLIENT_KEY_TEST=test_ck_XXX
 TOSS_SECRET_KEY_TEST=test_sk_XXX
 
 # S3 버킷
-TOSSPAY_BUCKET=mindgraphy-tosspay
+SHOP_BUCKET=mindgraphy-shop
 ```
 
 ---
@@ -225,23 +225,23 @@ TOSSPAY_BUCKET=mindgraphy-tosspay
 
 ```
 Route (app)
-├ ○ /tosspay                      # 홈
-├ ○ /tosspay/business-info        # 사업자정보
-├ ○ /tosspay/cart                 # 장바구니
-├ ○ /tosspay/checkout             # 결제
-├ ○ /tosspay/fail                 # 결제실패
-├ ○ /tosspay/products             # 상품목록
-├ ● /tosspay/products/[id]        # 상품상세 (6개 생성)
-│ ├ /tosspay/products/product-001
-│ ├ /tosspay/products/product-002
-│ ├ /tosspay/products/product-003
-│ ├ /tosspay/products/product-004
-│ ├ /tosspay/products/product-005
-│ └ /tosspay/products/product-006
-├ ○ /tosspay/success              # 결제성공
-├ ○ /tosspay/terms/privacy        # 개인정보
-├ ○ /tosspay/terms/refund         # 환불정책
-└ ○ /tosspay/terms/service        # 이용약관
+├ ○ /shop                      # 홈
+├ ○ /shop/business-info        # 사업자정보
+├ ○ /shop/cart                 # 장바구니
+├ ○ /shop/checkout             # 결제
+├ ○ /shop/fail                 # 결제실패
+├ ○ /shop/products             # 상품목록
+├ ● /shop/products/[id]        # 상품상세 (6개 생성)
+│ ├ /shop/products/product-001
+│ ├ /shop/products/product-002
+│ ├ /shop/products/product-003
+│ ├ /shop/products/product-004
+│ ├ /shop/products/product-005
+│ └ /shop/products/product-006
+├ ○ /shop/success              # 결제성공
+├ ○ /shop/terms/privacy        # 개인정보
+├ ○ /shop/terms/refund         # 환불정책
+└ ○ /shop/terms/service        # 이용약관
 
 ○ (Static) 정적 생성
 ● (SSG) 동적 라우트 정적 생성
@@ -275,12 +275,12 @@ Route (app)
 - ✅ 검색 엔진 노출 방지 (`noindex, nofollow`)
 - ✅ 민감 정보 환경 변수 처리
 - ✅ HTTPS (배포 시)
-- ✅ 토스페이먼츠 안전 결제
+- ✅ 결제 시스템 안전 결제
 - ✅ 에스크로 시스템
 
 ---
 
-## 📝 토스페이먼츠 심사 체크리스트
+## 📝 결제 시스템 심사 체크리스트
 
 ### ✅ 필수 항목
 - [x] 상품 판매 페이지 구현
@@ -293,7 +293,7 @@ Route (app)
 - [x] 사업자 정보 표시
 - [x] 통신판매업 신고번호
 - [x] 고객센터 정보
-- [x] 결제 대행 업체 명시 (토스페이먼츠)
+- [x] 결제 대행 업체 명시 (결제 시스템)
 - [x] 에스크로 안내
 - [x] 분쟁 해결 기관 정보
 
@@ -309,11 +309,11 @@ Route (app)
 
 ## 🎯 다음 단계
 
-### 1. 토스페이먼츠 SDK 연동 (옵션)
-결제 페이지에서 실제 토스페이먼츠 Checkout API 호출을 구현할 수 있습니다.
+### 1. 결제 시스템 SDK 연동 (옵션)
+결제 페이지에서 실제 결제 시스템 Checkout API 호출을 구현할 수 있습니다.
 
 ```bash
-npm install @tosspayments/payment-widget-sdk
+npm install @shopments/payment-widget-sdk
 ```
 
 ### 2. 실제 사업자 정보 업데이트
@@ -326,16 +326,16 @@ npm install @tosspayments/payment-widget-sdk
 ### 3. AWS S3 배포
 ```bash
 # S3 버킷 생성
-aws s3 mb s3://mindgraphy-tosspay
+aws s3 mb s3://mindgraphy-shop
 
 # 배포
-npm run deploy:tosspay
+npm run deploy:shop
 ```
 
 ### 4. 도메인 연결
 - Route 53에서 도메인 구매
 - CloudFront로 HTTPS 설정
-- tosspay.mindgraphy.com 연결
+- shop.mindgraphy.com 연결
 
 ---
 
@@ -343,7 +343,7 @@ npm run deploy:tosspay
 
 ### 1. 로컬 테스트 순서
 ```
-1. 홈페이지 접속 (http://localhost:3000/tosspay)
+1. 홈페이지 접속 (http://localhost:3000/shop)
 2. "상품 둘러보기" 클릭
 3. 상품 선택 → 상세 페이지
 4. "장바구니 추가" 클릭
@@ -367,7 +367,7 @@ npm run deploy:tosspay
 
 ## 🎊 완성!
 
-**토스페이먼츠 심사를 위한 완벽한 커머스 사이트가 구축되었습니다!**
+**결제 시스템 심사를 위한 완벽한 커머스 사이트가 구축되었습니다!**
 
 - ✅ **20개 페이지** 완성
 - ✅ **통신판매업 법적 요구사항** 100% 충족

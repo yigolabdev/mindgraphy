@@ -12,7 +12,7 @@
     "deploy:www": "./scripts/deploy-split.sh www",
     "deploy:portal": "./scripts/deploy-split.sh portal",
     "deploy:admin": "./scripts/deploy-split.sh admin",
-    "deploy:tosspay": "./scripts/deploy-split.sh tosspay"
+    "deploy:shop": "./scripts/deploy-split.sh shop"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",

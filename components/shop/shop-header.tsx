@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store/cart-store";
 
-export function TossPayHeader() {
+export function ShopHeader() {
   const totalItems = useCartStore((state) => state.getTotalItems());
 
   return (
@@ -21,7 +21,7 @@ export function TossPayHeader() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* 로고 */}
-          <Link href="/tosspay" className="flex items-center gap-2">
+          <Link href="/shop" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">M</span>
             </div>
@@ -34,7 +34,7 @@ export function TossPayHeader() {
           {/* 우측 액션 */}
           <div className="flex items-center gap-2">
             {/* 장바구니 */}
-            <Link href="/tosspay/cart">
+            <Link href="/shop/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
@@ -50,38 +50,38 @@ export function TossPayHeader() {
         {/* 네비게이션 */}
         <nav className="hidden md:flex items-center gap-6 py-3 border-t">
           <Link
-            href="/tosspay/products"
+            href="/shop/products"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             전체상품
           </Link>
           <Link
-            href="/tosspay/products?category=웨딩촬영"
+            href="/shop/products?category=웨딩촬영"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             웨딩촬영
           </Link>
           <Link
-            href="/tosspay/products?category=스냅촬영"
+            href="/shop/products?category=스냅촬영"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             스냅촬영
           </Link>
           <Link
-            href="/tosspay/products?category=영상촬영"
+            href="/shop/products?category=영상촬영"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             영상촬영
           </Link>
           <Link
-            href="/tosspay/products?category=앨범"
+            href="/shop/products?category=앨범"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             앨범
           </Link>
           <div className="flex-1" />
           <Link
-            href="/tosspay/about"
+            href="/shop/about"
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             회사소개

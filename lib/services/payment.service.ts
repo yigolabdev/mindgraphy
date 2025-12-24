@@ -12,7 +12,7 @@
 import type { Payment } from '@/lib/types'
 
 // 토스페이먼츠 결제 요청 데이터 타입
-export interface TossPaymentRequest {
+export interface PaymentRequest {
   orderId: string // 주문 ID (고유값)
   orderName: string // 주문명
   amount: number // 결제 금액
@@ -24,14 +24,14 @@ export interface TossPaymentRequest {
 }
 
 // 토스페이먼츠 결제 승인 데이터 타입
-export interface TossPaymentApproval {
+export interface PaymentApproval {
   paymentKey: string
   orderId: string
   amount: number
 }
 
 // 토스페이먼츠 결제 응답 데이터 타입
-export interface TossPaymentResponse {
+export interface PaymentResponse {
   paymentKey: string
   orderId: string
   status: 'READY' | 'IN_PROGRESS' | 'WAITING_FOR_DEPOSIT' | 'DONE' | 'CANCELED' | 'PARTIAL_CANCELED' | 'ABORTED' | 'EXPIRED'
@@ -49,7 +49,7 @@ export interface TossPaymentResponse {
  * @param request 결제 요청 데이터
  * @returns 결제 링크 URL
  */
-export async function createTossPayment(request: TossPaymentRequest): Promise<string> {
+export async function createPayment(request: PaymentRequest): Promise<string> {
   // TODO: 실제 토스페이먼츠 API 연동
   // 현재는 개발 환경을 위한 모의 구현
   
@@ -89,7 +89,7 @@ export async function createTossPayment(request: TossPaymentRequest): Promise<st
  * @param approval 결제 승인 데이터
  * @returns 결제 응답 데이터
  */
-export async function approveTossPayment(approval: TossPaymentApproval): Promise<TossPaymentResponse> {
+export async function approvePayment(approval: PaymentApproval): Promise<PaymentResponse> {
   // TODO: 실제 토스페이먼츠 API 연동
   
   const secretKey = process.env.TOSS_SECRET_KEY
@@ -140,11 +140,11 @@ export async function approveTossPayment(approval: TossPaymentApproval): Promise
  * @param cancelAmount 취소 금액 (부분 취소 시)
  * @returns 취소 결과
  */
-export async function cancelTossPayment(
+export async function cancelPayment(
   paymentKey: string,
   cancelReason: string,
   cancelAmount?: number
-): Promise<TossPaymentResponse> {
+): Promise<PaymentResponse> {
   // TODO: 실제 토스페이먼츠 API 연동
   
   const secretKey = process.env.TOSS_SECRET_KEY
@@ -196,7 +196,7 @@ export async function cancelTossPayment(
  * @returns Payment 객체
  */
 export function convertToPayment(
-  tossPayment: TossPaymentResponse,
+  tossPayment: PaymentResponse,
   contractId: string,
   paymentType: 'deposit' | 'balance' | 'additional'
 ): Payment {

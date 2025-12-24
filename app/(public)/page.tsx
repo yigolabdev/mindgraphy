@@ -181,10 +181,10 @@ function HomePageContent() {
             </Card>
           </div>
 
-          {/* TossPay Portal Card */}
+          {/* Shop Portal Card */}
           <Link 
-            href="/tosspay"
-            data-branch="tosspay"
+            href="/shop"
+            data-branch="shop"
             data-portal="payment-demo"
             className="block group"
           >

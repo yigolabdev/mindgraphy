@@ -42,7 +42,7 @@ export default function CheckoutPage() {
     // 토스페이먼츠 결제 창 호출 (여기서는 성공 페이지로 리다이렉트)
     toast.success("결제 진행 중...");
     setTimeout(() => {
-      window.location.href = "/tosspay/success?orderId=ORDER_" + Date.now();
+      window.location.href = "/shop/success?orderId=ORDER_" + Date.now();
     }, 1500);
   };
 
@@ -51,7 +51,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-gray-50 py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-4">주문할 상품이 없습니다</h2>
-          <Link href="/tosspay/products">
+          <Link href="/shop/products">
             <Button>상품 둘러보기</Button>
           </Link>
         </div>
@@ -62,7 +62,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        <Link href="/tosspay/cart" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-6">
+        <Link href="/shop/cart" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-6">
           <ArrowLeft className="w-4 h-4" />
           장바구니로 돌아가기
         </Link>
@@ -182,7 +182,7 @@ export default function CheckoutPage() {
                     onCheckedChange={(checked) => setAgreedTerms(checked as boolean)}
                   />
                   <Label htmlFor="terms" className="cursor-pointer">
-                    <Link href="/tosspay/terms/service" target="_blank" className="text-blue-600 hover:underline">
+                    <Link href="/shop/terms/service" target="_blank" className="text-blue-600 hover:underline">
                       이용약관
                     </Link>에 동의합니다 (필수)
                   </Label>
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
                     onCheckedChange={(checked) => setAgreedPrivacy(checked as boolean)}
                   />
                   <Label htmlFor="privacy" className="cursor-pointer">
-                    <Link href="/tosspay/terms/privacy" target="_blank" className="text-blue-600 hover:underline">
+                    <Link href="/shop/terms/privacy" target="_blank" className="text-blue-600 hover:underline">
                       개인정보 처리방침
                     </Link>에 동의합니다 (필수)
                   </Label>

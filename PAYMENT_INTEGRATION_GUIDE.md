@@ -1,9 +1,9 @@
-# 토스페이먼츠 연동 가이드
+# 결제 시스템 연동 가이드
 
 ## 개요
 
-Mindgraphy 관리자 시스템에 토스페이먼츠 결제 시스템이 통합되어 있습니다. 
-현재는 수동 입금 관리 기능이 활성화되어 있으며, 토스페이먼츠 API 연동을 위한 준비가 완료되었습니다.
+Mindgraphy 관리자 시스템에 결제 시스템 결제 시스템이 통합되어 있습니다. 
+현재는 수동 입금 관리 기능이 활성화되어 있으며, 결제 시스템 API 연동을 위한 준비가 완료되었습니다.
 
 ## 기능
 
@@ -13,7 +13,7 @@ Mindgraphy 관리자 시스템에 토스페이먼츠 결제 시스템이 통합�
 - 입금 진행률 시각화
 - 결제 수단 관리 (계좌이체, 신용카드, 현금 등)
 
-### 2. 토스페이먼츠 자동 결제 ⏳ (준비 완료)
+### 2. 결제 시스템 자동 결제 ⏳ (준비 완료)
 - 결제 링크 생성 및 전송
 - 자동 입금 확인
 - 웹훅을 통한 실시간 결제 상태 업데이트
@@ -26,16 +26,16 @@ Mindgraphy 관리자 시스템에 토스페이먼츠 결제 시스템이 통합�
 `.env.local` 파일에 다음 환경변수를 추가하세요:
 
 ```bash
-# 토스페이먼츠 클라이언트 키 (공개 가능)
+# 결제 시스템 클라이언트 키 (공개 가능)
 NEXT_PUBLIC_TOSS_CLIENT_KEY=test_ck_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# 토스페이먼츠 시크릿 키 (비공개, 서버에서만 사용)
+# 결제 시스템 시크릿 키 (비공개, 서버에서만 사용)
 TOSS_SECRET_KEY=test_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### 2. 토스페이먼츠 계정 설정
+### 2. 결제 시스템 계정 설정
 
-1. [토스페이먼츠 개발자 센터](https://developers.tosspayments.com/) 회원가입
+1. [결제 시스템 개발자 센터](https://developers.shopments.com/) 회원가입
 2. 새 애플리케이션 생성
 3. 클라이언트 키와 시크릿 키 발급
 4. 테스트 환경에서 먼저 연동 테스트
@@ -46,7 +46,7 @@ TOSS_SECRET_KEY=test_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 lib/
   services/
-    payment.service.ts        # 토스페이먼츠 API 서비스
+    payment.service.ts        # 결제 시스템 API 서비스
     
 components/
   customers/
@@ -81,9 +81,9 @@ app/
    - 메모
 4. "등록" 버튼 클릭
 
-### 3. 토스페이먼츠 결제 (준비 중)
+### 3. 결제 시스템 결제 (준비 중)
 
-입금 관리 다이얼로그에서 "토스페이먼츠 결제" 버튼을 클릭하면:
+입금 관리 다이얼로그에서 "결제 시스템 결제" 버튼을 클릭하면:
 - 결제 링크가 자동 생성됩니다
 - 고객에게 카카오톡/문자로 전송 가능 (추가 구현 필요)
 - 고객이 결제 완료 시 자동으로 입금 확인
@@ -92,7 +92,7 @@ app/
 
 ### Phase 1: 테스트 환경 구축 ✅
 - [x] 입금 관리 UI 구현
-- [x] 토스페이먼츠 서비스 파일 생성
+- [x] 결제 시스템 서비스 파일 생성
 - [x] 타입 정의 완료
 
 ### Phase 2: API 연동 (진행 예정)
@@ -111,9 +111,9 @@ app/
 
 ## 웹훅 설정
 
-토스페이먼츠에서 결제 상태 변경 시 자동으로 알림을 받으려면:
+결제 시스템에서 결제 상태 변경 시 자동으로 알림을 받으려면:
 
-1. 토스페이먼츠 개발자 센터에서 웹훅 URL 설정
+1. 결제 시스템 개발자 센터에서 웹훅 URL 설정
 2. URL: `https://yourdomain.com/api/webhooks/toss`
 3. 웹훅 엔드포인트 구현 필요 (추후 작업)
 
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
    - Git에 커밋하지 않기
 
 2. **웹훅 검증**
-   - 토스페이먼츠 서명 검증 필수
+   - 결제 시스템 서명 검증 필수
    - IP 화이트리스트 설정 권장
 
 3. **금액 검증**
@@ -147,7 +147,7 @@ export async function POST(request: Request) {
 
 ## 테스트 카드 정보
 
-토스페이먼츠 테스트 환경에서 사용 가능한 카드:
+결제 시스템 테스트 환경에서 사용 가능한 카드:
 
 ```
 카드번호: 4000-0000-0000-0001
@@ -157,18 +157,18 @@ CVC: 아무 3자리 숫자
 
 ## 참고 자료
 
-- [토스페이먼츠 개발 가이드](https://docs.tosspayments.com/)
-- [결제창 연동 가이드](https://docs.tosspayments.com/guides/payment-widget/integration)
-- [웹훅 가이드](https://docs.tosspayments.com/guides/webhook)
-- [API 레퍼런스](https://docs.tosspayments.com/reference)
+- [결제 시스템 개발 가이드](https://docs.shopments.com/)
+- [결제창 연동 가이드](https://docs.shopments.com/guides/payment-widget/integration)
+- [웹훅 가이드](https://docs.shopments.com/guides/webhook)
+- [API 레퍼런스](https://docs.shopments.com/reference)
 
 ## 문의
 
-토스페이먼츠 연동 관련 문의:
-- 토스페이먼츠 고객센터: 1544-7772
-- 개발자 커뮤니티: https://community.tosspayments.com/
+결제 시스템 연동 관련 문의:
+- 결제 시스템 고객센터: 1544-7772
+- 개발자 커뮤니티: https://community.shopments.com/
 
 ## 버전 히스토리
 
 - **v1.0.0** (2024-12-16): 수동 입금 관리 기능 추가
-- **v1.1.0** (예정): 토스페이먼츠 API 연동 완료
+- **v1.1.0** (예정): 결제 시스템 API 연동 완료

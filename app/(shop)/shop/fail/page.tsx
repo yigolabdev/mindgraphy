@@ -35,13 +35,13 @@ export default function FailPage() {
             </div>
 
             <div className="flex gap-3 justify-center mb-8">
-              <Link href="/tosspay/cart">
+              <Link href="/shop/cart">
                 <Button size="lg">
                   <ArrowLeft className="mr-2 w-5 h-5" />
                   장바구니로 돌아가기
                 </Button>
               </Link>
-              <Link href="/tosspay/contact">
+              <Link href="/shop/contact">
                 <Button size="lg" variant="outline">
                   <Mail className="mr-2 w-5 h-5" />
                   문의하기

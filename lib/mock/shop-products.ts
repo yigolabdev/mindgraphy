@@ -1,5 +1,5 @@
 /**
- * 토스페이먼츠 심사용 실제 상품 데이터
+ * 온라인 쇼핑몰 심사용 실제 상품 데이터
  * 기존 시스템의 product 데이터를 기반으로 구성
  */
 
@@ -11,7 +11,7 @@ export interface ProductOption {
   isRequired?: boolean;
 }
 
-export interface TossPayProduct {
+export interface ShopProduct {
   id: string;
   name: string;
   shortName: string; // 'new BASIC', 'BASIC' 등
@@ -91,7 +91,7 @@ export const productOptions: ProductOption[] = [
 // BASE PRODUCTS (본식스냅 상품)
 // ============================================================
 
-export const mockTossPayProducts: TossPayProduct[] = [
+export const mockShopProducts: ShopProduct[] = [
   // === 본식스냅 앨범형 ===
   {
     id: "new-basic",
@@ -574,30 +574,30 @@ export const mockTossPayProducts: TossPayProduct[] = [
 
 // 카테고리 목록
 export const productCategories = [
-  { id: "all", name: "전체", count: mockTossPayProducts.length },
+  { id: "all", name: "전체", count: mockShopProducts.length },
   { 
     id: "wedding", 
     name: "웨딩촬영", 
-    count: mockTossPayProducts.filter(p => p.category === "wedding").length 
+    count: mockShopProducts.filter(p => p.category === "wedding").length 
   },
   { 
     id: "snap", 
     name: "스냅촬영", 
-    count: mockTossPayProducts.filter(p => p.category === "snap").length 
+    count: mockShopProducts.filter(p => p.category === "snap").length 
   },
   { 
     id: "special", 
     name: "특수촬영", 
-    count: mockTossPayProducts.filter(p => p.category === "special").length 
+    count: mockShopProducts.filter(p => p.category === "special").length 
   },
 ];
 
 // 상품 필터링 함수
 export function filterProducts(
-  products: TossPayProduct[],
+  products: ShopProduct[],
   category: string,
   searchQuery?: string
-): TossPayProduct[] {
+): ShopProduct[] {
   let filtered = products;
 
   // 카테고리 필터
@@ -621,9 +621,9 @@ export function filterProducts(
 
 // 상품 정렬 함수
 export function sortProducts(
-  products: TossPayProduct[],
+  products: ShopProduct[],
   sortBy: "popular" | "price-low" | "price-high" | "newest"
-): TossPayProduct[] {
+): ShopProduct[] {
   const sorted = [...products];
 
   switch (sortBy) {

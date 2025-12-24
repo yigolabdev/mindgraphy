@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Star, Heart, Camera, Shield, Package, Truck, HeadphonesIcon } from "lucide-react";
 import Link from "next/link";
-import { mockTossPayProducts } from "@/lib/mock/tosspay-products";
+import { mockShopProducts } from "@/lib/mock/shop-products";
 
 /**
  * 토스페이먼츠 심사용 메인 홈페이지
  * 실제 커머스 사이트 형태
  */
-export default function TossPayHomePage() {
-  const featuredProducts = mockTossPayProducts.filter(p => p.tags.includes("인기") || p.tags.includes("추천")).slice(0, 3);
+export default function ShopHomePage() {
+  const featuredProducts = mockShopProducts.filter(p => p.tags.includes("인기") || p.tags.includes("추천")).slice(0, 3);
 
   return (
     <div>
@@ -28,13 +28,13 @@ export default function TossPayHomePage() {
               MindGraphy와 함께 평생 간직할 추억을 만드세요
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Link href="/tosspay/products">
+              <Link href="/shop/products">
                 <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                   상품 둘러보기
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/tosspay/about">
+              <Link href="/shop/about">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
                   회사소개
                 </Button>
@@ -120,7 +120,7 @@ export default function TossPayHomePage() {
               const finalPrice = product.price;
 
               return (
-                <Link key={product.id} href={`/tosspay/products/${product.id}`}>
+                <Link key={product.id} href={`/shop/products/${product.id}`}>
                   <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden">
                     <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                       <div 
@@ -155,7 +155,7 @@ export default function TossPayHomePage() {
           </div>
 
           <div className="text-center">
-            <Link href="/tosspay/products">
+            <Link href="/shop/products">
               <Button size="lg" variant="outline">
                 전체 상품 보기
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -174,7 +174,7 @@ export default function TossPayHomePage() {
           <p className="text-xl mb-8 text-white/90">
             특별한 순간을 영원히 간직할 수 있도록 도와드립니다
           </p>
-          <Link href="/tosspay/products">
+          <Link href="/shop/products">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
               상품 둘러보기
               <ArrowRight className="ml-2 w-5 h-5" />
