@@ -24,7 +24,7 @@ export default function BusinessInfoPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">상호명</p>
-                    <p className="font-semibold text-gray-900">(주)마인드그래피</p>
+                    <p className="font-semibold text-gray-900">주식회사 마인드그래피</p>
                     <p className="text-xs text-gray-500 mt-1">MindGraphy Inc.</p>
                   </div>
                 </div>
@@ -35,7 +35,7 @@ export default function BusinessInfoPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">대표자명</p>
-                    <p className="font-semibold text-gray-900">홍길동</p>
+                    <p className="font-semibold text-gray-900">신영민</p>
                   </div>
                 </div>
 
@@ -45,9 +45,9 @@ export default function BusinessInfoPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">사업자등록번호</p>
-                    <p className="font-semibold text-gray-900">123-45-67890</p>
+                    <p className="font-semibold text-gray-900">817-88-03363</p>
                     <a 
-                      href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1234567890" 
+                      href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=8178803363" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-xs text-blue-600 hover:underline"
@@ -62,16 +62,8 @@ export default function BusinessInfoPage() {
                     <Globe className="w-5 h-5 text-pink-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">통신판매업 신고번호</p>
-                    <p className="font-semibold text-gray-900">2024-서울강남-12345</p>
-                    <a 
-                      href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1234567890" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:underline"
-                    >
-                      신고번호 확인 →
-                    </a>
+                    <p className="text-sm text-gray-600">법인등록번호</p>
+                    <p className="font-semibold text-gray-900">110111-0937598</p>
                   </div>
                 </div>
               </div>
@@ -89,9 +81,9 @@ export default function BusinessInfoPage() {
                   <div>
                     <p className="text-sm text-gray-600">사업장 소재지</p>
                     <p className="font-medium text-gray-900">
-                      서울특별시 강남구 테헤란로 123, 4층 (역삼동, ABC빌딩)
+                      서울특별시 성동구 마조로15길 6, 1층 (마장동)
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">우편번호: 06234</p>
+                    <p className="text-sm text-gray-500 mt-1">우편번호: 04780</p>
                   </div>
                 </div>
 

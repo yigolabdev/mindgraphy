@@ -117,25 +117,24 @@ export function TossPayFooter() {
           {/* 사업자 정보 */}
           <div className="text-sm text-gray-600 space-y-1 mb-6">
             <p>
-              <strong className="text-gray-900">상호:</strong> (주)마인드그래피
+              <strong className="text-gray-900">상호:</strong> 주식회사 마인드그래피
               {" | "}
-              <strong className="text-gray-900">대표:</strong> 홍길동
+              <strong className="text-gray-900">대표:</strong> 신영민
               {" | "}
               <strong className="text-gray-900">사업자등록번호:</strong>{" "}
-              123-45-67890
+              817-88-03363
             </p>
             <p>
-              <strong className="text-gray-900">통신판매업신고번호:</strong>{" "}
-              2024-서울강남-12345
+              <strong className="text-gray-900">법인등록번호:</strong>{" "}
+              110111-0937598
               {" | "}
               <strong className="text-gray-900">개인정보보호책임자:</strong>{" "}
-              김철수
+              신영민
             </p>
             <p className="flex items-start gap-2">
               <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
               <span>
-                <strong className="text-gray-900">주소:</strong> 서울특별시
-                강남구 테헤란로 123, 4층 (역삼동, ABC빌딩)
+                <strong className="text-gray-900">주소:</strong> 서울특별시 성동구 마조로15길 6, 1층 (마장동)
               </span>
             </p>
             <p>

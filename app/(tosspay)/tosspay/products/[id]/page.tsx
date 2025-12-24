@@ -43,10 +43,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const finalPrice = product.discountPrice || product.price;
-  const discountRate = product.discountPrice
-    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
-    : 0;
+  const finalPrice = product.price;
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -129,16 +126,6 @@ export default function ProductDetailPage() {
 
             {/* 가격 */}
             <div className="mb-6">
-              {product.discountPrice && (
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl text-gray-400 line-through">
-                    {product.price.toLocaleString()}원
-                  </span>
-                  <Badge className="bg-red-500 text-white text-lg px-3 py-1">
-                    {discountRate}% OFF
-                  </Badge>
-                </div>
-              )}
               <div className="text-4xl font-bold text-blue-600">
                 {finalPrice.toLocaleString()}원
               </div>

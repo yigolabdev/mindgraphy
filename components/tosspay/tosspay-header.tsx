@@ -1,22 +1,12 @@
 "use client";
 
-import { ShoppingCart, Search, Menu } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store/cart-store";
-import { useState } from "react";
 
 export function TossPayHeader() {
   const totalItems = useCartStore((state) => state.getTotalItems());
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/tosspay/products?search=${encodeURIComponent(searchQuery)}`;
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -41,27 +31,8 @@ export function TossPayHeader() {
             </div>
           </Link>
 
-          {/* 검색 바 */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="상품을 검색해보세요..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4"
-              />
-            </div>
-          </form>
-
           {/* 우측 액션 */}
           <div className="flex items-center gap-2">
-            {/* 모바일 검색 버튼 */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Search className="w-5 h-5" />
-            </Button>
-
             {/* 장바구니 */}
             <Link href="/tosspay/cart">
               <Button variant="ghost" size="icon" className="relative">
@@ -73,11 +44,6 @@ export function TossPayHeader() {
                 )}
               </Button>
             </Link>
-
-            {/* 메뉴 */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 

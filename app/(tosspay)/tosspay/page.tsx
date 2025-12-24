@@ -117,10 +117,7 @@ export default function TossPayHomePage() {
           
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {featuredProducts.map((product) => {
-              const finalPrice = product.discountPrice || product.price;
-              const discountRate = product.discountPrice 
-                ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
-                : 0;
+              const finalPrice = product.price;
 
               return (
                 <Link key={product.id} href={`/tosspay/products/${product.id}`}>
@@ -130,11 +127,6 @@ export default function TossPayHomePage() {
                         className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-300"
                         style={{ backgroundImage: `url(${product.image})` }}
                       />
-                      {discountRate > 0 && (
-                        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                          {discountRate}% OFF
-                        </div>
-                      )}
                       {product.tags.includes("인기") && (
                         <div className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
                           <Star className="w-4 h-4" />
@@ -151,11 +143,6 @@ export default function TossPayHomePage() {
                         {product.description}
                       </p>
                       <div className="flex items-end gap-2">
-                        {product.discountPrice && (
-                          <span className="text-sm text-gray-400 line-through">
-                            {product.price.toLocaleString()}원
-                          </span>
-                        )}
                         <span className="text-2xl font-bold text-blue-600">
                           {finalPrice.toLocaleString()}원
                         </span>
