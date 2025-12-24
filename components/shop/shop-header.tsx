@@ -1,92 +1,80 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ShoppingCart, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store/cart-store";
+import { useState, useEffect } from "react";
 
 export function ShopHeader() {
-  const totalItems = useCartStore((state) => state.getTotalItems());
+  const [mounted, setMounted] = useState(false);
+  const getTotalItems = useCartStore((state) => state.getTotalItems);
+  const totalItems = mounted ? getTotalItems() : 0;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      {/* 상단 알림 바 */}
-      <div className="bg-blue-600 text-white text-center py-2 text-sm">
-        <p>
-          🎉 <strong>신규 고객 특별 할인!</strong> 첫 구매 시 최대 20% 할인 혜택
-        </p>
-      </div>
-
-      {/* 메인 헤더 */}
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* 로고 */}
-          <Link href="/shop" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">M</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">MindGraphy</h1>
-              <p className="text-xs text-gray-500">웨딩 촬영 전문</p>
-            </div>
-          </Link>
-
-          {/* 우측 액션 */}
-          <div className="flex items-center gap-2">
-            {/* 장바구니 */}
-            <Link href="/shop/cart">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="w-5 h-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {totalItems}
-                  </span>
-                )}
-              </Button>
-            </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <Link href="/shop" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+          <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">M</span>
           </div>
-        </div>
+          <span className="text-lg font-light text-zinc-900 tracking-tight">MindGraphy</span>
+        </Link>
 
-        {/* 네비게이션 */}
-        <nav className="hidden md:flex items-center gap-6 py-3 border-t">
-          <Link
-            href="/shop/products"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
+          <Link 
+            href="/shop/products" 
+            className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors font-light"
           >
             전체상품
           </Link>
-          <Link
-            href="/shop/products?category=웨딩촬영"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+          <Link 
+            href="/shop/products?category=wedding" 
+            className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors font-light"
           >
             웨딩촬영
           </Link>
-          <Link
-            href="/shop/products?category=스냅촬영"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+          <Link 
+            href="/shop/products?category=snap" 
+            className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors font-light"
           >
             스냅촬영
           </Link>
-          <Link
-            href="/shop/products?category=영상촬영"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+          <Link 
+            href="/shop/products?category=special" 
+            className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors font-light"
           >
-            영상촬영
+            특수촬영
           </Link>
-          <Link
-            href="/shop/products?category=앨범"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
-          >
-            앨범
-          </Link>
-          <div className="flex-1" />
-          <Link
-            href="/shop/about"
-            className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+          <Link 
+            href="/shop/about" 
+            className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors font-light"
           >
             회사소개
           </Link>
         </nav>
+
+        {/* Cart */}
+        <Link href="/shop/cart">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative hover:bg-zinc-100 transition-colors"
+          >
+            <ShoppingCart className="h-5 w-5 text-zinc-600" />
+            {mounted && totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-zinc-900 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                {totalItems}
+              </span>
+            )}
+          </Button>
+        </Link>
       </div>
     </header>
   );

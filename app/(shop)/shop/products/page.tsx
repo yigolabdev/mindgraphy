@@ -1,18 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search, Star, SlidersHorizontal } from "lucide-react";
+import { Search, Star } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import {
   mockShopProducts,
   productCategories,
@@ -30,6 +23,11 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortBy, setSortBy] = useState<"popular" | "price-low" | "price-high" | "newest">("popular");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 필터링 및 정렬된 상품 목록
   const filteredAndSortedProducts = useMemo(() => {
@@ -38,129 +36,108 @@ export default function ProductsPage() {
   }, [selectedCategory, searchQuery, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={cn(
+      "min-h-screen bg-white transition-all duration-1000 ease-out",
+      isMounted ? "opacity-100" : "opacity-0"
+    )}>
       {/* 페이지 헤더 */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">전체 상품</h1>
-          <p className="text-gray-600">
-            총 <span className="font-semibold text-blue-600">{filteredAndSortedProducts.length}</span>개의 상품
-          </p>
+      <div className="border-b border-zinc-200 bg-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-5xl mx-auto text-center space-y-4">
+            <h1 className="text-4xl font-light text-zinc-900 tracking-tight">
+              전체 상품
+            </h1>
+            <p className="text-sm text-zinc-600 font-light">
+              총 <span className="font-medium text-zinc-900">{filteredAndSortedProducts.length}</span>개의 상품
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* 사이드바 필터 */}
-          <aside className="lg:w-64 flex-shrink-0">
-            <Card className="sticky top-24">
-              <CardContent className="pt-6">
-                {/* 검색 */}
-                <div className="mb-6">
-                  <label className="text-sm font-semibold text-gray-900 mb-2 block">
-                    상품 검색
-                  </label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="상품명 검색"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                {/* 카테고리 */}
-                <div className="mb-6">
-                  <label className="text-sm font-semibold text-gray-900 mb-2 block">
-                    카테고리
-                  </label>
-                  <div className="space-y-2">
-                    {productCategories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                          selectedCategory === category.id
-                            ? "bg-blue-600 text-white font-medium"
-                            : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{category.name}</span>
-                          <span className="text-sm">({category.count})</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 정렬 */}
-                <div>
-                  <label className="text-sm font-semibold text-gray-900 mb-2 block">
-                    정렬 기준
-                  </label>
-                  <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="popular">인기순</SelectItem>
-                      <SelectItem value="price-low">가격 낮은순</SelectItem>
-                      <SelectItem value="price-high">가격 높은순</SelectItem>
-                      <SelectItem value="newest">최신순</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-          </aside>
-
-          {/* 상품 그리드 */}
-          <div className="flex-1">
-            {/* 모바일 필터/정렬 */}
-            <div className="lg:hidden mb-6 flex gap-3">
-              <Button variant="outline" className="flex-1">
-                <SlidersHorizontal className="w-4 h-4 mr-2" />
-                필터
-              </Button>
-              <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="popular">인기순</SelectItem>
-                  <SelectItem value="price-low">가격 낮은순</SelectItem>
-                  <SelectItem value="price-high">가격 높은순</SelectItem>
-                  <SelectItem value="newest">최신순</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-5xl mx-auto">
+          {/* 검색 및 필터 */}
+          <div className="space-y-6 mb-12">
+            {/* 검색 */}
+            <div className="relative max-w-md mx-auto">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+              <Input
+                type="text"
+                placeholder="상품명 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-11 h-12 border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0"
+              />
             </div>
 
-            {/* 상품 목록 */}
-            {filteredAndSortedProducts.length === 0 ? (
-              <Card className="p-12 text-center">
-                <p className="text-gray-500 mb-4">검색 결과가 없습니다</p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory("all");
-                  }}
+            {/* 카테고리 */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {productCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={cn(
+                    "px-6 py-2.5 text-sm transition-all duration-200",
+                    selectedCategory === category.id
+                      ? "bg-zinc-900 text-white"
+                      : "bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 border border-zinc-200"
+                  )}
                 >
-                  필터 초기화
-                </Button>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredAndSortedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+                  {category.name}
+                  <span className="ml-2 text-xs opacity-60">
+                    {category.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* 정렬 */}
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <span className="text-zinc-500 font-light">정렬:</span>
+              {[
+                { value: "popular", label: "인기순" },
+                { value: "price-low", label: "낮은 가격" },
+                { value: "price-high", label: "높은 가격" },
+                { value: "newest", label: "최신순" },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSortBy(option.value as any)}
+                  className={cn(
+                    "px-4 py-1.5 transition-all duration-200",
+                    sortBy === option.value
+                      ? "text-zinc-900 font-medium border-b-2 border-zinc-900"
+                      : "text-zinc-500 font-light hover:text-zinc-900"
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* 상품 목록 */}
+          {filteredAndSortedProducts.length === 0 ? (
+            <div className="text-center py-24 space-y-6">
+              <p className="text-zinc-500 font-light">검색 결과가 없습니다</p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("all");
+                }}
+                className="h-12 px-6 border-2 border-zinc-300 hover:border-zinc-900"
+              >
+                필터 초기화
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8">
+              {filteredAndSortedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -169,53 +146,51 @@ export default function ProductsPage() {
 
 // 상품 카드 컴포넌트
 function ProductCard({ product }: { product: ShopProduct }) {
-  const finalPrice = product.price;
-
   return (
-    <Link href={`/shop/products/${product.id}`}>
-      <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden h-full">
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+    <Link href={`/shop/products/${product.id}`} className="group">
+      <div className="bg-white border-2 border-zinc-200 hover:border-zinc-900 transition-all duration-300 overflow-hidden h-full flex flex-col">
+        <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
           <div
-            className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-300"
+            className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
             style={{ backgroundImage: `url(${product.image})` }}
           />
           {product.tags.map((tag, idx) => (
             <div
               key={idx}
-              className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1"
+              className="absolute top-4 right-4 bg-zinc-900 text-white px-3 py-1 text-xs font-medium flex items-center gap-1"
             >
-              {tag === "인기" && <Star className="w-4 h-4" />}
+              {tag === "인기" && <Star className="w-3 h-3" />}
               {tag}
             </div>
           ))}
           {!product.isAvailable && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">품절</span>
+              <span className="text-white font-medium">품절</span>
             </div>
           )}
         </div>
-        <CardContent className="p-6">
-          <p className="text-sm text-gray-500 mb-2">{product.categoryLabel}</p>
-          <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-            {product.shortName}
-          </h3>
-          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-            {product.description}
-          </p>
-          <div className="flex items-end justify-between">
-            <div>
-              <span className="text-2xl font-bold text-blue-600">
-                {finalPrice.toLocaleString()}원
-              </span>
-            </div>
+        <div className="p-6 space-y-4 flex-1 flex flex-col">
+          <div className="flex-1 space-y-3">
+            <p className="text-xs text-zinc-500 font-light">{product.categoryLabel}</p>
+            <h3 className="font-medium text-lg text-zinc-900 group-hover:text-zinc-700 transition-colors">
+              {product.shortName}
+            </h3>
+            <p className="text-sm text-zinc-600 leading-relaxed font-light line-clamp-2">
+              {product.description}
+            </p>
+          </div>
+          <div className="flex items-end justify-between pt-4 border-t border-zinc-200">
+            <span className="text-2xl font-light text-zinc-900">
+              {product.price.toLocaleString()}원
+            </span>
             {product.availableOptions && product.availableOptions.length > 0 && (
-              <span className="text-xs text-gray-500">
-                + 옵션 선택 가능
+              <span className="text-xs text-zinc-500 font-light">
+                + 옵션
               </span>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

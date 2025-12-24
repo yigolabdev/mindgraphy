@@ -1,176 +1,309 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Minus, Plus, X, ShoppingBag, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ShoppingCart, X, Plus, Minus, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { useCartStore, getOptionsKey } from "@/lib/store/cart-store";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getTotalPrice, clearCart } = useCartStore();
+  const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  const items = useCartStore((state) => state.items);
+  const removeItem = useCartStore((state) => state.removeItem);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const getTotalPrice = useCartStore((state) => state.getTotalPrice);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCheckout = () => {
-    if (items.length === 0) {
-      toast.error("장바구니가 비어있습니다");
-      return;
-    }
-    window.location.href = "/shop/checkout";
+    router.push("/shop/checkout");
   };
+
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900"></div>
+          <p className="text-sm text-zinc-600 font-light">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-md mx-auto text-center py-12">
-            <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">장바구니가 비어있습니다</h2>
-            <p className="text-gray-600 mb-6">상품을 담아보세요!</p>
+      <div className="min-h-screen bg-white">
+        <div className="border-b border-zinc-200">
+          <div className="container mx-auto px-4 py-12">
+            <div className="max-w-3xl mx-auto text-center space-y-4">
+              <h1 className="text-4xl font-light text-zinc-900 tracking-tight">
+                장바구니
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-md mx-auto text-center space-y-8">
+            <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
+              <ShoppingCart className="w-10 h-10 text-zinc-400" />
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-light text-zinc-900">
+                장바구니가 비어있습니다
+              </h2>
+              <p className="text-sm text-zinc-600 font-light leading-relaxed">
+                원하는 상품을 장바구니에 담아보세요
+              </p>
+            </div>
             <Link href="/shop/products">
-              <Button>상품 둘러보기</Button>
+              <Button 
+                size="lg"
+                className="h-14 px-8 bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 active:scale-[0.98]"
+              >
+                상품 둘러보기
+              </Button>
             </Link>
-          </Card>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">장바구니</h1>
+    <div className={cn(
+      "min-h-screen bg-white transition-all duration-1000 ease-out",
+      isMounted ? "opacity-100" : "opacity-0"
+    )}>
+      {/* 페이지 헤더 */}
+      <div className="border-b border-zinc-200">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="space-y-4">
+              <h1 className="text-4xl font-light text-zinc-900 tracking-tight">
+                장바구니
+              </h1>
+              <p className="text-sm text-zinc-600 font-light">
+                총 <span className="font-medium text-zinc-900">{items.length}</span>개의 상품
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* 장바구니 상품 목록 */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>상품 ({items.length}개)</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={clearCart}>
-                    전체 삭제
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* 장바구니 아이템 목록 */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* 전체 삭제 버튼 */}
+              <div className="flex items-center justify-between pb-4 border-b border-zinc-200">
+                <h2 className="text-lg font-medium text-zinc-900">상품 목록</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearCart}
+                  className="text-sm text-zinc-500 hover:text-zinc-900"
+                >
+                  전체 삭제
+                </Button>
+              </div>
+
+              {/* 아이템 리스트 */}
+              <div className="space-y-4">
                 {items.map((item, index) => {
+                  const optKey = getOptionsKey(item.selectedOptions);
                   const optionsPrice = item.selectedOptions?.reduce((sum, opt) => sum + opt.price, 0) || 0;
                   const itemTotal = (item.product.price + optionsPrice) * item.quantity;
-                  const optKey = getOptionsKey(item.selectedOptions);
-                  
+
                   return (
-                    <div key={`${item.product.id}-${index}`} className="flex gap-4 p-4 border rounded-lg">
-                      <div
-                        className="w-24 h-24 bg-gray-100 rounded-lg bg-cover bg-center flex-shrink-0"
-                        style={{ backgroundImage: `url(${item.product.image})` }}
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
+                    <div
+                      key={`${item.product.id}-${index}-${optKey}`}
+                      className="bg-white border-2 border-zinc-200 p-6 space-y-4"
+                    >
+                      <div className="flex gap-4">
+                        {/* 상품 이미지 */}
+                        <Link
+                          href={`/shop/products/${item.product.id}`}
+                          className="flex-shrink-0"
+                        >
+                          <div
+                            className="w-24 h-24 bg-zinc-100 bg-cover bg-center border border-zinc-200"
+                            style={{ backgroundImage: `url(${item.product.image})` }}
+                          />
+                        </Link>
+
+                        {/* 상품 정보 */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4 mb-3">
                             <Link
                               href={`/shop/products/${item.product.id}`}
-                              className="font-semibold hover:text-blue-600"
+                              className="flex-1"
                             >
-                              {item.product.shortName || item.product.name}
+                              <p className="text-xs text-zinc-500 font-light mb-1">
+                                {item.product.categoryLabel}
+                              </p>
+                              <h3 className="font-medium text-zinc-900 hover:text-zinc-700 transition-colors">
+                                {item.product.shortName}
+                              </h3>
                             </Link>
-                            <p className="text-sm text-gray-600">{item.product.categoryLabel}</p>
-                            
-                            {/* 선택된 옵션 표시 */}
-                            {item.selectedOptions && item.selectedOptions.length > 0 && (
-                              <div className="mt-2 space-y-1">
-                                {item.selectedOptions.map((option) => (
-                                  <div key={option.id} className="flex items-center gap-2">
-                                    <Badge variant="outline" className="text-xs">
-                                      {option.name}
-                                    </Badge>
-                                    <span className="text-xs text-gray-600">
-                                      +{option.price.toLocaleString()}원
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeItem(item.product.id, optKey)}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <div className="flex items-center border rounded-lg">
                             <Button
                               variant="ghost"
-                              size="sm"
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1, optKey)}
+                              size="icon"
+                              onClick={() => removeItem(item.product.id, optKey)}
+                              className="flex-shrink-0 hover:bg-zinc-100"
                             >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                            <span className="px-4 py-2">{item.quantity}</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1, optKey)}
-                            >
-                              <Plus className="w-4 h-4" />
+                              <X className="w-4 h-4 text-zinc-500" />
                             </Button>
                           </div>
-                          <div className="text-right">
-                            <div className="text-lg font-bold text-blue-600">
-                              {itemTotal.toLocaleString()}원
+
+                          {/* 선택된 옵션 */}
+                          {item.selectedOptions && item.selectedOptions.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {item.selectedOptions.map((opt) => (
+                                <Badge
+                                  key={opt.id}
+                                  variant="outline"
+                                  className="text-xs font-light border-zinc-300"
+                                >
+                                  {opt.name} (+{opt.price.toLocaleString()}원)
+                                </Badge>
+                              ))}
                             </div>
-                            {optionsPrice > 0 && (
-                              <div className="text-xs text-gray-500">
-                                (상품 {(item.product.price * item.quantity).toLocaleString()}원 + 옵션 {(optionsPrice * item.quantity).toLocaleString()}원)
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            {/* 수량 조절 */}
+                            <div className="flex items-center border border-zinc-200">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.product.id,
+                                    Math.max(1, item.quantity - 1),
+                                    optKey
+                                  )
+                                }
+                                disabled={item.quantity <= 1}
+                                className="h-8 w-8 hover:bg-zinc-100"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </Button>
+                              <Input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const newQty = Math.max(1, parseInt(e.target.value) || 1);
+                                  updateQuantity(item.product.id, newQty, optKey);
+                                }}
+                                className="w-12 h-8 text-center border-0 focus-visible:ring-0 font-light text-sm"
+                                min="1"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  updateQuantity(item.product.id, item.quantity + 1, optKey)
+                                }
+                                className="h-8 w-8 hover:bg-zinc-100"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                            </div>
+
+                            {/* 가격 */}
+                            <div className="text-right">
+                              <div className="text-lg font-medium text-zinc-900">
+                                {itemTotal.toLocaleString()}원
                               </div>
-                            )}
+                              <div className="text-xs text-zinc-500 font-light mt-1">
+                                개당 {(item.product.price + optionsPrice).toLocaleString()}원
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
 
-          {/* 주문 요약 */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle>결제 금액</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">상품 금액</span>
-                    <span className="font-medium">{getTotalPrice().toLocaleString()}원</span>
+            {/* 주문 요약 */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-6">
+                <div className="bg-zinc-50 border-2 border-zinc-200 p-6 space-y-6">
+                  <h2 className="text-lg font-medium text-zinc-900">주문 요약</h2>
+                  
+                  <div className="space-y-3 py-4 border-y border-zinc-200">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-zinc-600 font-light">상품 금액</span>
+                      <span className="font-medium text-zinc-900">
+                        {getTotalPrice().toLocaleString()}원
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-zinc-600 font-light">배송비</span>
+                      <span className="font-medium text-zinc-900">무료</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">배송비</span>
-                    <span className="font-medium text-green-600">무료</span>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-base font-medium text-zinc-900">총 결제 금액</span>
+                    <span className="text-2xl font-light text-zinc-900">
+                      {getTotalPrice().toLocaleString()}원
+                    </span>
                   </div>
+
+                  <Button
+                    size="lg"
+                    onClick={handleCheckout}
+                    className="w-full h-14 text-base font-normal bg-zinc-900 hover:bg-zinc-800 text-white transition-all duration-300 active:scale-[0.98] shadow-md hover:shadow-lg"
+                  >
+                    주문하기
+                    <ChevronRight className="w-5 h-5 ml-2" />
+                  </Button>
+
+                  <Link href="/shop/products">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full h-14 text-base font-normal border-2 border-zinc-300 hover:border-zinc-900 hover:bg-zinc-50 transition-all duration-300"
+                    >
+                      쇼핑 계속하기
+                    </Button>
+                  </Link>
                 </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>총 결제 금액</span>
-                    <span className="text-blue-600">{getTotalPrice().toLocaleString()}원</span>
-                  </div>
+
+                {/* 안내 사항 */}
+                <div className="bg-white border border-zinc-200 p-5 space-y-3">
+                  <h3 className="text-sm font-medium text-zinc-900">구매 안내</h3>
+                  <ul className="space-y-2 text-xs text-zinc-600 font-light leading-relaxed">
+                    <li className="flex items-start gap-2">
+                      <span className="text-zinc-400">•</span>
+                      <span>모든 상품은 VAT 포함 가격입니다</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-zinc-400">•</span>
+                      <span>배송비는 무료입니다</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-zinc-400">•</span>
+                      <span>결제 후 영업일 기준 1-2일 내 연락드립니다</span>
+                    </li>
+                  </ul>
                 </div>
-                <Button size="lg" className="w-full" onClick={handleCheckout}>
-                  주문하기
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <p className="text-xs text-gray-500 text-center">
-                  안전한 전자결제 시스템을 이용합니다
-                </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

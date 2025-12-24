@@ -1,133 +1,209 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, Target, Award } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { Camera, Target, Award, Users, TrendingUp, Calendar } from "lucide-react";
 
 export default function AboutPage() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl">회사소개</CardTitle>
-            <p className="text-sm text-gray-600">MindGraphy - 당신의 특별한 순간을 아름답게 기록합니다</p>
-          </CardHeader>
-          <CardContent className="space-y-8">
-            {/* 회사 개요 */}
-            <section>
-              <div className="flex items-center gap-3 mb-4">
-                <Building2 className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-bold">회사 개요</h2>
-              </div>
-              <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
-                <p>
-                  주식회사 마인드그래피는 2026년 설립된 프리미엄 웨딩 촬영 전문 기업입니다.
-                  우리는 고객의 특별한 순간을 예술적이고 감동적으로 담아내는 것을 목표로 합니다.
-                </p>
-                <p className="mt-4">
-                  최고의 장비와 전문 작가진, 그리고 철저한 사전 준비를 통해 
-                  고객님의 소중한 추억을 완벽하게 보존해드립니다.
-                </p>
-              </div>
-            </section>
+    <div className={cn(
+      "min-h-screen bg-white transition-all duration-1000 ease-out",
+      isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+    )}>
+      {/* 페이지 헤더 */}
+      <div className="border-b border-zinc-200">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <h1 className="text-5xl font-light text-zinc-900 tracking-tight">
+              About Us
+            </h1>
+            <p className="text-lg text-zinc-600 leading-relaxed font-light">
+              당신의 특별한 순간을 아름답게 기록합니다
+            </p>
+          </div>
+        </div>
+      </div>
 
-            {/* 비전 & 미션 */}
-            <section className="border-t pt-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Target className="w-6 h-6 text-purple-600" />
-                <h2 className="text-2xl font-bold">비전 & 미션</h2>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <h3 className="font-bold text-lg mb-3 text-blue-900">비전</h3>
-                  <p className="text-sm text-blue-800">
-                    대한민국 최고의 웨딩 촬영 브랜드로 성장하여, 
-                    모든 커플의 특별한 순간을 아름답게 기록하는 
-                    신뢰받는 파트너가 되겠습니다.
-                  </p>
-                </div>
-                <div className="bg-purple-50 p-6 rounded-lg">
-                  <h3 className="font-bold text-lg mb-3 text-purple-900">미션</h3>
-                  <p className="text-sm text-purple-800">
-                    최고의 기술과 예술적 감각으로 고객의 소중한 추억을 
-                    영원히 간직할 수 있도록 돕고, 감동과 만족을 선사합니다.
-                  </p>
-                </div>
-              </div>
-            </section>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto space-y-24">
+          {/* 회사 소개 */}
+          <section className="space-y-8">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-light text-zinc-900 tracking-tight">
+                MindGraphy
+              </h2>
+              <p className="text-base text-zinc-600 leading-relaxed font-light max-w-2xl mx-auto">
+                MindGraphy는 2026년 설립된 프리미엄 웨딩 촬영 전문 기업입니다.
+                고객님의 소중한 순간을 가장 아름답고 감동적으로 담아내기 위해
+                최선을 다하고 있습니다.
+              </p>
+            </div>
+          </section>
 
-            {/* 핵심 가치 */}
-            <section className="border-t pt-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Award className="w-6 h-6 text-green-600" />
-                <h2 className="text-2xl font-bold">핵심 가치</h2>
-              </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-5 rounded-lg">
-                  <h3 className="font-bold mb-2">품질</h3>
-                  <p className="text-sm text-gray-600">
-                    최상의 품질을 위해 끊임없이 연구하고 발전합니다
-                  </p>
-                </div>
-                <div className="bg-gray-50 p-5 rounded-lg">
-                  <h3 className="font-bold mb-2">신뢰</h3>
-                  <p className="text-sm text-gray-600">
-                    약속을 지키고 고객과의 신뢰를 최우선으로 합니다
-                  </p>
-                </div>
-                <div className="bg-gray-50 p-5 rounded-lg">
-                  <h3 className="font-bold mb-2">혁신</h3>
-                  <p className="text-sm text-gray-600">
-                    새로운 기술과 트렌드를 적극 도입합니다
-                  </p>
-                </div>
-              </div>
-            </section>
+          {/* Divider */}
+          <div className="border-t border-zinc-200"></div>
 
-            {/* 팀 소개 */}
-            <section className="border-t pt-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Users className="w-6 h-6 text-pink-600" />
-                <h2 className="text-2xl font-bold">우리 팀</h2>
+          {/* 비전 & 미션 */}
+          <section className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-4">
+              <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center">
+                <Target className="w-7 h-7 text-zinc-700" />
               </div>
-              <div className="prose prose-sm max-w-none text-gray-700">
-                <p>
-                  마인드그래피는 10명 이상의 전문 작가진과 스태프로 구성되어 있습니다.
-                  각 분야의 전문가들이 협력하여 최상의 결과물을 만들어냅니다.
-                </p>
-                <ul className="mt-4 space-y-2">
-                  <li>• <strong>메인 포토그래퍼:</strong> 10년 이상 경력의 베테랑 작가진</li>
-                  <li>• <strong>영상팀:</strong> 시네마틱 영상 전문 감독 및 편집자</li>
-                  <li>• <strong>보정팀:</strong> 섬세한 후반 작업 전문가</li>
-                  <li>• <strong>고객 관리팀:</strong> 친절하고 세심한 CS 전문가</li>
-                </ul>
-              </div>
-            </section>
+              <h3 className="text-2xl font-light text-zinc-900 tracking-tight">비전</h3>
+              <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                대한민국을 대표하는 웨딩 촬영 브랜드로 성장하여,
+                모든 커플들이 평생 간직할 수 있는 아름다운 추억을 
+                만들어드리는 것이 우리의 비전입니다.
+              </p>
+            </div>
 
-            {/* 연혁 */}
-            <section className="border-t pt-8">
-              <h2 className="text-2xl font-bold mb-6">연혁</h2>
-              <div className="space-y-4">
-                <div className="flex gap-4">
-                  <div className="w-24 font-bold text-blue-600">2026.09</div>
-                  <div>
-                    <p className="font-semibold">주식회사 마인드그래피 설립</p>
-                    <p className="text-sm text-gray-600">웨딩 촬영 사업 시작</p>
-                  </div>
+            <div className="space-y-4">
+              <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center">
+                <Camera className="w-7 h-7 text-zinc-700" />
+              </div>
+              <h3 className="text-2xl font-light text-zinc-900 tracking-tight">미션</h3>
+              <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                최고의 기술력과 감성적인 접근으로 고객님의 특별한 순간을
+                완벽하게 담아내며, 전문성과 진정성을 바탕으로 한
+                최상의 서비스를 제공합니다.
+              </p>
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-zinc-200"></div>
+
+          {/* 핵심 가치 */}
+          <section className="space-y-8">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-light text-zinc-900 tracking-tight">
+                핵심 가치
+              </h2>
+              <p className="text-sm text-zinc-500 font-light">
+                우리가 가장 중요하게 생각하는 것들
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center space-y-4 p-6">
+                <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
+                  <Award className="w-7 h-7 text-zinc-700" />
                 </div>
-              </div>
-            </section>
-
-            {/* 수상 및 인증 */}
-            <section className="border-t pt-8">
-              <h2 className="text-2xl font-bold mb-6">수상 및 인증</h2>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                <p className="text-sm text-yellow-900">
-                  고객 만족도 1위, 서비스 품질 인증 등 다양한 수상 경력을 보유하고 있습니다.
-                  앞으로도 최고의 서비스로 고객님의 기대에 부응하겠습니다.
+                <h4 className="font-medium text-zinc-900">전문성</h4>
+                <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                  10년 이상의 경력을 가진 전문 작가진이
+                  최상의 결과물을 보장합니다
                 </p>
               </div>
-            </section>
-          </CardContent>
-        </Card>
+
+              <div className="text-center space-y-4 p-6">
+                <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
+                  <Users className="w-7 h-7 text-zinc-700" />
+                </div>
+                <h4 className="font-medium text-zinc-900">고객 중심</h4>
+                <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                  고객님의 니즈를 최우선으로 생각하며
+                  맞춤형 서비스를 제공합니다
+                </p>
+              </div>
+
+              <div className="text-center space-y-4 p-6">
+                <div className="w-14 h-14 bg-zinc-100 rounded-full flex items-center justify-center mx-auto">
+                  <TrendingUp className="w-7 h-7 text-zinc-700" />
+                </div>
+                <h4 className="font-medium text-zinc-900">혁신</h4>
+                <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                  최신 트렌드와 기술을 끊임없이 연구하며
+                  더 나은 서비스를 제공합니다
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-zinc-200"></div>
+
+          {/* 연혁 */}
+          <section className="space-y-8">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-light text-zinc-900 tracking-tight">
+                연혁
+              </h2>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex gap-8 items-start">
+                <div className="flex-shrink-0 w-24">
+                  <span className="text-sm font-medium text-zinc-900">2026년</span>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="w-2 h-2 bg-zinc-900 rounded-full"></div>
+                  <p className="text-sm text-zinc-600 font-light leading-relaxed">
+                    (주)마인드그래피 법인 설립<br />
+                    온라인 웨딩 촬영 플랫폼 오픈
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-8 items-start">
+                <div className="flex-shrink-0 w-24">
+                  <span className="text-sm font-medium text-zinc-900">2025년</span>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="w-2 h-2 bg-zinc-400 rounded-full"></div>
+                  <p className="text-sm text-zinc-600 font-light leading-relaxed">
+                    누적 고객 5,000명 돌파<br />
+                    우수 웨딩 서비스 업체 선정
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-8 items-start">
+                <div className="flex-shrink-0 w-24">
+                  <span className="text-sm font-medium text-zinc-900">2024년</span>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="w-2 h-2 bg-zinc-400 rounded-full"></div>
+                  <p className="text-sm text-zinc-600 font-light leading-relaxed">
+                    서울 스튜디오 확장 이전<br />
+                    프리미엄 웨딩 촬영 서비스 런칭
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-zinc-200"></div>
+
+          {/* 통계 */}
+          <section className="bg-zinc-50 border-2 border-zinc-200 p-12">
+            <div className="grid md:grid-cols-4 gap-8 text-center">
+              <div className="space-y-3">
+                <div className="text-4xl font-light text-zinc-900">5,000+</div>
+                <p className="text-sm text-zinc-600 font-light">누적 촬영 고객</p>
+              </div>
+              <div className="space-y-3">
+                <div className="text-4xl font-light text-zinc-900">99%</div>
+                <p className="text-sm text-zinc-600 font-light">고객 만족도</p>
+              </div>
+              <div className="space-y-3">
+                <div className="text-4xl font-light text-zinc-900">100+</div>
+                <p className="text-sm text-zinc-600 font-light">월간 촬영 건수</p>
+              </div>
+              <div className="space-y-3">
+                <div className="text-4xl font-light text-zinc-900">10+</div>
+                <p className="text-sm text-zinc-600 font-light">전문 작가진</p>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );
