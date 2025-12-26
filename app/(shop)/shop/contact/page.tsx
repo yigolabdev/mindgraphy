@@ -83,7 +83,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-zinc-500 font-light mb-2">전화</p>
-                      <p className="text-base font-medium text-zinc-900">1588-0000</p>
+                      <p className="text-base font-medium text-zinc-900">02-2202-9966</p>
                       <p className="text-sm text-zinc-600 font-light mt-1">평일 09:00 - 18:00</p>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-sm text-zinc-500 font-light mb-2">이메일</p>
-                      <p className="text-base font-medium text-zinc-900">support@mindgraphy.com</p>
+                      <p className="text-base font-medium text-zinc-900">mindgraphy@daum.net</p>
                       <p className="text-sm text-zinc-600 font-light mt-1">24시간 접수 가능</p>
                     </div>
                   </div>
@@ -132,21 +132,32 @@ export default function ContactPage() {
 
               <div className="pt-8 border-t border-zinc-200">
                 <div className="bg-zinc-50 border border-zinc-200 p-6 space-y-3">
-                  <h3 className="text-sm font-medium text-zinc-900">답변 시간 안내</h3>
+                  <h3 className="text-sm font-medium text-zinc-900">카카오 채널 상담</h3>
+                  <p className="text-xs text-zinc-600 font-light leading-relaxed">
+                    1:1 채팅으로 빠른 상담이 가능합니다
+                  </p>
                   <ul className="space-y-2 text-xs text-zinc-600 font-light leading-relaxed">
                     <li className="flex items-start gap-2">
                       <span className="text-zinc-400">•</span>
-                      <span>영업일 기준 1-2일 내에 답변드립니다</span>
+                      <span>1상담팀 (카카오ID: mind.channel)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-zinc-400">•</span>
-                      <span>주말 및 공휴일에는 답변이 지연될 수 있습니다</span>
+                      <span>2진행팀 (카카오ID: mind.system)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-zinc-400">•</span>
-                      <span>긴급 문의는 전화로 연락 부탁드립니다</span>
+                      <span>시간 기준 순차적으로 상담이 진행됩니다</span>
                     </li>
                   </ul>
+                  <a 
+                    href="http://pf.kakao.com/_xfxcxfxaK" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-medium text-zinc-900 hover:text-zinc-700 underline underline-offset-4"
+                  >
+                    카카오 채널로 문의하기 →
+                  </a>
                 </div>
               </div>
             </div>

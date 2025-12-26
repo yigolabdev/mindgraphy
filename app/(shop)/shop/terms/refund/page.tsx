@@ -6,161 +6,222 @@ export default function RefundPolicyPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">환불 및 교환 정책</CardTitle>
-            <p className="text-sm text-gray-600">최종 업데이트: 2026년 1월 1일</p>
+            <CardTitle className="text-3xl">환불 정책</CardTitle>
+            <p className="text-sm text-gray-600">최종 업데이트: 2025년 7월 1일</p>
           </CardHeader>
-          <CardContent className="prose prose-sm max-w-none">
-            <h2>1. 청약철회 및 환불 가능 기간</h2>
-            <p>
-              「전자상거래 등에서의 소비자보호에 관한 법률」 제17조에 따라, 구매자는 상품을 배송 받은 날로부터 <strong>7일 이내</strong>에 청약을 철회하고 환불을 요청할 수 있습니다.
-            </p>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4">
-              <p className="text-sm text-blue-800 font-medium mb-2">📌 중요 안내</p>
-              <p className="text-sm text-blue-700">
-                촬영 서비스의 특성상, <strong>촬영이 진행된 이후에는 환불이 불가능</strong>합니다. 
-                촬영 예약 후 일정 변경 요청은 촬영 7일 전까지 가능하며, 최대 2회까지 변경 가능합니다.
+          <CardContent className="prose prose-sm max-w-none space-y-8">
+            
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-amber-900 mb-3">📌 중요 안내</h3>
+              <p className="text-amber-800 leading-relaxed">
+                촬영 예약은 <strong>입금과 동시에 확정</strong>되며, 
+                아래 약관 내용에 동의하신 것으로 간주합니다.
               </p>
             </div>
 
-            <h2>2. 환불 가능한 경우</h2>
-            <ul>
-              <li>상품 또는 서비스에 하자가 있는 경우</li>
-              <li>상품이 광고 내용과 다르거나 계약 내용과 다르게 이행된 경우</li>
-              <li>배송된 상품이 파손되거나 손상된 경우</li>
-              <li>서비스 제공이 불가능한 경우</li>
-              <li>촬영 일정이 기상 악화 등 불가항력적 사유로 취소된 경우</li>
-            </ul>
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">첫번째. 목적</h2>
+              <p className="text-gray-700 leading-relaxed">
+                마인드그라피와 촬영 및 사진, 영상물 제작을 의뢰한 고객과의 
+                권리와 의무를 명확히 규정함에 그 목적이 있습니다.
+              </p>
+            </section>
 
-            <h2>3. 환불 불가능한 경우</h2>
-            <p>다음의 경우에는 청약철회 및 환불이 제한될 수 있습니다:</p>
-            <ul>
-              <li>촬영 서비스가 이미 제공된 경우</li>
-              <li>디지털 콘텐츠가 다운로드된 경우</li>
-              <li>고객의 요청에 따라 개별적으로 주문 제작되는 상품의 경우</li>
-              <li>시간의 경과에 의하여 재판매가 곤란할 정도로 상품의 가치가 현저히 감소한 경우</li>
-              <li>복제가 가능한 상품의 포장을 훼손한 경우</li>
-            </ul>
-
-            <h2>4. 환불 절차</h2>
-            <h3>4-1. 환불 신청</h3>
-            <ol>
-              <li>고객센터(1588-0000) 또는 이메일(support@mindgraphy.com)로 환불 신청</li>
-              <li>환불 사유 및 주문번호 제공</li>
-              <li>회사의 환불 승인 후 처리 진행</li>
-            </ol>
-
-            <h3>4-2. 환불 처리 기간</h3>
-            <ul>
-              <li><strong>신용카드 결제:</strong> 승인 취소 후 2-7영업일 내 환불 (카드사 정책에 따라 상이)</li>
-              <li><strong>계좌이체/가상계좌:</strong> 환불 승인 후 3영업일 이내 입금</li>
-              <li><strong>휴대폰 결제:</strong> 승인 취소 후 익월 청구 시 차감</li>
-            </ul>
-
-            <h3>4-3. 배송비 및 수수료</h3>
-            <ul>
-              <li>회사의 귀책사유로 인한 환불: 배송비 전액 회사 부담</li>
-              <li>고객의 단순 변심에 의한 환불: 왕복 배송비 고객 부담</li>
-              <li>환불 시 결제 수수료는 고객 부담</li>
-            </ul>
-
-            <h2>5. 교환 정책</h2>
-            <h3>5-1. 교환 가능 기간</h3>
-            <p>상품 수령 후 <strong>7일 이내</strong> 교환 신청이 가능합니다.</p>
-
-            <h3>5-2. 교환 불가능한 경우</h3>
-            <ul>
-              <li>교환 가능 기간이 경과한 경우</li>
-              <li>고객의 책임 있는 사유로 상품이 멸실 또는 훼손된 경우</li>
-              <li>포장을 개봉하였거나 포장이 훼손되어 상품가치가 현저히 상실된 경우</li>
-              <li>사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우</li>
-            </ul>
-
-            <h3>5-3. 교환 절차</h3>
-            <ol>
-              <li>고객센터로 교환 신청</li>
-              <li>상품 반송</li>
-              <li>회사의 검수 완료 후 새 상품 발송</li>
-            </ol>
-
-            <h2>6. 촬영 서비스 특별 규정</h2>
-            <h3>6-1. 일정 변경</h3>
-            <ul>
-              <li>촬영 7일 전까지: 무료 변경 (최대 2회)</li>
-              <li>촬영 3-7일 전: 변경 수수료 50% 부과</li>
-              <li>촬영 3일 이내: 변경 불가</li>
-            </ul>
-
-            <h3>6-2. 촬영 취소 및 환불</h3>
-            <ul>
-              <li>촬영 14일 전: 100% 환불</li>
-              <li>촬영 7-14일 전: 50% 환불</li>
-              <li>촬영 7일 이내: 환불 불가</li>
-              <li>촬영 진행 후: 환불 불가</li>
-            </ul>
-
-            <h3>6-3. 불가항력 사유</h3>
-            <p>다음의 경우에는 전액 환불 또는 일정 재조정이 가능합니다:</p>
-            <ul>
-              <li>태풍, 폭우 등 기상 악화로 촬영이 불가능한 경우</li>
-              <li>천재지변, 재난 등의 사유</li>
-              <li>회사의 귀책사유로 서비스 제공이 불가능한 경우</li>
-            </ul>
-
-            <h2>7. 디지털 상품 환불 정책</h2>
-            <ul>
-              <li>디지털 파일 다운로드 전: 100% 환불</li>
-              <li>디지털 파일 다운로드 후: 환불 불가</li>
-              <li>파일 오류 시: 정상 파일로 재전송 또는 전액 환불</li>
-            </ul>
-
-            <h2>8. 부분 환불</h2>
-            <p>패키지 상품의 경우, 일부 서비스만 제공받은 경우 다음과 같이 부분 환불이 가능합니다:</p>
-            <ul>
-              <li>제공받은 서비스에 대한 금액을 차감</li>
-              <li>계약서에 명시된 개별 서비스 가격 기준으로 계산</li>
-              <li>할인 혜택은 제공받은 서비스에 비례하여 적용</li>
-            </ul>
-
-            <h2>9. 환불 금액 계산</h2>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="font-medium mb-2">환불 금액 = (결제 금액) - (제공받은 서비스 금액) - (위약금) - (배송비)</p>
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">두번째. 환불에 관련한 내용</h2>
               
-              <div className="text-sm text-gray-600 mt-3">
-                <p><strong>예시:</strong></p>
-                <ul className="mt-2">
-                  <li>결제 금액: 1,000,000원</li>
-                  <li>제공받은 서비스: 0원 (촬영 전)</li>
-                  <li>취소 시점: 촬영 10일 전</li>
-                  <li>위약금: 0원 (14일 전 이내)</li>
-                  <li><strong>환불 금액: 1,000,000원 (100%)</strong></li>
-                </ul>
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">A. 상호 협의</h3>
+                  <p className="text-gray-700">
+                    마인드그라피와 의뢰인의 상호 협의하에 청약 철회 및 환불이 가능합니다.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">B. 사전 준비 비용</h3>
+                  <p className="text-gray-700">
+                    섭외, 대여, 답사 미팅 등 사전 준비 도중 청약 철회 시, 
+                    해당 비용을 공제한 금액이 환불 가능합니다.
+                  </p>
+                </div>
+
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <h3 className="font-semibold text-red-900 mb-2">C. 촬영 착수 후</h3>
+                  <p className="text-red-800">
+                    <strong>촬영 또는 편집 작업 착수 이후 청약 철회시, 환불이 불가능합니다.</strong>
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <h2>10. 분쟁 해결</h2>
-            <p>
-              환불 및 교환과 관련하여 분쟁이 발생한 경우, 다음의 기관을 통해 분쟁 조정을 신청하실 수 있습니다:
-            </p>
-            <ul>
-              <li><strong>한국소비자원:</strong> 1372 (www.kca.go.kr)</li>
-              <li><strong>공정거래위원회:</strong> 1588-1919</li>
-              <li><strong>전자거래분쟁조정위원회:</strong> 02-2122-2500</li>
-            </ul>
+              <div className="mt-6 p-6 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">환불 가이드라인</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">1. 고객 요청으로 촬영 취소 시 위약금</h4>
+                    <ul className="list-disc list-inside space-y-1 text-blue-800">
+                      <li>촬영일로부터 1개월 이내: <strong>50만원</strong></li>
+                      <li>촬영일로부터 1개월~2개월 사이: <strong>30만원</strong></li>
+                      <li>촬영일로부터 2개월~3개월 사이: <strong>15만원</strong></li>
+                    </ul>
+                  </div>
 
-            <h2>11. 고객센터</h2>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p><strong>(주)마인드그래피 고객센터</strong></p>
-              <ul>
-                <li>전화: 1588-0000</li>
-                <li>이메일: support@mindgraphy.com</li>
-                <li>운영시간: 평일 09:00 - 18:00 (주말 및 공휴일 휴무)</li>
-              </ul>
-            </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">2. 상품 구성 감소 시 위약금</h4>
+                    <p className="text-blue-800 mb-2">
+                      계약 이후 상품 구성이 줄어드는 경우 감소폭에 대한 위약금 발생:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 text-blue-800">
+                      <li>촬영일로부터 1개월 이내: 감소폭의 <strong>50%</strong></li>
+                      <li>촬영일로부터 1개월~2개월 사이: 감소폭의 <strong>40%</strong></li>
+                      <li>촬영일로부터 2개월~3개월 사이: 감소폭의 <strong>30%</strong></li>
+                    </ul>
+                  </div>
 
-            <div className="mt-8 pt-8 border-t">
-              <p className="text-sm text-gray-600">
-                본 환불 및 교환 정책은 「전자상거래 등에서의 소비자보호에 관한 법률」, 「소비자기본법」 등 관련 법령에 따라 작성되었습니다.
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">3. 계약금 환불 불가</h4>
+                    <p className="text-blue-800">
+                      계약금은 계약일로부터 <strong>14일 경과 후</strong>에는 
+                      고객 요청으로 촬영이 이루어지지 않더라도, 
+                      청약철회와 같기 때문에 <strong>환불되지 않습니다</strong>.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">4. 계약금 환불 가능 경우</h4>
+                    <p className="text-blue-800">
+                      계약금 환불은 (세번째 기타 내용의 F, G 항목)에 해당하는 경우에만 가능합니다.
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 className="font-semibold text-green-900 mb-2">5. 예외 조항</h4>
+                    <p className="text-green-800">
+                      <strong>계약일로부터 14일 이내</strong>인 경우만, 
+                      계약금 환불이 <strong>100% 가능</strong>합니다.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-4 bg-white rounded-lg border border-blue-300">
+                  <h4 className="font-semibold text-gray-900 mb-2">환불 계산 예시</h4>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <p>계약금 30만원 납입 후 촬영일로부터 1개월 이내 취소 시:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>계약금: 환불 불가 (30만원)</li>
+                      <li>위약금: 50만원</li>
+                      <li><strong className="text-red-600">총 납부 금액: 80만원</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">세번째. 기타 내용</h2>
+              
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">A. 계약 효력 발생</h3>
+                  <p className="text-gray-700">
+                    마인드그라피의 계약은 <strong>계약금 입금과 함께</strong> 모든 규정의 효력이 발생합니다.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">B. 계약금 기준</h3>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                    <li>본식 상품: <strong>30만원</strong></li>
+                    <li>그 외 촬영 (세미웨딩 등): <strong>15만원</strong></li>
+                    <li>계약금이 상품가보다 높은 경우: 전액 입금이 계약금</li>
+                  </ul>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">C. 잔금 결제</h3>
+                  <p className="text-gray-700">
+                    잔금은 계약금을 제외한 나머지 촬영비이며, 
+                    <strong> 촬영 7일 전</strong>에 결제해주시면 됩니다.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">D. 원본 보관 기간</h3>
+                  <p className="text-gray-700">
+                    원본의 보관 기간은 촬영 상품이 모두 전달된 후 <strong>30일</strong>입니다.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-2">E. 콘텐츠 업로드</h3>
+                  <p className="text-gray-700">
+                    촬영된 콘텐츠는 마인드그라피의 인스타그램, 블로그, 또는 홈페이지에 업로드될 수 있습니다. 
+                    이 내용은 마인드그라피와 상의 및 조율할 수 있습니다.
+                  </p>
+                </div>
+
+                <div className="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+                  <h3 className="font-semibold text-red-900 mb-2">F. 회사 귀책사유</h3>
+                  <p className="text-red-800">
+                    마인드그라피가 <strong>고의 또는 단순 이유로 촬영을 전혀 이행하지 못한 경우</strong>, 
+                    마인드그라피는 고객으로부터 수령한 금액을 기준으로 <strong>2배의 금액을 배상</strong>합니다.
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                  <h3 className="font-semibold text-blue-900 mb-2">G. 불가항력 사유</h3>
+                  <p className="text-blue-800">
+                    전쟁, 지진, 폭동과 같은 <strong>불가항력적인 사유</strong>로 인해 
+                    마인드그라피가 촬영을 이행하지 못한 경우에는 
+                    고객으로부터 수령한 <strong>금액 전액을 환불</strong>해드립니다.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-gray-100 p-6 rounded-lg">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">촬영 및 결과물 제작 순서</h2>
+              <ol className="space-y-3 text-gray-700">
+                <li><strong>1.</strong> 촬영 예약 - 금액 결제</li>
+                <li><strong>2.</strong> 사전 미팅 (촬영 2-3주 전, 전화/직접미팅/서면)</li>
+                <li><strong>3.</strong> 잔금 결제 (촬영 7일 전)</li>
+                <li><strong>4.</strong> 촬영 진행</li>
+                <li><strong>5.</strong> 전체 원본 전달 (본식: 35일, 평일촬영: 7일)</li>
+                <li><strong>6.</strong> 고객 셀렉 (전달일로부터 1년 이내)</li>
+                <li><strong>7.</strong> 세부 보정 및 앨범 시안 (셀렉일로부터 50일)</li>
+                <li><strong>8.</strong> 시안 컨펌</li>
+                <li><strong>9.</strong> 앨범 제작 (35일)</li>
+                <li><strong>10.</strong> 상품 수령 (택배 무료배송)</li>
+              </ol>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">셀렉 기한 및 추가 비용</h2>
+              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                <p className="text-amber-800 leading-relaxed">
+                  <strong>셀렉 기한:</strong> 전체 원본 전달 날짜로부터 <strong>1년</strong><br/>
+                  원본 발송된 날짜로부터 1년이 지난 뒤에 앨범 및 보정 작업을 원하실 경우 
+                  <strong>금액이 추가 발생</strong>됩니다.
+                </p>
+              </div>
+            </section>
+
+            <section className="pt-6 border-t-2">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">고객센터</h2>
+              <div className="space-y-3 text-gray-700">
+                <p><strong>전화:</strong> 02-2202-9966</p>
+                <p><strong>이메일:</strong> mindgraphy@daum.net</p>
+                <p><strong>카카오 채널:</strong> <a href="http://pf.kakao.com/_xfxcxfxaK" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">http://pf.kakao.com/_xfxcxfxaK</a></p>
+                <p><strong>1상담팀:</strong> 카카오ID: mind.channel</p>
+                <p><strong>2진행팀:</strong> 카카오ID: mind.system</p>
+              </div>
+            </section>
+
+            <div className="mt-8 pt-8 border-t-2">
+              <p className="text-sm text-gray-600 leading-relaxed">
+                촬영을 준비하시는 과정에서 궁금하신 부분이나 변동사항이 있으실 경우 
+                언제든 연락 부탁드립니다. 감사합니다.
               </p>
             </div>
           </CardContent>
