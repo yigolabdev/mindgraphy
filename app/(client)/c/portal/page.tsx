@@ -300,10 +300,6 @@ export default function PortalPage() {
 
   const progressPercentage = ((customerData.currentStep + 1) / processSteps.length) * 100
 
-  const handlePhotoSelection = () => {
-    router.push('/c/portal/photos')
-  }
-  
   const handleSaveAddress = () => {
     console.log('[Portal] handleSaveAddress called with:', deliveryAddress)
     
@@ -1129,43 +1125,11 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Step 4: 사진 선택 */}
+        {/* Step 4: 사진 선택 - 제거됨 (사진 선택 기능 불필요) */}
+        {customerData.currentStep === 4 && null}
+
         {customerData.currentStep === 4 && (
           <>
-            <div className="space-y-6">
-              <h2 className="text-lg font-medium text-zinc-900 text-center">
-                사진 선택
-              </h2>
-              
-              <div className="bg-zinc-50 border-2 border-zinc-200 p-6 space-y-4">
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-zinc-600">
-                    전체 {customerData.totalPhotos}장 중 {customerData.maxSelections}장 선택
-                  </p>
-                  <p className="text-2xl font-light text-zinc-900">
-                    {customerData.selectedPhotos} / {customerData.maxSelections}
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={handlePhotoSelection}
-                  className={cn(
-                    "w-full h-12 text-base font-normal transition-all duration-300",
-                    "bg-zinc-900 hover:bg-zinc-800 text-white",
-                    "active:scale-[0.98]",
-                    "shadow-md hover:shadow-lg"
-                  )}
-                >
-                  사진 선택하러 가기
-                </Button>
-                
-                <p className="text-xs text-zinc-500 leading-relaxed text-center pt-2">
-                  선택 마감일까지 사진을 선택해 주세요<br />
-                  선택된 사진은 세부 보정이 진행됩니다
-                </p>
-              </div>
-            </div>
-
             {/* 앨범 수령 주소지 입력 */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
