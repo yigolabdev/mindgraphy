@@ -1714,69 +1714,73 @@ export default function PortalPage() {
           </>
         )}
 
-        {/* Requests (모든 단계에서 표시) */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-zinc-900 text-center">
-            요청사항
-          </h2>
-          
-          {/* Request History */}
-          {customerData.requestHistory.length > 0 && (
-            <div className="space-y-3">
-              {customerData.requestHistory.map((request) => {
-                const date = new Date(request.createdAt)
-                const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
-                
-                return (
-                  <div
-                    key={request.id}
-                    className="bg-zinc-50 border border-zinc-200 p-4 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  >
-                    <p className="text-xs text-zinc-400 font-mono">
-                      {formattedDate}
-                    </p>
-                    <p className="text-sm text-zinc-900 leading-relaxed whitespace-pre-wrap">
-                      {request.content}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-          
-          {/* New Request Input */}
-          <div className="space-y-4">
-            <Textarea
-              value={newRequest}
-              onChange={(e) => setNewRequest(e.target.value)}
-              placeholder="새로운 요청사항을 작성해 주세요"
-              className="min-h-[120px] text-sm leading-relaxed border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 resize-none"
-            />
-            
-            <Button
-              onClick={handleAddRequest}
-              disabled={!newRequest.trim()}
-              variant="outline"
-              className={cn(
-                "w-full h-12 text-base font-normal transition-all duration-300",
-                "border-2 border-zinc-300 bg-white text-zinc-700",
-                "hover:border-zinc-900 hover:bg-zinc-50 hover:text-zinc-900",
-                "active:scale-[0.98]",
-                "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-300 disabled:hover:bg-white disabled:hover:text-zinc-700"
+        {/* Requests (촬영 전까지만 표시 - Step 0~3) */}
+        {customerData.currentStep <= 3 && (
+          <>
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium text-zinc-900 text-center">
+                요청사항
+              </h2>
+              
+              {/* Request History */}
+              {customerData.requestHistory.length > 0 && (
+                <div className="space-y-3">
+                  {customerData.requestHistory.map((request) => {
+                    const date = new Date(request.createdAt)
+                    const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+                    
+                    return (
+                      <div
+                        key={request.id}
+                        className="bg-zinc-50 border border-zinc-200 p-4 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      >
+                        <p className="text-xs text-zinc-400 font-mono">
+                          {formattedDate}
+                        </p>
+                        <p className="text-sm text-zinc-900 leading-relaxed whitespace-pre-wrap">
+                          {request.content}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
               )}
-            >
-              요청사항 추가
-            </Button>
-            
-            <p className="text-xs text-zinc-500 leading-relaxed text-center">
-              작성한 내용은 날짜와 함께 기록됩니다<br />
-              급한 문의는 전화나 카카오톡으로 부탁드립니다
-            </p>
-          </div>
-        </div>
+              
+              {/* New Request Input */}
+              <div className="space-y-4">
+                <Textarea
+                  value={newRequest}
+                  onChange={(e) => setNewRequest(e.target.value)}
+                  placeholder="새로운 요청사항을 작성해 주세요"
+                  className="min-h-[120px] text-sm leading-relaxed border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 resize-none"
+                />
+                
+                <Button
+                  onClick={handleAddRequest}
+                  disabled={!newRequest.trim()}
+                  variant="outline"
+                  className={cn(
+                    "w-full h-12 text-base font-normal transition-all duration-300",
+                    "border-2 border-zinc-300 bg-white text-zinc-700",
+                    "hover:border-zinc-900 hover:bg-zinc-50 hover:text-zinc-900",
+                    "active:scale-[0.98]",
+                    "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-300 disabled:hover:bg-white disabled:hover:text-zinc-700"
+                  )}
+                >
+                  요청사항 추가
+                </Button>
+                
+                <p className="text-xs text-zinc-500 leading-relaxed text-center">
+                  작성한 내용은 날짜와 함께 기록됩니다<br />
+                  급한 문의는 전화나 카카오톡으로 부탁드립니다
+                </p>
+              </div>
+            </div>
 
-        {/* Divider */}
-        <div className="border-t border-zinc-200"></div>
+            {/* Divider */}
+            <div className="border-t border-zinc-200"></div>
+          </>
+        )}
 
         {/* Logout Button */}
         <div className="pt-4">
