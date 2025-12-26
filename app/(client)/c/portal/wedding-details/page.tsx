@@ -135,6 +135,16 @@ export default function WeddingDetailsPage() {
               <br />
               입력하신 정보는 더 나은 촬영을 위해 사용됩니다
             </p>
+            
+            {/* 30일 이전 작성 안내 */}
+            <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-lg max-w-xl mx-auto mt-6">
+              <p className="text-sm text-amber-900 font-medium leading-relaxed">
+                ⏰ 예식일 기준 <span className="font-bold text-amber-700">30일 이전</span>까지 작성해 주세요
+              </p>
+              <p className="text-xs text-amber-700 mt-2 leading-relaxed">
+                충분한 준비 시간을 위해 가급적 빠른 작성을 부탁드립니다
+              </p>
+            </div>
           </div>
 
           {/* Divider */}

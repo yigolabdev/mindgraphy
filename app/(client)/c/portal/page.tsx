@@ -801,6 +801,16 @@ export default function PortalPage() {
                       예식 상세 정보 입력하기
                     </Button>
                     
+                    {/* 30일 이전 작성 안내 */}
+                    <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-lg">
+                      <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                        ⏰ <span className="font-bold">예식일 30일 이전</span>까지 작성 필수
+                      </p>
+                      <p className="text-xs text-amber-700 mt-1.5 leading-relaxed">
+                        사전 준비를 위해 가급적 빠른 작성을 부탁드립니다
+                      </p>
+                    </div>
+                    
                     <div className="bg-gradient-to-r from-zinc-50 to-white border border-zinc-200 rounded-lg p-4 space-y-2">
                       <p className="text-xs text-zinc-500 font-medium">💡 촬영 당일 Tip</p>
                       <ul className="text-xs text-zinc-600 space-y-1 text-left">
