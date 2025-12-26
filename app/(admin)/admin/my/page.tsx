@@ -22,18 +22,13 @@ import { Calendar, CheckSquare, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
-import { ScheduleDetailDialog } from '@/components/dashboard/schedule-detail-dialog'
-import { differenceInDays } from 'date-fns'
 import type { MySchedule } from '@/lib/mock/me'
-import type { Schedule } from '@/lib/mock/admin'
 
 export default function MyPage() {
   // State
   const [activeTab, setActiveTab] = useState<'day' | 'upcoming' | 'availability'>('day')
   const [todaySchedule, setTodaySchedule] = useState<any[]>([])
   const [upcomingSchedule, setUpcomingSchedule] = useState<any[]>([])
-  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null)
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
 
   // localStorage의 업데이트를 적용한 스케줄 로드
   useEffect(() => {
@@ -109,29 +104,7 @@ export default function MyPage() {
     saveScheduleAcceptance(scheduleId, currentUser.id, accept, reason)
   }
 
-  // Convert MySchedule to Schedule for DetailDialog
-  const handleScheduleClick = (schedule: MySchedule) => {
-    // Convert MySchedule to Schedule type
-    const detailSchedule: Schedule = {
-      id: schedule.id,
-      projectId: schedule.eventId, // Using eventId as projectId for linking
-      customerName: `${schedule.groomName} & ${schedule.brideName}`,
-      date: schedule.date,
-      time: schedule.startTime,
-      location: schedule.venueName || '',
-      photographerIds: [currentUser.id],
-      photographerNames: schedule.photographerNames,
-      status: schedule.status === 'upcoming' ? 'confirmed' : 
-              schedule.status === 'completed' ? 'completed' : 
-              schedule.status === 'uploaded' ? 'completed' : 'confirmed',
-      type: schedule.productType,
-      daysUntil: differenceInDays(new Date(schedule.date), new Date()),
-      hasProof: false // Default
-    }
-    
-    setSelectedSchedule(detailSchedule)
-    setDetailDialogOpen(true)
-  }
+  // Schedule click handler removed - dialog not needed
 
   return (
     <AdminLayout align="left">
@@ -173,7 +146,6 @@ export default function MyPage() {
             <MyDay
               schedule={todaySchedule}
               onStatusChange={handleStatusChange}
-              onScheduleClick={handleScheduleClick}
             />
           </TabsContent>
 
@@ -181,7 +153,6 @@ export default function MyPage() {
             <MyWeek
               schedule={upcomingSchedule}
               onAcceptanceChange={handleAcceptanceChange}
-              onScheduleClick={handleScheduleClick}
             />
           </TabsContent>
 
@@ -231,13 +202,6 @@ export default function MyPage() {
           </div>
         </div>
       </div>
-      
-      {/* Schedule Detail Dialog */}
-      <ScheduleDetailDialog
-        schedule={selectedSchedule}
-        open={detailDialogOpen}
-        onOpenChange={setDetailDialogOpen}
-      />
     </AdminLayout>
   )
 }
