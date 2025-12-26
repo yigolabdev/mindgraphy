@@ -92,12 +92,23 @@ export function ShopFooter() {
             <div className="space-y-3 text-sm text-zinc-600 font-light">
               <div>
                 <p className="text-xs text-zinc-500 mb-1">고객센터</p>
-                <p className="font-medium text-zinc-900">1588-0000</p>
+                <p className="font-medium text-zinc-900">02-2202-9966</p>
                 <p className="text-xs text-zinc-500">평일 09:00 - 18:00</p>
               </div>
               <div>
                 <p className="text-xs text-zinc-500 mb-1">이메일</p>
-                <p className="font-medium text-zinc-900">support@mindgraphy.com</p>
+                <p className="font-medium text-zinc-900">mindgraphy@daum.net</p>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-500 mb-1">카카오 채널</p>
+                <a 
+                  href="http://pf.kakao.com/_xfxcxfxaK" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-zinc-900 hover:underline"
+                >
+                  상담 문의하기 →
+                </a>
               </div>
             </div>
           </div>

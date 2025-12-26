@@ -122,8 +122,8 @@ export default function DeliveryPolicyPage() {
                 <strong>배송 관련 문의</strong>
               </p>
               <div className="text-sm text-blue-700">
-                <p><strong>전화:</strong> 1588-0000 (평일 09:00 - 18:00)</p>
-                <p className="mb-0"><strong>이메일:</strong> support@mindgraphy.com</p>
+                <p><strong>전화:</strong> 02-2202-9966 (평일 09:00 - 18:00)</p>
+                <p className="mb-0"><strong>이메일:</strong> mindgraphy@daum.net</p>
               </div>
             </div>
 

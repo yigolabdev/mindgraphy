@@ -398,7 +398,8 @@ npm audit fix
 ### 문의
 
 - GitHub Issues
-- Email: support@mindgraphy.com
+- Email: mindgraphy@daum.net
+- 전화: 02-2202-9966
 
 ---
 

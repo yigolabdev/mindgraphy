@@ -117,7 +117,7 @@ export default function BusinessInfoPage() {
                   고객센터
                 </div>
                 <div className="font-medium text-zinc-900">
-                  1588-0000
+                  02-2202-9966
                 </div>
               </div>
 
@@ -128,7 +128,28 @@ export default function BusinessInfoPage() {
                   이메일
                 </div>
                 <div className="font-medium text-zinc-900">
-                  support@mindgraphy.com
+                  mindgraphy@daum.net
+                </div>
+              </div>
+
+              <div className="border-t border-zinc-200 pt-5"></div>
+
+              <div className="flex flex-col md:flex-row md:items-start">
+                <div className="md:w-40 text-sm text-zinc-600 font-light mb-1 md:mb-0">
+                  카카오 채널
+                </div>
+                <div>
+                  <a 
+                    href="http://pf.kakao.com/_xfxcxfxaK" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-medium text-zinc-900 hover:underline"
+                  >
+                    상담 문의하기 →
+                  </a>
+                  <p className="text-xs text-zinc-500 mt-1">
+                    1상담팀: mind.channel | 2진행팀: mind.system
+                  </p>
                 </div>
               </div>
 

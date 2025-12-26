@@ -116,7 +116,7 @@ export default function SuccessPage() {
           {/* 안내 */}
           <div className="bg-zinc-50 border border-zinc-200 p-6">
             <p className="text-sm text-zinc-600 leading-relaxed font-light">
-              문의사항이 있으시면 고객센터 <span className="font-medium text-zinc-900">1588-0000</span>으로 연락주세요<br />
+              문의사항이 있으시면 고객센터 <span className="font-medium text-zinc-900">02-2202-9966</span>으로 연락주세요<br />
               영업일 기준 1-2일 내에 담당자가 연락드립니다
             </p>
           </div>

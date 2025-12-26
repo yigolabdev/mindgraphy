@@ -198,11 +198,11 @@ export default function GuidePage() {
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="border-2 border-zinc-200 p-6 space-y-3">
                 <h3 className="font-medium text-zinc-900">전화 상담</h3>
                 <p className="text-sm text-zinc-600 leading-relaxed font-light">
-                  <span className="font-medium text-zinc-900">1588-0000</span><br />
+                  <span className="font-medium text-zinc-900">02-2202-9966</span><br />
                   평일 09:00 - 18:00<br />
                   (주말 및 공휴일 휴무)
                 </p>
@@ -211,9 +211,25 @@ export default function GuidePage() {
               <div className="border-2 border-zinc-200 p-6 space-y-3">
                 <h3 className="font-medium text-zinc-900">이메일 문의</h3>
                 <p className="text-sm text-zinc-600 leading-relaxed font-light">
-                  <span className="font-medium text-zinc-900">support@mindgraphy.com</span><br />
+                  <span className="font-medium text-zinc-900">mindgraphy@daum.net</span><br />
                   24시간 접수 가능<br />
                   영업일 기준 1-2일 내 답변
+                </p>
+              </div>
+
+              <div className="border-2 border-zinc-200 p-6 space-y-3">
+                <h3 className="font-medium text-zinc-900">카카오 채널</h3>
+                <p className="text-sm text-zinc-600 leading-relaxed font-light">
+                  <a 
+                    href="http://pf.kakao.com/_xfxcxfxaK" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-medium text-zinc-900 hover:underline"
+                  >
+                    상담하기 →
+                  </a><br />
+                  1:1 채팅 상담<br />
+                  시간 기준 순차 상담
                 </p>
               </div>
             </div>

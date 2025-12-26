@@ -162,14 +162,26 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <div className="text-center">
                 <p className="text-xs text-zinc-500 font-light mb-1">전화 문의</p>
-                <p className="text-lg font-medium text-zinc-900">1588-0000</p>
+                <p className="text-lg font-medium text-zinc-900">02-2202-9966</p>
                 <p className="text-xs text-zinc-500 font-light">평일 09:00 - 18:00</p>
               </div>
               <div className="hidden sm:block w-px h-12 bg-zinc-200"></div>
               <div className="text-center">
                 <p className="text-xs text-zinc-500 font-light mb-1">이메일 문의</p>
-                <p className="text-lg font-medium text-zinc-900">support@mindgraphy.com</p>
+                <p className="text-lg font-medium text-zinc-900">mindgraphy@daum.net</p>
                 <p className="text-xs text-zinc-500 font-light">24시간 접수 가능</p>
+              </div>
+              <div className="hidden sm:block w-px h-12 bg-zinc-200"></div>
+              <div className="text-center">
+                <p className="text-xs text-zinc-500 font-light mb-1">카카오 채널</p>
+                <a 
+                  href="http://pf.kakao.com/_xfxcxfxaK" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-zinc-900 hover:underline"
+                >
+                  상담하기 →
+                </a>
               </div>
             </div>
           </div>

@@ -153,7 +153,7 @@ export default function PrivacyPolicyPage() {
               <ul>
                 <li>성명: 김철수</li>
                 <li>직책: 개인정보보호책임자</li>
-                <li>연락처: 1588-0000</li>
+                <li>연락처: 02-2202-9966</li>
                 <li>이메일: privacy@mindgraphy.com</li>
               </ul>
             </div>
@@ -165,8 +165,8 @@ export default function PrivacyPolicyPage() {
             <ul>
               <li>부서명: 고객지원팀</li>
               <li>담당자: 홍길동</li>
-              <li>연락처: 1588-0000</li>
-              <li>이메일: support@mindgraphy.com</li>
+              <li>연락처: 02-2202-9966</li>
+              <li>이메일: mindgraphy@daum.net</li>
             </ul>
 
             <h2>제12조 (권익침해 구제방법)</h2>
