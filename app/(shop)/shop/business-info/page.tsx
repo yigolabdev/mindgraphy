@@ -24,7 +24,7 @@ export default function BusinessInfoPage() {
               사업자 정보
             </h1>
             <p className="text-lg text-zinc-600 leading-relaxed font-light">
-              주식회사 마인드그래피의 사업자 정보입니다
+              주식회사 마인드그라피의 사업자 정보입니다
             </p>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function BusinessInfoPage() {
                   상호명
                 </div>
                 <div className="font-medium text-zinc-900">
-                  주식회사 마인드그래피
+                  주식회사 마인드그라피
                 </div>
               </div>
 
@@ -218,9 +218,9 @@ export default function BusinessInfoPage() {
 
           <div className="bg-white border border-zinc-200 p-6">
             <p className="text-xs text-zinc-500 leading-relaxed font-light">
-              (주)마인드그래피는 통신판매중개자로서 통신판매의 당사자가 아니며, 
+              (주)마인드그라피는 통신판매중개자로서 통신판매의 당사자가 아니며, 
               입점 판매자가 등록한 상품정보 및 거래에 대해 일체 책임을 지지 않습니다. 
-              단, (주)마인드그래피가 직접 판매하는 상품에 대한 책임은 (주)마인드그래피에 있습니다.
+              단, (주)마인드그라피가 직접 판매하는 상품에 대한 책임은 (주)마인드그라피에 있습니다.
             </p>
           </div>
         </div>

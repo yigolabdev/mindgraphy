@@ -113,7 +113,7 @@ export default function DeliveryPolicyPage() {
             <ul>
               <li><strong>회사 귀책:</strong> 무료 반품 (착불)</li>
               <li><strong>고객 귀책:</strong> 왕복 배송비 고객 부담</li>
-              <li><strong>반품 주소:</strong> 서울특별시 성동구 마조로15길 6, 1층 (주)마인드그래피</li>
+              <li><strong>반품 주소:</strong> 서울특별시 성동구 마조로15길 6, 1층 (주)마인드그라피</li>
             </ul>
 
             <h2>10. 고객센터</h2>

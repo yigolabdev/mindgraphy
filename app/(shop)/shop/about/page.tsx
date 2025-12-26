@@ -145,7 +145,7 @@ export default function AboutPage() {
                 <div className="flex-1 space-y-2">
                   <div className="w-2 h-2 bg-zinc-900 rounded-full"></div>
                   <p className="text-sm text-zinc-600 font-light leading-relaxed">
-                    (주)마인드그래피 법인 설립<br />
+                    (주)마인드그라피 법인 설립<br />
                     온라인 웨딩 촬영 플랫폼 오픈
                   </p>
                 </div>

@@ -12,7 +12,7 @@ export default function TermsOfServicePage() {
           <CardContent className="prose prose-sm max-w-none">
             <h2>제1조 (목적)</h2>
             <p>
-              본 약관은 (주)마인드그래피(이하 "회사")가 운영하는 MindGraphy 웨딩 촬영 서비스(이하 "서비스")를 이용함에 있어 회사와 이용자 간의 권리, 의무 및 책임사항, 서비스 이용조건 및 절차 등 기본적인 사항을 규정함을 목적으로 합니다.
+              본 약관은 (주)마인드그라피(이하 "회사")가 운영하는 MindGraphy 웨딩 촬영 서비스(이하 "서비스")를 이용함에 있어 회사와 이용자 간의 권리, 의무 및 책임사항, 서비스 이용조건 및 절차 등 기본적인 사항을 규정함을 목적으로 합니다.
             </p>
 
             <h2>제2조 (정의)</h2>
@@ -97,7 +97,7 @@ export default function TermsOfServicePage() {
 
             <h2>제11조 (고객센터)</h2>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p><strong>(주)마인드그래피 고객센터</strong></p>
+              <p><strong>(주)마인드그라피 고객센터</strong></p>
               <ul>
                 <li>전화: 02-2202-9966</li>
                 <li>이메일: mindgraphy@daum.net</li>

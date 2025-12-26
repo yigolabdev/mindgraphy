@@ -119,7 +119,7 @@ export function ShopFooter() {
           {/* 사업자 정보 */}
           <div className="text-xs text-zinc-500 space-y-2 mb-8 font-light leading-relaxed">
             <p>
-              <span className="text-zinc-700">상호:</span> 주식회사 마인드그래피
+              <span className="text-zinc-700">상호:</span> 주식회사 마인드그라피
               {" | "}
               <span className="text-zinc-700">대표:</span> 신영민
               {" | "}
@@ -179,9 +179,9 @@ export function ShopFooter() {
           {/* 면책 조항 */}
           <div className="mt-8 pt-6 border-t border-zinc-200">
             <p className="text-xs text-zinc-400 leading-relaxed font-light">
-              (주)마인드그래피는 통신판매중개자로서 통신판매의 당사자가 아니며, 
+              (주)마인드그라피는 통신판매중개자로서 통신판매의 당사자가 아니며, 
               입점 판매자가 등록한 상품정보 및 거래에 대해 일체 책임을 지지 않습니다. 
-              단, (주)마인드그래피가 직접 판매하는 상품에 대한 책임은 (주)마인드그래피에 있습니다.
+              단, (주)마인드그라피가 직접 판매하는 상품에 대한 책임은 (주)마인드그라피에 있습니다.
             </p>
           </div>
         </div>
