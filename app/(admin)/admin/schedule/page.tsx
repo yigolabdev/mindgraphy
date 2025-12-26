@@ -47,6 +47,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { EventClickArg, EventContentArg } from '@fullcalendar/core'
 
 const EVENT_TYPE_LABELS: Record<ScheduleEventType, string> = {
+  'pre-meeting': '사전미팅',
   'meeting': '미팅',
   'conference': '회의',
   'appointment': '약속',
@@ -63,6 +64,7 @@ const EVENT_STATUS_LABELS: Record<ScheduleEventStatus, string> = {
 }
 
 const EVENT_TYPE_COLORS: Record<ScheduleEventType, { bg: string, border: string, text: string }> = {
+  'pre-meeting': { bg: '#fef3c7', border: '#f59e0b', text: '#92400e' },
   'meeting': { bg: '#dbeafe', border: '#3b82f6', text: '#1e40af' },
   'conference': { bg: '#e9d5ff', border: '#a855f7', text: '#6b21a8' },
   'appointment': { bg: '#d1fae5', border: '#10b981', text: '#065f46' },

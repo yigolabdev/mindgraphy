@@ -6,6 +6,7 @@
 import { addDays, format } from 'date-fns'
 
 export type ScheduleEventType = 
+  | 'pre-meeting'    // 사전미팅
   | 'meeting'        // 미팅
   | 'conference'     // 회의
   | 'appointment'    // 약속

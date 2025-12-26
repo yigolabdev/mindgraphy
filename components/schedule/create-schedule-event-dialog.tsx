@@ -18,6 +18,7 @@ interface CreateScheduleEventDialogProps {
 }
 
 const EVENT_TYPE_OPTIONS: { value: ScheduleEventType; label: string }[] = [
+  { value: 'pre-meeting', label: '사전미팅' },
   { value: 'meeting', label: '미팅' },
   { value: 'conference', label: '회의' },
   { value: 'appointment', label: '약속' },
