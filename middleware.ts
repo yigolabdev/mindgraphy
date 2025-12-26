@@ -22,8 +22,13 @@ export function middleware(request: NextRequest) {
   // 🛍️ 쇼핑몰 전용 배포 (토스페이먼츠 심사용)
   if (isShopOnly) {
     // /shop 경로만 허용
-    if (pathname.startsWith('/shop') || pathname === '/' || pathname.startsWith('/_next') || pathname.startsWith('/api')) {
+    if (pathname.startsWith('/shop') || pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next()
+    }
+    
+    // 루트 경로는 /shop으로 리다이렉트
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/shop', request.url))
     }
     
     // /c, /admin 접근 차단
