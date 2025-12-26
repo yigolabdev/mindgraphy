@@ -53,7 +53,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
@@ -87,7 +87,8 @@ export default function CustomersPage() {
         setMockProducts(mockSettings.mockProducts)
         setIsLoading(false)
       } catch (error) {
-        console.error('Error loading customer data:', error)
+        const { handleError } = await import('@/lib/utils/error-handling')
+        handleError(error, '고객 데이터 로딩')
         setIsLoading(false)
       }
     }

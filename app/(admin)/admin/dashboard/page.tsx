@@ -92,7 +92,8 @@ export default function AdminDashboard() {
         setSchedules(getThisWeekSchedules())
         setIsLoading(false)
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
+        const { handleError } = await import('@/lib/utils/error-handling')
+        handleError(error, '대시보드 데이터 로딩')
         setIsLoading(false)
       }
     }

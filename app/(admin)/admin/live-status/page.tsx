@@ -47,7 +47,8 @@ export default function LiveStatusPage() {
         setScheduleEvents(updatedEvents)
         setSchedulePhotographers(mockSchedulePhotographers)
       } catch (error) {
-        console.error('Error loading schedule data:', error)
+        const { handleError } = await import('@/lib/utils/error-handling')
+        handleError(error, '실시간 현황 데이터 로딩')
         setScheduleEvents([])
         setSchedulePhotographers([])
       }
