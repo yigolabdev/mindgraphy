@@ -2,15 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'export', // ✅ S3 정적 배포를 위해 활성화
+  // ⚠️ Vercel 배포에서는 output: 'export'를 제거해야 middleware가 작동합니다
+  // S3 배포용으로는 별도 브랜치나 환경변수로 분리 필요
   
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true, // Vercel 자동 이미지 최적화 사용하지 않음
   },
-  trailingSlash: true, // Better for static hosting compatibility
-  
-  // ✅ 동적 라우트 페이지는 fallback으로 처리
-  // 정적 export 시 동적 라우트는 404로 처리됨
   
   // ✅ Turbopack 설정 (Next.js 16 기본)
   turbopack: {
