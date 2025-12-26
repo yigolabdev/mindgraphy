@@ -1084,9 +1084,9 @@ export const mockProjects: Project[] = [
     weddingVenue: '경기 드림파크 웨딩홀',
     specialRequests: '야외 정원 촬영 희망, 가족 단체 사진 중요',
     referralSource: '고객용 페이지',  // 유입 경로
-    assignedPhotographerIds: [],  // 작가 미배정 (일정 미확정)
-    assignedPhotographers: [],
-    progress: 0,
+    assignedPhotographerIds: ['photographer-2'],  // 최작가 배정
+    assignedPhotographers: [mockPhotographers[1]],
+    progress: 15,
     createdAt: '2025-11-18T15:30:00Z',
     updatedAt: '2025-11-18T15:30:00Z'
   },
@@ -1105,9 +1105,9 @@ export const mockProjects: Project[] = [
     weddingVenue: '서울 그랜드 웨딩홀',
     specialRequests: '웨딩홀 제휴 고객입니다. 실내 촬영 위주로 진행해주세요.',
     referralSource: '웨딩홀 제휴',  // 유입 경로
-    assignedPhotographerIds: [],  // 작가 미배정 (일정 미확정)
-    assignedPhotographers: [],
-    progress: 0,
+    assignedPhotographerIds: ['photographer-1', 'photographer-3'],  // 박작가, 김작가 배정
+    assignedPhotographers: [mockPhotographers[0], mockPhotographers[2]],
+    progress: 20,
     createdAt: '2025-11-19T09:20:00Z',
     updatedAt: '2025-11-19T09:20:00Z'
   },
