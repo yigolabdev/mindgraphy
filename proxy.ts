@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 /**
- * Middleware for route protection and access control
+ * Proxy for route protection and access control
+ * (Previously called middleware in Next.js 15)
  * 
  * 배포 환경별 접근 제어:
  * - SHOP_ONLY=true: 쇼핑몰만 공개 (토스페이먼츠 심사용)
@@ -11,7 +12,7 @@ import type { NextRequest } from 'next/server'
  * - 설정 없음: 모든 페이지 접근 가능 (개발 환경)
  */
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   // 환경변수로 배포 모드 확인
