@@ -39,7 +39,7 @@ export default function AboutPage() {
                 MindGraphy
               </h2>
               <p className="text-base text-zinc-600 leading-relaxed font-light max-w-2xl mx-auto">
-                MindGraphy는 2026년 설립된 프리미엄 웨딩 촬영 전문 기업입니다.
+                MindGraphy는 프리미엄 웨딩 촬영 전문 기업입니다.
                 고객님의 소중한 순간을 가장 아름답고 감동적으로 담아내기 위해
                 최선을 다하고 있습니다.
               </p>
