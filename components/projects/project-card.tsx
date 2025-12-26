@@ -120,7 +120,7 @@ export function ProjectCard({
                   variant="outline"
                   size="sm"
                   className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-purple-300 text-purple-700 hover:bg-purple-50"
-                  onClick={() => window.location.href = `/admin/gallery/${project.id}/upload`}
+                  onClick={() => window.location.href = `/admin/gallery/upload?projectId=${project.id}`}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   웹 갤러리
@@ -129,7 +129,7 @@ export function ProjectCard({
                   variant="outline" 
                   size="sm" 
                   className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-blue-300 text-blue-700 hover:bg-blue-50"
-                  onClick={() => window.location.href = `/admin/timetable/${project.id}`}
+                  onClick={() => window.location.href = `/admin/timetable?projectId=${project.id}`}
                 >
                   <ClipboardList className="mr-2 h-4 w-4" />
                   타임테이블
@@ -141,7 +141,7 @@ export function ProjectCard({
                   variant="outline"
                   size="sm"
                   className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-purple-300 text-purple-700 hover:bg-purple-50"
-                  onClick={() => window.location.href = `/admin/gallery/${project.id}/upload`}
+                  onClick={() => window.location.href = `/admin/gallery/upload?projectId=${project.id}`}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   웹 갤러리 업로드
@@ -150,7 +150,7 @@ export function ProjectCard({
                   variant="outline" 
                   size="sm" 
                   className="w-full sm:w-auto focus-ring transition-all hover:shadow-sm border-blue-300 text-blue-700 hover:bg-blue-50"
-                  onClick={() => window.location.href = `/admin/timetable/${project.id}`}
+                  onClick={() => window.location.href = `/admin/timetable?projectId=${project.id}`}
                 >
                   <ClipboardList className="mr-2 h-4 w-4" />
                   타임 테이블 관리
