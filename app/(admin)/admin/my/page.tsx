@@ -27,8 +27,8 @@ import type { MySchedule } from '@/lib/mock/me'
 export default function MyPage() {
   // State
   const [activeTab, setActiveTab] = useState<'day' | 'upcoming' | 'availability'>('day')
-  const [todaySchedule, setTodaySchedule] = useState<any[]>([])
-  const [upcomingSchedule, setUpcomingSchedule] = useState<any[]>([])
+  const [todaySchedule, setTodaySchedule] = useState<MySchedule[]>([])
+  const [upcomingSchedule, setUpcomingSchedule] = useState<MySchedule[]>([])
 
   // localStorage의 업데이트를 적용한 스케줄 로드
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function MyPage() {
     const rawUpcomingSchedule = getAllUpcomingSchedule()
     
     // localStorage 업데이트 적용 (상태 변경)
-    const updatedTodaySchedule = applyScheduleUpdates(rawTodaySchedule as any)
-    const updatedUpcomingSchedule = applyScheduleUpdates(rawUpcomingSchedule as any)
+    const updatedTodaySchedule = applyScheduleUpdates(rawTodaySchedule as unknown as import('@/lib/mock/schedules').ScheduleEvent[]) as unknown as MySchedule[]
+    const updatedUpcomingSchedule = applyScheduleUpdates(rawUpcomingSchedule as unknown as import('@/lib/mock/schedules').ScheduleEvent[]) as unknown as MySchedule[]
     
     // localStorage 수락/거절 상태 적용
     const acceptedTodaySchedule = applyScheduleAcceptances(updatedTodaySchedule)
@@ -45,7 +45,7 @@ export default function MyPage() {
     
     // 오늘 탭: 수락된 일정만 표시
     const filteredTodaySchedule = acceptedTodaySchedule.filter(
-      (schedule: any) => schedule.acceptanceStatus === 'accepted'
+      (schedule) => schedule.acceptanceStatus === 'accepted'
     )
     
     setTodaySchedule(filteredTodaySchedule)

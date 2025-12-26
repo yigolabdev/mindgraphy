@@ -75,7 +75,7 @@ export default function SettingsPage() {
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create')
   const [selectedItem, setSelectedItem] = useState<Product | Policy | Venue | Partner | null>(null)
   const [activeTab, setActiveTab] = useState<'snap' | 'options' | 'policies' | 'venues' | 'partners'>('snap')
-  const [formData, setFormData] = useState<any>({})
+  const [formData, setFormData] = useState<Record<string, any>>({})
   
   const [contractDialogOpen, setContractDialogOpen] = useState(false)
   const [editingContract, setEditingContract] = useState<ContractTemplate | null>(null)

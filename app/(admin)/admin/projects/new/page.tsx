@@ -94,7 +94,7 @@ export default function CreateProjectPage() {
   
   const availableOptions = mockProducts.filter(p => p.category === 'OPTION' && p.isActive)
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | number | string[] | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
