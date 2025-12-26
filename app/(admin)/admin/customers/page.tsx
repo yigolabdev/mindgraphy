@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { AdminLayout } from '@/components/layout/admin-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -97,7 +97,7 @@ export default function CustomersPage() {
   }, [])
 
   // 현재 진행 단계 계산
-  const getCurrentStage = (customer: Customer, projects: Project[], _contracts: unknown[]) => {
+  const getCurrentStage = useCallback((customer: Customer, projects: Project[], _contracts: unknown[]) => {
     const activeProjects = projects.filter(p => 
       p.projectStatus !== 'completed' && p.projectStatus !== 'delivered' && p.projectStatus !== 'cancelled'
     )
@@ -118,10 +118,10 @@ export default function CustomersPage() {
     if (status === 'editing') return { label: '편집 중', color: 'bg-orange-100 text-orange-800 border-orange-200' }
     
     return { label: '진행 중', color: 'bg-blue-100 text-blue-800 border-blue-200' }
-  }
+  }, [])
 
   // 입금 상태 확인 (Payment 데이터 기반)
-  const getPaymentStatus = (customer: Customer, contracts: Contract[]) => {
+  const getPaymentStatus = useCallback((customer: Customer, contracts: Contract[]) => {
     const customerContracts = contracts.filter(c => c.customerId === customer.id)
     if (customerContracts.length === 0) return { paid: 0, total: 0, percent: 0, methods: [] }
     
@@ -145,7 +145,7 @@ export default function CustomersPage() {
       percent,
       methods: paymentMethods
     }
-  }
+  }, [mockPayments])
 
   // 일정 미확정 여부 확인 (고객용 페이지를 통한 신청 후 일정 미확정)
   const isScheduleUnconfirmed = (customer: Customer, projects: Project[]) => {
